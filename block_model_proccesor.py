@@ -32,13 +32,14 @@ def show_blocks(conn):
 
 
 def load_block_file(file = None):
+
     if not file:
         file_path = input("File path: ")
     else:
         file_path = file
     conn = sqlite3.connect(DB_NAME)
     try:
-        conn.execute("CREATE TABLE BLOCK ("
+        conn.execute("CREATE TABLE IF NOT EXISTS BLOCK ("
                              "ID INT PRIMARY KEY NOT NULL, "
                              "X INT NOT NULL, "
                              "Y INT NOT NULL,"
