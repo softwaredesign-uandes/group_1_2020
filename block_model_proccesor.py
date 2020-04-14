@@ -11,7 +11,7 @@ INITIAL_HEADERS = [["-------", "---", "---", "---", "-----------", "-------", "-
                 ["_______", "___", "___", "___", "___________", "_______", "___________", "__________"]]
 TABLE = [INITIAL_HEADERS[1], INITIAL_HEADERS[2]]
 
-def show_blocks(conn, file_path):
+def show_blocks(conn):
     cursor = conn.execute("SELECT * from BLOCK")
     c = 1
     for row in cursor:
@@ -63,18 +63,24 @@ def make_db(conn, file_path):
         conn.close()
         return False
 
-def load_block_file(file = None):
+def load_block_file(is_test=False, file=None):
 
     if not file:
         file_path = input("File path: ")
     else:
         file_path = file
-    conn = sqlite3.connect(DB_NAME)
-    if os.path.isfile("block_model.db"):
-        print("DB is already loaded")
-        return
-    else:
+    if is_test:
+        if os.path.isfile("block_model.db"):
+            print("DB is already loaded, removing it in order to test...")
+            os.remove(DB_NAME)
+        conn = sqlite3.connect(DB_NAME)
         return make_db(conn, file_path)
+    else:
+        if os.path.isfile("block_model.db"):
+            print("DB is already loaded")
+        else:
+            conn = sqlite3.connect(DB_NAME)
+            return make_db(conn, file_path)
 
 def query_console():
     conn = sqlite3.connect("block_model.db")
