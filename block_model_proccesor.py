@@ -31,43 +31,43 @@ def show_blocks(conn):
 
 
 
-def load_block_file():
-    file_path = input("File path: ")
+def load_block_file(file = None):
+    if not file:
+        file_path = input("File path: ")
+    else:
+        file_path = file
+    conn = sqlite3.connect(DB_NAME)
     try:
-        conn = sqlite3.connect(DB_NAME)
-        try:
-            conn.execute("CREATE TABLE BLOCK ("
-                                 "ID INT PRIMARY KEY NOT NULL, "
-                                 "X INT NOT NULL, "
-                                 "Y INT NOT NULL,"
-                                 "Z INT NOT NULL, "
-                                 "VALUE INT NOT NULL, "
-                                 "TON FLOAT NOT NULL, "
-                                 "DESTINATION INT NOT NULL,"
-                                 " AU FLOAT NOT NULL);")
+        conn.execute("CREATE TABLE BLOCK ("
+                             "ID INT PRIMARY KEY NOT NULL, "
+                             "X INT NOT NULL, "
+                             "Y INT NOT NULL,"
+                             "Z INT NOT NULL, "
+                             "VALUE INT NOT NULL, "
+                             "TON FLOAT NOT NULL, "
+                             "DESTINATION INT NOT NULL,"
+                             " AU FLOAT NOT NULL);")
 
-            data = open(file_path)
-            for line in data:
-                columns = line.split()
-                id = int(columns[0])
-                x = int(columns[1])
-                y = int(columns[2])
-                z = int(columns[3])
-                value = int(columns[4])
-                ton = float(columns[5])
-                destination = int(columns[6])
-                au = float(columns[7])
-                conn.execute("INSERT INTO BLOCK (ID, X, Y, Z, VALUE, TON, DESTINATION, AU) VALUES ({}, {}, {}, {}, {}, {}, {}, {})".format(id, x, y, z, value, ton, destination, au))
-            conn.commit()
-            print("File loaded")
-        except:
-            print("ERROR")
+        data = open(file_path)
+        for line in data:
+            columns = line.split()
+            id = int(columns[0])
+            x = int(columns[1])
+            y = int(columns[2])
+            z = int(columns[3])
+            value = int(columns[4])
+            ton = float(columns[5])
+            destination = int(columns[6])
+            au = float(columns[7])
+            conn.execute("INSERT INTO BLOCK (ID, X, Y, Z, VALUE, TON, DESTINATION, AU) VALUES ({}, {}, {}, {}, {}, {}, {}, {})".format(id, x, y, z, value, ton, destination, au))
+        conn.commit()
+        print("File loaded")
         conn.close()
-
+        return True
     except:
-        print("File not found")
-
-    return
+        print("ERROR")
+        conn.close()
+        return False
 
 def query_console():
     conn = sqlite3.connect("block_model.db")
