@@ -30,8 +30,11 @@ def show_blocks(conn):
         c += 1
     return
 
-def make_table(conn):
-    conn.execute("CREATE TABLE IF NOT EXISTS BLOCK ("
+def make_db(file_path):
+    try:
+        data = open(file_path)
+        conn = sqlite3.connect(DB_NAME)
+        conn.execute("CREATE TABLE IF NOT EXISTS BLOCK ("
                          "ID INT PRIMARY KEY NOT NULL, "
                          "X INT NOT NULL, "
                          "Y INT NOT NULL,"
@@ -40,6 +43,26 @@ def make_table(conn):
                          "TON FLOAT NOT NULL, "
                          "DESTINATION INT NOT NULL,"
                          " AU FLOAT NOT NULL);")
+        for line in data:
+            columns = line.split()
+            id = int(columns[0])
+            x = int(columns[1])
+            y = int(columns[2])
+            z = int(columns[3])
+            value = int(columns[4])
+            ton = float(columns[5])
+            destination = int(columns[6])
+            au = float(columns[7])
+            conn.execute(
+                "INSERT INTO BLOCK (ID, X, Y, Z, VALUE, TON, DESTINATION, AU) VALUES ({}, {}, {}, {}, {}, {}, {}, {})".format(
+                    id, x, y, z, value, ton, destination, au))
+        conn.commit()
+        print("File loaded")
+        conn.close()
+        return True
+    except:
+        print("ERROR MAKING DB")
+        return False
 
 def load_block_file(is_test=False, file=None):
 
@@ -51,32 +74,32 @@ def load_block_file(is_test=False, file=None):
         if os.path.isfile("block_model.db"):
             print("DB is already loaded, removing it in order to test...")
             os.remove(DB_NAME)
-        conn = sqlite3.connect(DB_NAME)
-        return make_table(conn, file_path)
+        return make_db(file_path)
     else:
         if os.path.isfile("block_model.db"):
             print("DB is already loaded")
         else:
-            conn = sqlite3.connect(DB_NAME)
-            return make_table(conn, file_path)
+            return make_db(file_path)
 
 def query_console():
-    conn = sqlite3.connect("block_model.db")
-    while True:
-        print("What do you want to see \n"
-               "(1) Block List\n"
-               "(0) Exit to main menu\n")
+    if os.path.isfile("block_model.db"):
+        conn = sqlite3.connect("block_model.db")
+        while True:
+            print("What do you want to see \n"
+                   "(1) Block List\n"
+                   "(0) Exit to main menu\n")
 
-        user_input = input("Option number: ")
-        while user_input not in QUERY_MENU_VALID_OPTIONS:
-            user_input = input("Choose a valid option: ")
+            user_input = input("Option number: ")
+            while user_input not in QUERY_MENU_VALID_OPTIONS:
+                user_input = input("Choose a valid option: ")
 
-        if user_input == QUERY_MENU_VALID_OPTIONS[0]:
-            conn.close()
-            return
-        elif user_input == QUERY_MENU_VALID_OPTIONS[1]:
-            show_blocks(conn)
-
+            if user_input == QUERY_MENU_VALID_OPTIONS[0]:
+                conn.close()
+                return
+            elif user_input == QUERY_MENU_VALID_OPTIONS[1]:
+                show_blocks(conn)
+    else:
+        print("The database does not exist")
 
 def main_menu():
     while True:
