@@ -6,7 +6,7 @@ def main(args=None):
     """The main routine."""
     if args is None:
         args = sys.argv[1:]
-    # tests.test_answer()
+    tests.test_answer()
     print("Running tests")
     # Do argument parsing here (eg. with argparse) and anything else
     # you want your project to do.
