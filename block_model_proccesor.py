@@ -1,5 +1,4 @@
 import sqlite3
-import os
 MAIN_MANU_VALID_OPTIONS = ["0", "1", "2"]
 QUERY_MENU_VALID_OPTIONS = ["0", "1"]
 CONTINUE_SHOWING_OPTIONS = ["y", "n"]
