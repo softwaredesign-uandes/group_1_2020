@@ -11,7 +11,7 @@ INITIAL_HEADERS = [["-------", "---", "---", "---", "-----------", "-------", "-
                 ["_______", "___", "___", "___", "___________", "_______", "___________", "__________"]]
 TABLE = [INITIAL_HEADERS[1], INITIAL_HEADERS[2]]
 
-def show_blocks(conn, file_path):
+def show_blocks(conn):
     cursor = conn.execute("SELECT * from BLOCK")
     c = 1
     for row in cursor:
@@ -30,55 +30,38 @@ def show_blocks(conn, file_path):
         c += 1
     return
 
-def make_db(conn, file_path):
-    try:
-        conn.execute("CREATE TABLE IF NOT EXISTS BLOCK ("
-                             "ID INT PRIMARY KEY NOT NULL, "
-                             "X INT NOT NULL, "
-                             "Y INT NOT NULL,"
-                             "Z INT NOT NULL, "
-                             "VALUE INT NOT NULL, "
-                             "TON FLOAT NOT NULL, "
-                             "DESTINATION INT NOT NULL,"
-                             " AU FLOAT NOT NULL);")
+def make_table(conn):
+    conn.execute("CREATE TABLE IF NOT EXISTS BLOCK ("
+                         "ID INT PRIMARY KEY NOT NULL, "
+                         "X INT NOT NULL, "
+                         "Y INT NOT NULL,"
+                         "Z INT NOT NULL, "
+                         "VALUE INT NOT NULL, "
+                         "TON FLOAT NOT NULL, "
+                         "DESTINATION INT NOT NULL,"
+                         " AU FLOAT NOT NULL);")
 
-        data = open(file_path)
-        for line in data:
-            columns = line.split()
-            id = int(columns[0])
-            x = int(columns[1])
-            y = int(columns[2])
-            z = int(columns[3])
-            value = int(columns[4])
-            ton = float(columns[5])
-            destination = int(columns[6])
-            au = float(columns[7])
-            conn.execute("INSERT INTO BLOCK (ID, X, Y, Z, VALUE, TON, DESTINATION, AU) VALUES ({}, {}, {}, {}, {}, {}, {}, {})".format(id, x, y, z, value, ton, destination, au))
-        conn.commit()
-        print("File loaded")
-        conn.close()
-        return True
-    except:
-        print("ERROR")
-        conn.close()
-        return False
-
-def load_block_file(file = None):
+def load_block_file(is_test=False, file=None):
 
     if not file:
         file_path = input("File path: ")
     else:
         file_path = file
-    conn = sqlite3.connect(DB_NAME)
-    if os.path.isfile("block_model.db"):
-        print("DB is already loaded")
-        return
+    if is_test:
+        if os.path.isfile("block_model.db"):
+            print("DB is already loaded, removing it in order to test...")
+            os.remove(DB_NAME)
+        conn = sqlite3.connect(DB_NAME)
+        return make_table(conn, file_path)
     else:
-        return make_db(conn, file_path)
+        if os.path.isfile("block_model.db"):
+            print("DB is already loaded")
+        else:
+            conn = sqlite3.connect(DB_NAME)
+            return make_table(conn, file_path)
 
 def query_console():
     conn = sqlite3.connect("block_model.db")
-
     while True:
         print("What do you want to see \n"
                "(1) Block List\n"
