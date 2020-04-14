@@ -1,5 +1,6 @@
 import sqlite3
 from tabulate import tabulate
+import os
 
 MAIN_MANU_VALID_OPTIONS = ["0", "1", "2"]
 QUERY_MENU_VALID_OPTIONS = ["0", "1"]
@@ -10,7 +11,7 @@ INITIAL_HEADERS = [["-------", "---", "---", "---", "-----------", "-------", "-
                 ["_______", "___", "___", "___", "___________", "_______", "___________", "__________"]]
 TABLE = [INITIAL_HEADERS[1], INITIAL_HEADERS[2]]
 
-def show_blocks(conn):
+def show_blocks(conn, file_path):
     cursor = conn.execute("SELECT * from BLOCK")
     c = 1
     for row in cursor:
@@ -29,15 +30,7 @@ def show_blocks(conn):
         c += 1
     return
 
-
-
-def load_block_file(file = None):
-
-    if not file:
-        file_path = input("File path: ")
-    else:
-        file_path = file
-    conn = sqlite3.connect(DB_NAME)
+def make_db(conn, file_path):
     try:
         conn.execute("CREATE TABLE IF NOT EXISTS BLOCK ("
                              "ID INT PRIMARY KEY NOT NULL, "
@@ -69,6 +62,19 @@ def load_block_file(file = None):
         print("ERROR")
         conn.close()
         return False
+
+def load_block_file(file = None):
+
+    if not file:
+        file_path = input("File path: ")
+    else:
+        file_path = file
+    conn = sqlite3.connect(DB_NAME)
+    if os.path.isfile("block_model.db"):
+        print("DB is already loaded")
+        return
+    else:
+        return make_db(conn, file_path)
 
 def query_console():
     conn = sqlite3.connect("block_model.db")
