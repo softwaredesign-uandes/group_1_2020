@@ -1,23 +1,32 @@
 import sqlite3
 import os
+from tabulate import tabulate
+
 MAIN_MANU_VALID_OPTIONS = ["0", "1", "2"]
 QUERY_MENU_VALID_OPTIONS = ["0", "1"]
 CONTINUE_SHOWING_OPTIONS = ["y", "n"]
 DB_NAME = "block_model.db"
+INITIAL_HEADERS = [["-------", "---", "---", "---", "-----------", "-------", "-----------", "----------"],
+                ["ID", "x", "y", "z", "block value", "ton", "destination", "Au(oz/ton)"],
+                ["_______", "___", "___", "___", "___________", "_______", "___________", "__________"]]
+TABLE = [INITIAL_HEADERS[1], INITIAL_HEADERS[2]]
 
 def show_blocks(conn):
     cursor = conn.execute("SELECT * from BLOCK")
-
-    # testing
     c = 1
     for row in cursor:
-        print(row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7])
-        if c % 200 == 0:
+        TABLE.append([row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]])
+        if c % 500 == 0:
+            print(tabulate(TABLE))
             continue_printing = input("Continue showing data(y/n): ").lower()
             while continue_printing not in CONTINUE_SHOWING_OPTIONS:
                 continue_printing = input("Enter a valid option. Continue showing data(y/n): ").lower()
+            
             if continue_printing == CONTINUE_SHOWING_OPTIONS[1]:
                 break
+        if c % 50 == 0:
+            for header in INITIAL_HEADERS:
+                TABLE.append(header)
         c += 1
     return
 
