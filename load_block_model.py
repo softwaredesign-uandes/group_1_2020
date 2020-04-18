@@ -1,6 +1,16 @@
-
+import os
 import sqlite3
 DB_NAME = "block_model.db"
+
+def create_db():
+    DB_NAME = "block_model.db"
+    if db_exists(DB_NAME):
+        os.remove(DB_NAME)
+    sqlite3.connect(DB_NAME)
+
+def db_exists(db_name):
+    return os.path.isfile(db_name)
+
 def make_db(file_path):
     try:
         data = open(file_path)

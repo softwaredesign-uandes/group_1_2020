@@ -25,6 +25,12 @@ def show_blocks():
     return
 
 
+from load_block_model import DB_NAME
+
+def show_blocks2(model, from_id, to_id):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.execute("SELECT * FROM {} WHERE ID >= {} AND ID < {}".format(model, from_id, to_id))
+    print(cursor, cursor[0])
 
 
 
