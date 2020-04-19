@@ -1,63 +1,100 @@
 import os
 import sqlite3
+import json
+
 DB_NAME = "block_model.db"
+LOADED_MODELS_INFORMATION_FILE_NAME = "models_information.json"
+
 
 def create_db():
     DB_NAME = "block_model.db"
-    if db_exists(DB_NAME):
+    if os.path.isfile(DB_NAME):
         os.remove(DB_NAME)
     sqlite3.connect(DB_NAME)
 
-def db_exists(db_name):
-    return os.path.isfile(db_name)
 
-def make_db(file_path):
-    try:
-        data = open(file_path)
-        conn = sqlite3.connect(DB_NAME)
-        conn.execute("CREATE TABLE IF NOT EXISTS BLOCK ("
-                         "ID INT PRIMARY KEY NOT NULL, "
-                         "X INT NOT NULL, "
-                         "Y INT NOT NULL,"
-                         "Z INT NOT NULL, "
-                         "VALUE INT NOT NULL, "
-                         "TON FLOAT NOT NULL, "
-                         "DESTINATION INT NOT NULL,"
-                         " AU FLOAT NOT NULL);")
-        for line in data:
-            columns = line.split()
-            id = int(columns[0])
-            x = int(columns[1])
-            y = int(columns[2])
-            z = int(columns[3])
-            value = int(columns[4])
-            ton = float(columns[5])
-            destination = int(columns[6])
-            au = float(columns[7])
-            conn.execute(
-                "INSERT INTO BLOCK (ID, X, Y, Z, VALUE, TON, DESTINATION, AU) VALUES ({}, {}, {}, {}, {}, {}, {}, {})".format(
-                    id, x, y, z, value, ton, destination, au))
-        conn.commit()
-        print("File loaded")
-        conn.close()
-        return True
-    except:
-        print("ERROR MAKING DB")
-        return False
-
-def load_block_file(is_test=False, file=None):
-
-    if not file:
-        file_path = input("File path: ")
+def get_model_name_from_path(file_path):
+    if "\\" in file_path:
+        separator = "\\"
     else:
-        file_path = file
-    if is_test:
-        if os.path.isfile("block_model.db"):
-            print("DB is already loaded, removing it in order to test...")
-            os.remove(DB_NAME)
-        return make_db(file_path)
-    else:
-        if os.path.isfile("block_model.db"):
-            print("DB is already loaded")
+        separator = "/"
+    model_name = file_path.split(separator)[-1].split(".")[0]
+    return model_name
+
+
+def retrieve_columns_types(file_path, model_has_id):
+    types = []
+    with open(file_path, "r") as blocks:
+        first_line = list(blocks)[0].strip().split(" ")
+        if model_has_id:
+            first_line = first_line[1:]
+        for item in first_line:
+            if item.isdigit():
+                types.append("INT")
+            elif item.replace("-", "").isdigit():
+                types.append("INT")
+            elif item.replace(".", "").replace(",", "").replace("-", "").isdigit():
+                types.append("FLOAT")
+            else:
+                types.append("TEXT")
+    return types
+
+
+def parse_block_column_types(block):
+    parsed_block = []
+    for data in block:
+        if data.isdigit():
+            parsed_block.append(data.strip())
+        elif data.replace("-", "").isdigit():
+            parsed_block.append(data.strip())
+        elif data.replace(".", "").replace(",", "").replace("-", "").isdigit():
+            parsed_block.append(data.strip())
         else:
-            return make_db(file_path)
+            parsed_block.append("\'{}\'".format(data.strip()))
+    return parsed_block
+
+
+def create_table_query(model_name, table_columns, columns_types):
+    db_columns = ["{} INT PRIMARY KEY ".format(table_columns[0])]
+    for column_name, column_type in zip(table_columns[1:], columns_types):
+        db_columns.append("{} {} NOT NULL".format(column_name, column_type))
+    query = "CREATE TABLE IF NOT EXISTS {}({});".format(model_name, ",".join(db_columns))
+    print(query)
+    return query
+
+
+
+def load_block_file(file_path, table_columns, model_has_id, db_name=DB_NAME):
+    model_name = get_model_name_from_path(file_path)
+    conn = sqlite3.connect(db_name)
+    columns_types = retrieve_columns_types(file_path, model_has_id)
+    conn.execute(create_table_query(model_name, table_columns, columns_types))
+    conn.commit()
+    with open(file_path, "r") as block_file:
+        columns_for_query = ",".join(table_columns)
+        for block in block_file:
+            id_count = 1
+            block_parsed = ",".join(parse_block_column_types(block.strip().split(" ")))
+
+            if model_has_id:
+                insert_query = "INSERT INTO {}({}) VALUES ({})".format(model_name, columns_for_query, block_parsed)
+
+            else:
+                insert_query = "INSERT INTO {}({}) VALUES ({},{})".format(model_name, columns_for_query, id_count,
+                                                                           ",".join(block_parsed))
+            print(insert_query)
+            conn.execute(insert_query)
+        conn.commit()
+    dump_model_information_into_json(model_name, table_columns)
+
+
+def dump_model_information_into_json(model_name, column_names):
+    with open(LOADED_MODELS_INFORMATION_FILE_NAME, 'r') as json_file:
+        data = json.load(json_file)
+    data[model_name] = column_names
+    with open(LOADED_MODELS_INFORMATION_FILE_NAME, 'w') as json_file:
+        json.dump(data, json_file, sort_keys=True)
+
+
+print(retrieve_columns_types("mclaughlin_limit.blocks", True))
+

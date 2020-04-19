@@ -1,6 +1,10 @@
 import sqlite3
 import os
-from tabultate import tabulate
+from tabulate import tabulate
+
+INITIAL_HEADERS = [["-------", "---", "---", "---", "-----------", "-------", "-----------", "----------"],
+                ["ID", "x", "y", "z", "block value", "ton", "destination", "Au(oz/ton)"],
+                ["_______", "___", "___", "___", "___________", "_______", "___________", "__________"]]
 
 TABLE = [INITIAL_HEADERS[1], INITIAL_HEADERS[2]]
 
