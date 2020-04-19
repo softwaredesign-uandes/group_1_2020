@@ -23,7 +23,7 @@ def check_block_model_file_existence(file_name):
 
 
 def enter_block_model_information():
-    file_name = input("Enter file name: ")
+    file_name = input("Enter file name: :")
     if not check_block_model_file_existence(file_name):
         print("FILE NOT FOUND")
         return
