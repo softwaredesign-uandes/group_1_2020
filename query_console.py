@@ -1,18 +1,45 @@
 from tabulate import tabulate
-from load_block_model import load_block_file, show_blocks
-
+import load_block_model
+import os
 
 
 MAIN_MANU_VALID_OPTIONS = ["0", "1", "2"]
 QUERY_MENU_VALID_OPTIONS = ["0", "1"]
+ENTER_COLUMNS_OPTIONS = ["0", "1"] 
 CONTINUE_SHOWING_OPTIONS = ["y", "n"]
 INITIAL_HEADERS = [["-------", "---", "---", "---", "-----------", "-------", "-----------", "----------"],
                 ["ID", "x", "y", "z", "block value", "ton", "destination", "Au(oz/ton)"],
                 ["_______", "___", "___", "___", "___________", "_______", "___________", "__________"]]
-
+DEFAULT_USER_INPUT = "1"
+EXIT_INPUT = "0"
 
 TABLE = [INITIAL_HEADERS[1], INITIAL_HEADERS[2]]
 
+def check_block_model_file_existence(file_name):
+    return os.path.isfile(file_name)
+
+def enter_block_model_information():
+    file_name = input("Enter file name")
+    if not check_block_model_file_existence(file_name):
+        print("FILE NOT FOUND")
+        return
+    table_columns = []
+    model_has_id = input("The model has id?(y/n): ")
+    while model_has_id not in CONTINUE_SHOWING_OPTIONS:
+        model_has_id = input("The dataset has identification column?(y/n): ")
+    model_has_id = True if model_has_id == "y" else False
+    if not model_has_id:
+        table_columns.append("id")
+    while True:
+        print("Enter column name one by one\n(0) Exit\(1)Reset")
+        user_input = input("Column name/options: ")
+        if user_input not in ENTER_COLUMNS_OPTIONS:
+            table_columns.append(user_input)
+        elif user_input == ENTER_COLUMNS_OPTIONS[0]:
+            break
+        elif user_input == ENTER_COLUMNS_OPTIONS[1]:
+            table_columns.clear()
+    load_block_model.load_block_file(file_name, table_columns, model_has_id)
 
 def main_menu():
     while True:
@@ -29,7 +56,7 @@ def main_menu():
         if user_input == MAIN_MANU_VALID_OPTIONS[0]:
             exit(0)
         elif user_input == MAIN_MANU_VALID_OPTIONS[1]:
-            load_block_file()
+            enter_block_model_information()
         elif user_input == MAIN_MANU_VALID_OPTIONS[2]:
             query_console()
 
@@ -46,5 +73,5 @@ def query_console():
         if user_input == QUERY_MENU_VALID_OPTIONS[0]:
             return
         elif user_input == QUERY_MENU_VALID_OPTIONS[1]:
-            show_blocks(conn)
+            return
     
