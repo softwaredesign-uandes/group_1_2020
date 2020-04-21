@@ -8,7 +8,7 @@ def check_block_model_file_existence(file_name):
     return os.path.isfile(file_name)
 
 def enter_block_model_information():
-    file_name = input("Enter file name: :")
+    file_name = input("Enter file name: ")
     THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
     file_name = os.path.join(THIS_FOLDER, file_name)
     if not check_block_model_file_existence(file_name):
@@ -22,7 +22,7 @@ def enter_block_model_information():
     if not model_has_id:
         table_columns.append("id")
     while True:
-        print("Enter column name one by one\n(0) Exit\(1)Reset")
+        print("Enter column name one by one\n(0) Finish\n(1) Reset")
         user_input = input("Column name/options: ")
         if user_input not in ENTER_COLUMNS_OPTIONS:
             table_columns.append(user_input)
@@ -34,7 +34,7 @@ def enter_block_model_information():
 
 def main_menu():
     while True:
-        print("What do you want to do \n"
+        print("What do you want to do\n"
               "(1) Load block file\n"
               "(2) Open query console\n"
               "(0) Exit")
@@ -49,8 +49,10 @@ def main_menu():
         elif user_input == MAIN_MANU_VALID_OPTIONS[1]:
             enter_block_model_information()
         elif user_input == MAIN_MANU_VALID_OPTIONS[2]:
-            query_console()
-
+            if len(block_model_proccesor.get_available_models()) > 0:
+                query_console()
+            else:
+                print("There are no available models")
 
 def show_options_from_list_and_get_user_input(data_to_show):
     valid_options = list(map(str, range(len(data_to_show))))
@@ -101,7 +103,7 @@ def show_mass_of_block(block_model_name):
     mass_column_name = block_model_columns[mass_column_index]
     block_mass = block_model_proccesor.get_mass_in_kilograms(block_model_name,x, y, z,mass_column_name)
     if block_mass != False:
-        print("Block in {} with coordinates {} {} {} has a mass of {}".format(block_model_name, x, y,z, block_mass))
+        print("Block in {} with coordinates {} {} {} has a mass of {} kilograms".format(block_model_name, x, y,z, block_mass))
     else:
         print("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
 
