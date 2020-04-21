@@ -1,9 +1,8 @@
 from tabulate import tabulate
 import sqlite3
-
 import json
-LOADED_MODELS_INFORMATION_FILE_NAME = "models_information.json"
-DB_NAME = "block_model.db"
+
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
 
 def get_model_data_table(model_name, from_id, to_id):
     data_table = []

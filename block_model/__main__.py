@@ -4,7 +4,8 @@ import query_console
 import json 
 import os
 import load_block_model
-LOADED_MODELS_INFORMATION_FILE_NAME = "models_information.json"
+
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME
 
 def check_neccesary_files_existence():
     if not os.path.isfile(LOADED_MODELS_INFORMATION_FILE_NAME):
