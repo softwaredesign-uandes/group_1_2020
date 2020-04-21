@@ -1,12 +1,7 @@
 import load_block_model
 import os
 
-MAIN_MANU_VALID_OPTIONS = ["0", "1", "2"]
-QUERY_MENU_VALID_OPTIONS = ["0", "1"]
-ENTER_COLUMNS_OPTIONS = ["0", "1"] 
-CONTINUE_SHOWING_OPTIONS = ["y", "n"]
-DEFAULT_USER_INPUT = "1"
-EXIT_INPUT = "0"
+from constants import CONTINUE_SHOWING_OPTIONS, ENTER_COLUMNS_OPTIONS, MAIN_MANU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS
 
 def check_block_model_file_existence(file_name):
     return os.path.isfile(file_name)

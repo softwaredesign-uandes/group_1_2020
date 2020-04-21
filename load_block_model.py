@@ -2,8 +2,7 @@ import os
 import sqlite3
 import json
 
-DB_NAME = "block_model.db"
-LOADED_MODELS_INFORMATION_FILE_NAME = "models_information.json"
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
 
 def create_db():
     DB_NAME = "block_model.db"
