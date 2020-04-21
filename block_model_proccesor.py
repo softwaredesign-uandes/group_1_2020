@@ -50,6 +50,7 @@ def get_mass_in_kilograms(model_name, x, y, z, mass_column_name):
 def get_available_models():
     models = get_models_information_json()
     models_names = models.keys()
+    print(models_names)
     return list(models_names)
 
 def get_number_of_blocks_in_model(block_model_name):
@@ -58,5 +59,3 @@ def get_number_of_blocks_in_model(block_model_name):
     return cursor.fetchall()[0][0]
 
 
-print(get_models_information_json())
-print(get_model_data_table("mclaughlin_limit",1,5))
