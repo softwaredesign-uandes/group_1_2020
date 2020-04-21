@@ -11,20 +11,20 @@ def create_db():
     sqlite3.connect(DB_NAME)
 
 
-def get_model_name_from_path(file_path):
-    if "\\" in file_path:
+def get_model_name_from_path(block_model_file_path):
+    if "\\" in block_model_file_path:
         separator = "\\"
     else:
         separator = "/"
-    model_name = file_path.split(separator)[-1].split(".")[0]
+    model_name = block_model_file_path.split(separator)[-1].split(".")[0]
     return model_name
 
 
-def retrieve_columns_types(file_path, model_has_id):
+def retrieve_columns_types(block_model_file_path, model_has_id):
     types = []
     THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-    file_path = os.path.join(THIS_FOLDER, file_path)
-    with open(file_path, "r") as blocks:
+    block_model_file_path = os.path.join(THIS_FOLDER, block_model_file_path)
+    with open(block_model_file_path, "r") as blocks:
         first_line = list(blocks)[0].strip().split(" ")
         if model_has_id:
             first_line = first_line[1:]
@@ -63,13 +63,13 @@ def create_table_query(model_name, table_columns, columns_types):
     return query
 
 
-def load_block_file(file_path, table_columns, model_has_id, db_name=DB_NAME):
-    model_name = get_model_name_from_path(file_path)
+def load_block_file(block_model_file_path, table_columns, model_has_id, db_name=DB_NAME):
+    model_name = get_model_name_from_path(block_model_file_path)
     conn = sqlite3.connect(db_name)
-    columns_types = retrieve_columns_types(file_path, model_has_id)
+    columns_types = retrieve_columns_types(block_model_file_path, model_has_id)
     conn.execute(create_table_query(model_name, table_columns, columns_types))
     conn.commit()
-    with open(file_path, "r") as block_file:
+    with open(block_model_file_path, "r") as block_file:
         columns_for_query = ",".join(table_columns)
         for block in block_file:
             id_count = 1
