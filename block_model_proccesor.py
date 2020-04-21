@@ -42,3 +42,10 @@ def get_available_models():
     models = get_models_information_json()
     models_names = models.keys()
     return list(models_names)
+
+def get_number_of_blocks_in_model(block_model_name):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.execute("SELECT COUNT(*) FROM {}".format(block_model_name))
+    return cursor.fetchall()[0][0]
+
+
