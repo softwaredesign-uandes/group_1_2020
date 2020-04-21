@@ -4,21 +4,23 @@ import json
 
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
 
-def get_model_data_table(model_name, from_id, to_id, db_name=DB_NAME):
+def get_model_data_table(block_model_name, from_id, to_id, db_name=DB_NAME):
     data_table = []
     conn = sqlite3.connect(db_name)
-    cursor = conn.execute("SELECT * FROM {} WHERE ID >= {} AND ID <= {}".format(model_name, from_id, to_id))
+    cursor = conn.execute("SELECT * FROM {} WHERE ID >= {} AND ID <= {}".format(block_model_name, from_id, to_id))
     for row in cursor:
         data_table.append(list(row))
     return data_table
 
 
-def get_headers_tabulated_table(model_name):
+
+
+def get_headers_tabulated_table(block_model_name):
     model_information_json = get_models_information_json()
     separator_lines = []
-    for column in model_information_json[model_name]:
+    for column in model_information_json[block_model_name]:
         separator_lines.append("_" * len(column))
-    return [model_information_json[model_name], separator_lines]
+    return [model_information_json[block_model_name], separator_lines]
 
 
 def get_block_model_columns(block_model_name):
@@ -26,10 +28,10 @@ def get_block_model_columns(block_model_name):
     return block_models_available[block_model_name]
 
 
-def check_if_model_exists_in_json(model_name):
+def check_if_model_exists_in_json(block_model_name):
     model_information_json = get_models_information_json()
     try:
-        info = model_information_json[model_name]
+        info = model_information_json[block_model_name]
         return True
     except:
         return False
@@ -40,6 +42,7 @@ def get_models_information_json():
         model_information_json = json.load(json_file)
     return model_information_json
 
+<<<<<<< HEAD
 
 def get_tabulated_blocks(model_name, from_id, to_id):
     if check_if_model_exists_in_json(model_name):
@@ -50,8 +53,18 @@ def get_tabulated_blocks(model_name, from_id, to_id):
 
 
 def get_mass_in_kilograms(model_name, x, y, z, mass_column_name, db_name = DB_NAME):
+=======
+def get_tabulated_blocks(block_model_name, from_id, to_id):
+    if check_if_model_exists_in_json(block_model_name):
+        table = get_headers_tabulated_table(block_model_name)
+        table.extend(get_model_data_table(block_model_name, from_id, to_id))
+        return tabulate(table)
+    return False
+
+def get_mass_in_kilograms(block_model_name, x, y, z, mass_column_name, db_name = DB_NAME):
+>>>>>>> 64e57761534afa3ee96a4a72322da104709f6cb0
     conn = sqlite3.connect(db_name)
-    cursor = conn.execute("SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(mass_column_name, model_name, x, y, z))
+    cursor = conn.execute("SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(mass_column_name, block_model_name, x, y, z))
     mass_in_tons = cursor.fetchone()
     if mass_in_tons is not None:
         return mass_in_tons[0] * 1000
