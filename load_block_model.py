@@ -22,6 +22,8 @@ def get_model_name_from_path(file_path):
 
 def retrieve_columns_types(file_path, model_has_id):
     types = []
+    THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
+    file_path = os.path.join(THIS_FOLDER, file_path)
     with open(file_path, "r") as blocks:
         first_line = list(blocks)[0].strip().split(" ")
         if model_has_id:
@@ -90,3 +92,4 @@ def dump_model_information_into_json(model_name, column_names):
     data[model_name] = column_names
     with open(LOADED_MODELS_INFORMATION_FILE_NAME, 'w') as json_file:
         json.dump(data, json_file, sort_keys=True)
+
