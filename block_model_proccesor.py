@@ -34,10 +34,12 @@ def check_if_model_exists_in_json(model_name):
     except:
         return False
 
+
 def get_models_information_json():
     with open(LOADED_MODELS_INFORMATION_FILE_NAME) as json_file:
         model_information_json = json.load(json_file)
     return model_information_json
+
 
 def get_tabulated_blocks(model_name, from_id, to_id):
     if check_if_model_exists_in_json(model_name):
@@ -45,6 +47,7 @@ def get_tabulated_blocks(model_name, from_id, to_id):
         table.extend(get_model_data_table(model_name, from_id, to_id))
         return tabulate(table)
     return False
+
 
 def get_mass_in_kilograms(model_name, x, y, z, mass_column_name, db_name = DB_NAME):
     conn = sqlite3.connect(db_name)
@@ -54,15 +57,18 @@ def get_mass_in_kilograms(model_name, x, y, z, mass_column_name, db_name = DB_NA
         return mass_in_tons[0] * 1000
     return False
 
+
 def get_available_models():
     models = get_models_information_json()
     models_names = models.keys()
     return list(models_names)
 
+
 def get_number_of_blocks_in_model(block_model_name, db_name = DB_NAME):
     conn = sqlite3.connect(db_name)
     cursor = conn.execute("SELECT COUNT(*) FROM {}".format(block_model_name))
     return cursor.fetchall()[0][0]
+
 
 def get_attribute_from_block(block_model_name, x, y, z, attribute, db_name = DB_NAME):
     conn = sqlite3.connect(db_name)
