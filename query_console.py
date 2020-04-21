@@ -51,17 +51,22 @@ def main_menu():
         elif user_input == MAIN_MANU_VALID_OPTIONS[2]:
             query_console()
 
+
+def show_options_from_list_and_get_user_input(data_to_show):
+    valid_options = list(map(str, range(len(data_to_show))))
+    for count, model_name in enumerate(data_to_show, start=0):
+        print("({}) {}".format(count, model_name))
+    user_input = ""
+    while user_input not in valid_options:
+        user_input = input("Choose your option number: ")
+    return user_input
+
 def get_model_name_to_work_with():
     print("In which model? ")
-    available_models = block_model_proccesor.get_available_models()
-    valid_options = list(map(str, range(len(available_models))))
-    for count, model_name in enumerate(available_models, start=0):
-        print("({}) {}".format(count, model_name))
-    user_input_model = ""
-    while user_input_model not in valid_options:
-        user_input_model = input("Choose your model number: ")
+    available_block_models = block_model_proccesor.get_available_models()
+    block_model_index = show_options_from_list_and_get_user_input(available_block_models)
 
-    return available_models[int(user_input_model)]
+    return available_block_models[int(block_model_index)]
 
 
 def show_blocks_in_model(model_name_to_work_with):
@@ -79,6 +84,27 @@ def show_number_of_blocks_in_model(block_model_name):
     print("{} has {} blocks".format(block_model_name, number_of_blocks))
 
 
+def check_valid_coordinates(coordinates):
+    coordinates= coordinates.replace("-", "").strip().split(" ")
+    if len(list(filter(lambda x: x.isdigit(), coordinates))) == len(coordinates) == 3:
+        return True
+    return False
+
+def show_mass_of_block(block_model_name):
+    coordinates = input("Enter coordinates separated by space(x y z): ")
+    while not check_valid_coordinates(coordinates):
+        coordinates = input("Enter valid coordinates(x y z): ")
+    x, y, z = coordinates.strip().split(" ")
+    block_model_columns = block_model_proccesor.get_block_model_columns(block_model_name)
+    print("Select the column that represents the mass")
+    mass_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
+    mass_column_name = block_model_columns[mass_column_index]
+    block_mass = block_model_proccesor.get_mass_in_kilograms(block_model_name,x, y, z,mass_column_name)
+    if block_mass != False:
+        print("Block in {} with coordinates {} {} {} has a mass of {}".format(block_model_name, x, y,z, block_mass))
+    else:
+        print("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
+
 def query_console():
     while True:
         print("What do you want to see \n"
@@ -93,14 +119,15 @@ def query_console():
         while user_input not in QUERY_MENU_VALID_OPTIONS:
             user_input = input("Choose a valid option: ")
 
-
-        block_model_name = get_model_name_to_work_with()
-
         if user_input == QUERY_MENU_VALID_OPTIONS[0]:
             return
-        elif user_input == QUERY_MENU_VALID_OPTIONS[1]:
+        block_model_name = get_model_name_to_work_with()
+
+        if user_input == QUERY_MENU_VALID_OPTIONS[1]:
             show_blocks_in_model(block_model_name)
         elif user_input == QUERY_MENU_VALID_OPTIONS[2]:
             show_number_of_blocks_in_model(block_model_name)
-
+        elif user_input == QUERY_MENU_VALID_OPTIONS[3]:
+            show_mass_of_block(block_model_name)
         return
+
