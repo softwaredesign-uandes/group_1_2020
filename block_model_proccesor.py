@@ -37,3 +37,12 @@ def get_tabulated_blocks(model_name, from_id, to_id):
         table = get_headers_tabulated_table(model_name)
         table.extend(get_model_data_table(model_name, from_id, to_id))
         return tabulate(table)
+    return False
+
+def get_mass_in_kilograms(model_name, x, y, z, mass_column_name):
+    conn = sqlite3.connect(DB_NAME)
+    cursor = conn.execute("SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(mass_column_name, model_name, x, y, z))
+    mass_in_tons = cursor.fetchone()
+    if mass_in_tons is not None:
+        return mass_in_tons[0] * 1000
+    return False
