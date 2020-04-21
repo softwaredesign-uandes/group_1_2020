@@ -42,3 +42,7 @@ def get_available_models():
     models = get_models_information_json()
     models_names = models.keys()
     return list(models_names)
+
+
+print(get_models_information_json())
+print(get_model_data_table("mclaughlin_limit",1,5))

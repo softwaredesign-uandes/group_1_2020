@@ -6,3 +6,5 @@ def test_get_data_table_return_true (self):
     return
 def test_check_if_model_exists_in_json_return_true(self):
     self.assertEqual(bmp.check_if_model_exists_in_json("models_information.json"),True)
+def test_get_headers_tabulated_table_return_true(self):
+    self.assertEqual(bmp.get_headers_tabulated_table("block_model.db"), True)
