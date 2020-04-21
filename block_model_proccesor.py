@@ -42,18 +42,6 @@ def get_models_information_json():
         model_information_json = json.load(json_file)
     return model_information_json
 
-<<<<<<< HEAD
-
-def get_tabulated_blocks(model_name, from_id, to_id):
-    if check_if_model_exists_in_json(model_name):
-        table = get_headers_tabulated_table(model_name)
-        table.extend(get_model_data_table(model_name, from_id, to_id))
-        return tabulate(table)
-    return False
-
-
-def get_mass_in_kilograms(model_name, x, y, z, mass_column_name, db_name = DB_NAME):
-=======
 def get_tabulated_blocks(block_model_name, from_id, to_id):
     if check_if_model_exists_in_json(block_model_name):
         table = get_headers_tabulated_table(block_model_name)
@@ -62,7 +50,7 @@ def get_tabulated_blocks(block_model_name, from_id, to_id):
     return False
 
 def get_mass_in_kilograms(block_model_name, x, y, z, mass_column_name, db_name = DB_NAME):
->>>>>>> 64e57761534afa3ee96a4a72322da104709f6cb0
+
     conn = sqlite3.connect(db_name)
     cursor = conn.execute("SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(mass_column_name, block_model_name, x, y, z))
     mass_in_tons = cursor.fetchone()
