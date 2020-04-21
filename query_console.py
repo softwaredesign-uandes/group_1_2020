@@ -90,11 +90,16 @@ def check_valid_coordinates(coordinates):
         return True
     return False
 
-def show_mass_of_block(block_model_name):
+
+def get_coordinates_from_user():
     coordinates = input("Enter coordinates separated by space(x y z): ")
     while not check_valid_coordinates(coordinates):
         coordinates = input("Enter valid coordinates(x y z): ")
     x, y, z = coordinates.strip().split(" ")
+    return x, y, z
+
+def show_mass_of_block(block_model_name):
+    x, y, z = get_coordinates_from_user()
     block_model_columns = block_model_proccesor.get_block_model_columns(block_model_name)
     print("Select the column that represents the mass")
     mass_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
@@ -102,6 +107,19 @@ def show_mass_of_block(block_model_name):
     block_mass = block_model_proccesor.get_mass_in_kilograms(block_model_name,x, y, z,mass_column_name)
     if block_mass != False:
         print("Block in {} with coordinates {} {} {} has a mass of {}".format(block_model_name, x, y,z, block_mass))
+    else:
+        print("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
+
+
+def show_attribute_of_block(block_model_name):
+    x, y, z = get_coordinates_from_user()
+    block_model_columns = block_model_proccesor.get_block_model_columns(block_model_name)
+    print("Which column do you want to see?")
+    column_to_show_index = int(show_options_from_list_and_get_user_input(block_model_columns))
+    column_to_show_name = block_model_columns[column_to_show_index]
+    attribute = block_model_proccesor.get_attribute_from_block(block_model_name, x, y, z, column_to_show_name)
+    if attribute != False:
+        print("Block in {} with coordinates {} {} {}, attribute {} is {}".format(block_model_name, x, y, z, column_to_show_name, attribute))
     else:
         print("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
 
@@ -129,5 +147,7 @@ def query_console():
             show_number_of_blocks_in_model(block_model_name)
         elif user_input == QUERY_MENU_VALID_OPTIONS[3]:
             show_mass_of_block(block_model_name)
-        return
+        elif user_input == QUERY_MENU_VALID_OPTIONS[5]:
+
+            return
 
