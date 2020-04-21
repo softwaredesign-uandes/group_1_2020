@@ -37,3 +37,8 @@ def get_tabulated_blocks(model_name, from_id, to_id):
         table = get_headers_tabulated_table(model_name)
         table.extend(get_model_data_table(model_name, from_id, to_id))
         return tabulate(table)
+
+def get_available_models():
+    models = get_models_information_json()
+    models_names = models.keys()
+    return list(models_names)
