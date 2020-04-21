@@ -46,3 +46,8 @@ def get_mass_in_kilograms(model_name, x, y, z, mass_column_name):
     if mass_in_tons is not None:
         return mass_in_tons[0] * 1000
     return False
+
+def get_available_models():
+    models = get_models_information_json()
+    models_names = models.keys()
+    return list(models_names)
