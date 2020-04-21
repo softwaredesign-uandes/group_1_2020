@@ -39,3 +39,4 @@ def get_tabulated_blocks(model_name, from_id, to_id):
         table.extend(get_model_data_table(model_name, from_id, to_id))
         print(tabulate(table))
         #TODO: MOVE PRINT TO QUERYCONSOLE
+

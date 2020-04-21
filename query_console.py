@@ -24,6 +24,8 @@ def check_block_model_file_existence(file_name):
 
 def enter_block_model_information():
     file_name = input("Enter file name: :")
+    THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
+    file_name = os.path.join(THIS_FOLDER, file_name)
     if not check_block_model_file_existence(file_name):
         print("FILE NOT FOUND")
         return
