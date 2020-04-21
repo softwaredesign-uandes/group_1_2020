@@ -5,13 +5,11 @@ import json
 DB_NAME = "block_model.db"
 LOADED_MODELS_INFORMATION_FILE_NAME = "models_information.json"
 
-
 def create_db():
     DB_NAME = "block_model.db"
     if os.path.isfile(DB_NAME):
         os.remove(DB_NAME)
     sqlite3.connect(DB_NAME)
-
 
 def get_model_name_from_path(file_path):
     if "\\" in file_path:
@@ -20,7 +18,6 @@ def get_model_name_from_path(file_path):
         separator = "/"
     model_name = file_path.split(separator)[-1].split(".")[0]
     return model_name
-
 
 def retrieve_columns_types(file_path, model_has_id):
     types = []
@@ -39,7 +36,6 @@ def retrieve_columns_types(file_path, model_has_id):
                 types.append("TEXT")
     return types
 
-
 def parse_block_column_types(block):
     parsed_block = []
     for data in block:
@@ -53,7 +49,6 @@ def parse_block_column_types(block):
             parsed_block.append("\'{}\'".format(data.strip()))
     return parsed_block
 
-
 def create_table_query(model_name, table_columns, columns_types):
     db_columns = ["{} INT PRIMARY KEY ".format(table_columns[0])]
     for column_name, column_type in zip(table_columns[1:], columns_types):
@@ -61,8 +56,6 @@ def create_table_query(model_name, table_columns, columns_types):
     query = "CREATE TABLE IF NOT EXISTS {}({});".format(model_name, ",".join(db_columns))
     print(query)
     return query
-
-
 
 def load_block_file(file_path, table_columns, model_has_id, db_name=DB_NAME):
     model_name = get_model_name_from_path(file_path)
@@ -78,7 +71,6 @@ def load_block_file(file_path, table_columns, model_has_id, db_name=DB_NAME):
 
             if model_has_id:
                 insert_query = "INSERT INTO {}({}) VALUES ({})".format(model_name, columns_for_query, block_parsed)
-
             else:
                 insert_query = "INSERT INTO {}({}) VALUES ({},{})".format(model_name, columns_for_query, id_count,
                                                                            ",".join(block_parsed))
@@ -87,7 +79,6 @@ def load_block_file(file_path, table_columns, model_has_id, db_name=DB_NAME):
         conn.commit()
     dump_model_information_into_json(model_name, table_columns)
 
-
 def dump_model_information_into_json(model_name, column_names):
     with open(LOADED_MODELS_INFORMATION_FILE_NAME, 'r') as json_file:
         data = json.load(json_file)
@@ -95,6 +86,4 @@ def dump_model_information_into_json(model_name, column_names):
     with open(LOADED_MODELS_INFORMATION_FILE_NAME, 'w') as json_file:
         json.dump(data, json_file, sort_keys=True)
 
-
 print(retrieve_columns_types("mclaughlin_limit.blocks", True))
-

@@ -1,26 +1,15 @@
-from tabulate import tabulate
 import load_block_model
 import os
-
-
 
 MAIN_MANU_VALID_OPTIONS = ["0", "1", "2"]
 QUERY_MENU_VALID_OPTIONS = ["0", "1"]
 ENTER_COLUMNS_OPTIONS = ["0", "1"] 
 CONTINUE_SHOWING_OPTIONS = ["y", "n"]
-INITIAL_HEADERS = [["-------", "---", "---", "---", "-----------", "-------", "-----------", "----------"],
-                ["ID", "x", "y", "z", "block value", "ton", "destination", "Au(oz/ton)"],
-                ["_______", "___", "___", "___", "___________", "_______", "___________", "__________"]]
 DEFAULT_USER_INPUT = "1"
 EXIT_INPUT = "0"
 
-TABLE = [INITIAL_HEADERS[1], INITIAL_HEADERS[2]]
-
 def check_block_model_file_existence(file_name):
     return os.path.isfile(file_name)
-
-
-
 
 def enter_block_model_information():
     file_name = input("Enter file name: :")
@@ -44,7 +33,6 @@ def enter_block_model_information():
         elif user_input == ENTER_COLUMNS_OPTIONS[1]:
             table_columns.clear()
     load_block_model.load_block_file(file_name, table_columns, model_has_id)
-
 
 def main_menu():
     while True:
@@ -79,4 +67,3 @@ def query_console():
             return
         elif user_input == QUERY_MENU_VALID_OPTIONS[1]:
             return
-    
