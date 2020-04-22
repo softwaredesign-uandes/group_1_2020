@@ -67,7 +67,7 @@ def show_options_from_list_and_get_user_input(data_to_show, is_menu=False):
     return user_input
 
 
-def get_user_decition_input(message):
+def get_user_decision_input(message):
     message = message + "(y/n): "
     user_input = input(message)
     while user_input.lower() not in CONTINUE_SHOWING_OPTIONS:
