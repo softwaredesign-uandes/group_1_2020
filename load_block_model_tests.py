@@ -1,12 +1,20 @@
 import unittest
 import load_block_model as lbm
+test_model_name = "mclaughlin_test"
+test_db_name = "block_model_test.db"
+test_json_name = "model_information_test.json"
+test_block_file_path = "mclaughlin_test.blocks"
+
 
 class TestLoadBlockModel(unittest.TestCase):
-    def test_check_exists_bd_return_true(self):
-        self.assertEqual(lbm.db_exists("block_model.db"), True)
 
-    def test_check_exists_bd_return_false(self):
-        self.assertEqual(lbm.db_exists("line_model.db"), False)
+    def test_get_model_name_from_path(self):
+        self.assertEqual(lbm.get_model_name_from_path("some\\text\\before\\name.name"), "name.name")
+        self.assertEqual(lbm.get_model_name_from_path("some/text/before/name.name"), "name.name")
+
+    def test_retrieve_columns_types_valid_types(self):
+        column_types = ["INT", "INT","INT", "INT","INT", "FLOAT", "INT", "INT", "FLOAT"]
+        self.assertEqual(lbm.retrieve_columns_types(test_block_file_path), column_types)
 
     """def test_load_block_model_with_valid_file_return_valid_rows(self):
         rows = [
