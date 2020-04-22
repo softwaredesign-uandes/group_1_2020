@@ -10,7 +10,7 @@ def main_menu():
     clear_console()
     while True:
         show_menu_title("main menu")
-        print("What do you want to do")
+        show_normal_message("What do you want to do")
         user_input = show_options_from_list_and_get_user_input(MAIN_MENU_OPTIONS, is_menu=True)
         if user_input == MAIN_MANU_VALID_OPTIONS[0]:
             exit(0)
@@ -20,12 +20,12 @@ def main_menu():
             if len(block_model_proccesor.get_available_models()) > 0:
                 query_console()
             else:
-                print("There are no available models")
+                not_allowed_message("There are no available models")
 
 
 def query_console():
     while True:
-        print("What do you want to see")
+        show_normal_message("What do you want to see")
         user_input = show_options_from_list_and_get_user_input(QUERY_CONSOLE_OPTIONS, is_menu=True)
         if user_input == QUERY_MENU_VALID_OPTIONS[0]:
             return
@@ -48,16 +48,38 @@ def show_error_message(message):
 def show_normal_message(message):
     print(message)
 
+
 def clear_console(continueKey=False):
     if continueKey:
         input("Press any key to continue")
     os.system("cls")
 
 
+def get_user_decition_input(message):
+    message = message + "(y/n): "
+    user_input = input(message)
+    while user_input.lower() not in CONTINUE_SHOWING_OPTIONS:
+        user_input = input("ENTER A VALID OPTION. " + message)
+    return_value = True if user_input == "y" else False
+    return return_value
+
+
+def get_valid_user_input(message, validate_alpha=False):
+    user_input = input(message)
+    while len(user_input) == 0:
+        user_input = input("ENTER VALID TEXT. " + message)
+    if validate_alpha:
+        while
+
+def not_allowed_message(message):
+    print(message)
+
+
 def show_menu_title(text):
     print("=" * (len(text) + 16))
     print("\t" + text.upper())
     print("=" * (len(text) + 16))
+
 
 def show_options_from_list_and_get_user_input(data_to_show, is_menu=False):
     valid_options = list(map(str, range(len(data_to_show))))
@@ -85,16 +107,14 @@ def enter_block_model_information():
         show_error_message("FILE NOT FOUND")
         return
     table_columns = []
-    is_valid_model = input("The dataset has id, x, y, z columns?")
-    while is_valid_model not in CONTINUE_SHOWING_OPTIONS:
-        is_valid_model = input("The dataset has identification column?(y/n): ")
-    is_valid_model = True if is_valid_model == "y" else False
+    is_valid_model = get_user_decition_input("The dataset has id, x, y, z columns?")
+
     if is_valid_model:
         table_columns.append("id")
         table_columns.append("x")
         table_columns.append("y")
         table_columns.append("z")
-        print("ID, X, Y, Z columns added")
+        show_normal_message("ID, X, Y, Z columns added")
         user_input = input("How many extra columns does the model have: ")
         while not user_input.isdigit():
             user_input = input("Enter a valid option. How many extra columns does the model have:")
