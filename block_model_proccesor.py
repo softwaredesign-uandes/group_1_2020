@@ -14,16 +14,16 @@ def get_model_data_table(block_model_name, from_id, to_id, db_name=DB_NAME):
     return data_table
 
 
-def get_headers_tabulated_table(block_model_name):
-    model_information_json = get_models_information_json()
+def get_headers_tabulated_table(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    model_information_json = get_models_information_json(json_file_name)
     separator_lines = []
     for column in model_information_json[block_model_name]:
         separator_lines.append("_" * len(column))
     return [model_information_json[block_model_name], separator_lines]
 
 
-def get_block_model_columns(block_model_name):
-    block_models_available = get_models_information_json()
+def get_block_model_columns(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    block_models_available = get_models_information_json(json_file_name)
     return block_models_available[block_model_name]
 
 
@@ -42,10 +42,10 @@ def get_models_information_json(json_file_name=LOADED_MODELS_INFORMATION_FILE_NA
     return model_information_json
 
 
-def get_tabulated_blocks(block_model_name, from_id, to_id):
-    if check_if_model_exists_in_json(block_model_name):
-        table = get_headers_tabulated_table(block_model_name)
-        table.extend(get_model_data_table(block_model_name, from_id, to_id))
+def get_tabulated_blocks(block_model_name, from_id, to_id, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME): #needs test
+    if check_if_model_exists_in_json(block_model_name, json_file_name):
+        table = get_headers_tabulated_table(block_model_name, json_file_name)
+        table.extend(get_model_data_table(block_model_name, from_id, to_id, db_name))
         return tabulate(table)
     return False
 
@@ -60,8 +60,8 @@ def get_mass_in_kilograms(block_model_name, x, y, z, mass_column_name, db_name=D
     return False
 
 
-def get_available_models():
-    models = get_models_information_json()
+def get_available_models(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME): #not you
+    models = get_models_information_json(json_file_name)
     models_names = models.keys()
     return list(models_names)
 
@@ -72,7 +72,7 @@ def get_number_of_blocks_in_model(block_model_name, db_name=DB_NAME):
     return cursor.fetchall()[0][0]
 
 
-def get_attribute_from_block(block_model_name, x, y, z, attribute, db_name=DB_NAME):
+def get_attribute_from_block(block_model_name, x, y, z, attribute, db_name=DB_NAME): #need test
     conn = sqlite3.connect(db_name)
     cursor = conn.execute(
         "SELECT {} from {} WHERE x = {} AND y = {} AND z = {}".format(attribute, block_model_name, x, y, z))

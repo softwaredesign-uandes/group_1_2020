@@ -1,5 +1,6 @@
 import block_model_proccesor as bmp
 import unittest
+import tabulate
 test_model_name = "mclaughlin_test"
 test_db_name = "block_model_test.db"
 test_json_name = "model_information_test.json"
@@ -33,4 +34,23 @@ class TestBlockModelProcessor(unittest.TestCase):
             [14, 31, 211, 44, 9208, 1041.67, 1, 0.036]
         ]
         self.assertEqual(bmp.get_model_data_table(test_model_name, 0, 14, test_db_name), rows)
+
+    def test_get_number_of_blocks_in_model_return_true(self):
+        self.assertEqual(bmp.get_number_of_blocks_in_model(test_model_name, test_db_name), 15)
+
+    def test_get_mass_in_kilograms_return_true(self):
+        self.assertEqual(bmp.get_mass_in_kilograms(test_model_name, 31, 208, 44, "ton", test_db_name), 489580)
+
+    def test_get_tabulated_blocks_return_true(self):
+        rows = [
+            ["id", "x", "y", "z", "blockvalue", "ton", "destination", "Au"],
+            []
+            [0, 31, 208, 44, -646, 489.58, 0, 0.038],
+            [1, 32, 208, 44, - 646, 489.58, 0, 0.039],
+            [2, 33, 208, 44, 2759, 239.58, 1, 0.039],
+            [3, 31, 209, 44, - 1334, 1010.42, 0, 0.039],
+            [4, 32, 209, 44, 13843, 1010.42, 1, 0.042]
+        ]
+        rows = tabulate.tabulate(rows)
+        self.assertEqual(bmp.get_tabulated_blocks(test_model_name,0, 4, test_json_name, test_db_name), rows)
 
