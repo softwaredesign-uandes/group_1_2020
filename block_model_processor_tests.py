@@ -44,7 +44,7 @@ class TestBlockModelProcessor(unittest.TestCase):
     def test_get_tabulated_blocks_return_true(self):
         rows = [
             ["id", "x", "y", "z", "blockvalue", "ton", "destination", "Au"],
-            []
+            ["__","_","_","_","__________","___","___________","__"],
             [0, 31, 208, 44, -646, 489.58, 0, 0.038],
             [1, 32, 208, 44, - 646, 489.58, 0, 0.039],
             [2, 33, 208, 44, 2759, 239.58, 1, 0.039],
