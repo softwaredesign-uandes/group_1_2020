@@ -101,12 +101,12 @@ def get_percentage_grade_for_mineral_from_different_unit(block_model_name, x, y,
     elif unit == "ppm":
         ppm = get_mineral_value(block_model_name, x, y, z, mineral_name, db_name)
         if ppm is not None:
-            return ppm[0] / 10000
+            return round(ppm[0] / 10000, 6)
         return False
     elif unit == "oz_per_ton":
         oz_per_ton = get_mineral_value(block_model_name, x, y, z, mineral_name, db_name)
         if oz_per_ton is not None:
-            return oz_per_ton[0] * 0.00342853
+            return round(oz_per_ton[0] * 0.00342853, 6)
         return False
 
 
@@ -124,7 +124,7 @@ def get_percentage_grade_for_mineral_from_copper_proportion(block_model_name, x,
         rock_tonnes = tonnes[0]
         ore_tonnes = tonnes[1]
         total_tonnes = ore_tonnes + rock_tonnes
-        return (ore_tonnes / total_tonnes) * 100
+        return round((ore_tonnes / total_tonnes) * 100, 3)
     return False
 
 
@@ -135,3 +135,8 @@ def get_percentage_grade_for_mineral_from_gold_proportion(block_model_name, x, y
     if AuFa is not None:
         return AuFa[0] * 100
     return False
+
+def get_available_minerals(block_model_name, json_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME): #not you
+    minerals = get_models_information_json(json_file_name)
+    minerals_names = minerals[block_model_name].keys()
+    return list(minerals_names)
