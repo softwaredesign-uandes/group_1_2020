@@ -1,21 +1,26 @@
 import load_block_model
 import os
 import block_model_proccesor
+from CLI_helpers import clear_console, show_menu_title, show_normal_message, show_options_from_list_and_get_user_input, \
+    not_allowed_message, get_valid_user_input, show_error_message, get_user_decition_input, show_result, \
+    show_submenu_title, show_success_message
 
-from constants import CONTINUE_SHOWING_OPTIONS, MAIN_MENU_OPTIONS, QUERY_CONSOLE_OPTIONS, ENTER_COLUMNS_OPTIONS, \
-    MAIN_MANU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS
+from constants import  MAIN_MENU_OPTIONS, QUERY_CONSOLE_OPTIONS, MAIN_MANU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS
 
 
 def main_menu():
-    clear_console()
     while True:
+        clear_console()
         show_menu_title("main menu")
         show_normal_message("What do you want to do")
         user_input = show_options_from_list_and_get_user_input(MAIN_MENU_OPTIONS, is_menu=True)
         if user_input == MAIN_MANU_VALID_OPTIONS[0]:
             exit(0)
         elif user_input == MAIN_MANU_VALID_OPTIONS[1]:
+            clear_console()
+            show_menu_title("load block model")
             enter_block_model_information()
+            clear_console(continueKey=True)
         elif user_input == MAIN_MANU_VALID_OPTIONS[2]:
             if len(block_model_proccesor.get_available_models()) > 0:
                 query_console()
@@ -24,76 +29,41 @@ def main_menu():
 
 
 def query_console():
+    clear_console()
+    show_menu_title("Query console")
     while True:
         show_normal_message("What do you want to see")
         user_input = show_options_from_list_and_get_user_input(QUERY_CONSOLE_OPTIONS, is_menu=True)
         if user_input == QUERY_MENU_VALID_OPTIONS[0]:
+            clear_console()
             return
+        clear_console()
         block_model_name = get_model_name_to_work_with()
         if user_input == QUERY_MENU_VALID_OPTIONS[1]:
+            clear_console()
+            show_submenu_title("Show blocks in {}".format(block_model_name))
             show_blocks_in_model(block_model_name)
+            clear_console(continueKey=True)
         elif user_input == QUERY_MENU_VALID_OPTIONS[2]:
+            clear_console()
+            show_submenu_title("Show number of blocks in {}".format(block_model_name))
             show_number_of_blocks_in_model(block_model_name)
+            clear_console(continueKey=True)
         elif user_input == QUERY_MENU_VALID_OPTIONS[3]:
+            clear_console()
+            show_submenu_title("Show mass of block in {}".format(block_model_name))
             show_mass_of_block(block_model_name)
+            clear_console(continueKey=True)
+        elif user_input == QUERY_MENU_VALID_OPTIONS[4]:
+            clear_console()
+            show_submenu_title("Grade in Percentage of mineral in {}".format(block_model_name))
+            clear_console(continueKey=True)
         elif user_input == QUERY_MENU_VALID_OPTIONS[5]:
+            clear_console()
+            show_submenu_title("Get attribute from block in {}".format(block_model_name))
             show_attribute_of_block(block_model_name)
-            return
+            clear_console(continueKey=True)
 
-
-def show_error_message(message):
-    print("\n ERROR: {} \n".format(message))
-
-
-def show_normal_message(message):
-    print(message)
-
-
-def clear_console(continueKey=False):
-    if continueKey:
-        input("Press any key to continue")
-    os.system("cls")
-
-
-def get_user_decition_input(message):
-    message = message + "(y/n): "
-    user_input = input(message)
-    while user_input.lower() not in CONTINUE_SHOWING_OPTIONS:
-        user_input = input("ENTER A VALID OPTION. " + message)
-    return_value = True if user_input == "y" else False
-    return return_value
-
-
-def get_valid_user_input(message, validate_alpha=False):
-    user_input = input(message)
-    while len(user_input) == 0:
-        user_input = input("ENTER VALID TEXT. " + message)
-    if validate_alpha:
-        while
-
-def not_allowed_message(message):
-    print(message)
-
-
-def show_menu_title(text):
-    print("=" * (len(text) + 16))
-    print("\t" + text.upper())
-    print("=" * (len(text) + 16))
-
-
-def show_options_from_list_and_get_user_input(data_to_show, is_menu=False):
-    valid_options = list(map(str, range(len(data_to_show))))
-    if is_menu:
-        for count, model_name in enumerate(data_to_show[:-1], start=1):
-            print("({}) {}".format(count, model_name))
-        print("(0) {}".format(data_to_show[-1]))
-    else:
-        for count, model_name in enumerate(data_to_show, start=0):
-            print("({}) {}".format(count, model_name))
-    user_input = ""
-    while user_input not in valid_options:
-        user_input = input("Choose your option number: ")
-    return user_input
 
 
 def check_block_model_file_existence(file_name):
@@ -101,7 +71,7 @@ def check_block_model_file_existence(file_name):
 
 
 def enter_block_model_information():
-    block_model_file_path = input("Enter file path: ")
+    block_model_file_path = get_valid_user_input("Enter file path: ")
 
     if not check_block_model_file_existence(block_model_file_path):
         show_error_message("FILE NOT FOUND")
@@ -115,28 +85,24 @@ def enter_block_model_information():
         table_columns.append("y")
         table_columns.append("z")
         show_normal_message("ID, X, Y, Z columns added")
-        user_input = input("How many extra columns does the model have: ")
-        while not user_input.isdigit():
-            user_input = input("Enter a valid option. How many extra columns does the model have:")
-        print("Enter the extra columns one by one(Only alphabetic characters)")
+        user_input = get_valid_user_input("How many extra columns does the model have: ", validate_digit=True)
+        show_normal_message("Enter the extra columns one by one(Only alphabetic characters)")
         for _ in range(int(user_input)):
-            column_name = input("Enter column name: ")
-            while not column_name.isalpha():
-                column_name = input("Enter a valid column name(Only alphabetic characters): ")
-            while column_name in table_columns:
-                column_name = input("Enter a non repeated column name(Only alphabetic characters): ")
+            column_name = get_valid_user_input("Enter column name: ", validate_alpha=True)
             table_columns.append(column_name)
-        # TODO: Make the user capable of re insert column names
-        load_block_model.load_block_file(block_model_file_path, table_columns)
+        if load_block_model.load_block_file(block_model_file_path, table_columns):
+            show_success_message("Block model loaded")
+        else:
+            show_error_message("Can not load block model")
+
     else:
-        print("Only models with id, x, y, z columns allowed")
+        not_allowed_message("Only models with id, x, y, z columns allowed")
 
 
 def get_model_name_to_work_with():
-    print("In which model? ")
+    show_normal_message("In which model? ")
     available_block_models = block_model_proccesor.get_available_models()
     block_model_index = show_options_from_list_and_get_user_input(available_block_models)
-
     return available_block_models[int(block_model_index)]
 
 
@@ -146,14 +112,12 @@ def show_blocks_in_model(model_name_to_work_with):
     while continue_user_input == "y":
         print(block_model_proccesor.get_tabulated_blocks(model_name_to_work_with, index_to_show, index_to_show + 50))
         index_to_show += 51
-        continue_user_input = input("Continue showing data(y/n): ").lower()
-        while continue_user_input not in CONTINUE_SHOWING_OPTIONS:
-            continue_user_input = input("Continue showing data(y/n): ").lower()
+        continue_user_input = get_user_decition_input("Continue showing data")
 
 
 def show_number_of_blocks_in_model(block_model_name):
     number_of_blocks = block_model_proccesor.get_number_of_blocks_in_model(block_model_name)
-    print("{} has {} blocks".format(block_model_name, number_of_blocks))
+    show_result("{} has {} blocks".format(block_model_name, number_of_blocks))
 
 
 def check_valid_coordinates(coordinates):
@@ -178,22 +142,22 @@ def show_mass_of_block(block_model_name):
     mass_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
     mass_column_name = block_model_columns[mass_column_index]
     block_mass = block_model_proccesor.get_mass_in_kilograms(block_model_name, x, y, z, mass_column_name)
-    if block_mass != False:
-        print("Block in {} with coordinates {} {} {} has a mass of {} kilograms".format(block_model_name, x, y, z,
-                                                                                        block_mass))
+    if block_mass:
+        show_result("Block in {} with coordinates {} {} {} has a mass of {} kilograms".format(block_model_name, x, y, z,
+                                                                                              block_mass))
     else:
-        print("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
+        show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
 
 
 def show_attribute_of_block(block_model_name):
     x, y, z = get_coordinates_from_user()
     block_model_columns = block_model_proccesor.get_block_model_columns(block_model_name)
-    print("Which column do you want to see?")
+    show_normal_message("Which column do you want to see?")
     column_to_show_index = int(show_options_from_list_and_get_user_input(block_model_columns))
     column_to_show_name = block_model_columns[column_to_show_index]
     attribute = block_model_proccesor.get_attribute_from_block(block_model_name, x, y, z, column_to_show_name)
-    if attribute != False:
-        print("Block in {} with coordinates {} {} {}, attribute {} is {}".format(block_model_name, x, y, z,
-                                                                                 column_to_show_name, attribute))
+    if attribute:
+        show_result("Block in {} with coordinates {} {} {}, attribute {} is {}".format(block_model_name, x, y, z,
+                                                                                       column_to_show_name, attribute))
     else:
-        print("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
+        show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
