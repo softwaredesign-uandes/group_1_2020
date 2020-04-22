@@ -43,3 +43,7 @@ class TestLoadBlockModel(unittest.TestCase):
         db_rows = []
         self.assertEqual(rows == db_rows, True) #not finished"""
 
+
+    # TODO: Test load block file with an inexistent model return true
+
+    # TODO: Test load block file with an existent model return false
