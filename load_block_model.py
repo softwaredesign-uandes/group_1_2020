@@ -55,6 +55,8 @@ def parse_block_column_types(block):
 
 
 def create_table_query(model_name, table_columns, columns_types):
+    print (columns_types)
+    print (table_columns)
     db_columns = ["{} INT PRIMARY KEY ".format(table_columns[0])]
     for column_name, column_type in zip(table_columns[1:], columns_types):
         db_columns.append("{} {} NOT NULL".format(column_name, column_type))
@@ -65,6 +67,7 @@ def create_table_query(model_name, table_columns, columns_types):
 
 def load_block_file(block_model_file_path, table_columns, model_has_id, db_name=DB_NAME):
     model_name = get_model_name_from_path(block_model_file_path)
+    print(table_columns)
     conn = sqlite3.connect(db_name)
     columns_types = retrieve_columns_types(block_model_file_path, model_has_id)
     conn.execute(create_table_query(model_name, table_columns, columns_types))
@@ -73,6 +76,7 @@ def load_block_file(block_model_file_path, table_columns, model_has_id, db_name=
         columns_for_query = ",".join(table_columns)
         for block in block_file:
             id_count = 1
+            print(block)
             block_parsed = ",".join(parse_block_column_types(block.strip().split(" ")))
 
             if model_has_id:
