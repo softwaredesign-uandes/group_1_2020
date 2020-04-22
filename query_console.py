@@ -76,24 +76,31 @@ def enter_block_model_information():
         print("FILE NOT FOUND")
         return
     table_columns = []
-    model_has_id = input("The dataset has identification column?(y/n):")
-    while model_has_id not in CONTINUE_SHOWING_OPTIONS:
-        model_has_id = input("The dataset has identification column?(y/n): ")
-    model_has_id = True if model_has_id == "y" else False
-    if not model_has_id:
+    is_valid_model = input("The dataset has id, x, y, z columns?")
+    while is_valid_model not in CONTINUE_SHOWING_OPTIONS:
+        is_valid_model = input("The dataset has identification column?(y/n): ")
+    is_valid_model = True if is_valid_model == "y" else False
+    if is_valid_model:
         table_columns.append("id")
-
-    user_input = input("How many columns does the model have: ")
-    while not user_input.isdigit():
-        user_input = input("Enter a valid option. How many columns does the model have:")
-    print("Enter columns one by one(Only alphabetic characters)")
-    for _ in range(int(user_input)):
-        column_name = input("Enter column name: ")
-        while not column_name.isalpha():
-            column_name = input("Enter a valid column name(Only alphabetic characters): ")
-        table_columns.append(column_name)
-    # TODO: Make the user capable of re insert column names
-    load_block_model.load_block_file(block_model_file_path, table_columns, model_has_id)
+        table_columns.append("x")
+        table_columns.append("y")
+        table_columns.append("z")
+        print("ID, X, Y, Z columns added")
+        user_input = input("How many extra columns does the model have: ")
+        while not user_input.isdigit():
+            user_input = input("Enter a valid option. How many extra columns does the model have:")
+        print("Enter the extra columns one by one(Only alphabetic characters)")
+        for _ in range(int(user_input)):
+            column_name = input("Enter column name: ")
+            while not column_name.isalpha():
+                column_name = input("Enter a valid column name(Only alphabetic characters): ")
+            while column_name in table_columns:
+                column_name = input("Enter a non repeated column name(Only alphabetic characters): ")
+            table_columns.append(column_name)
+        # TODO: Make the user capable of re insert column names
+        load_block_model.load_block_file(block_model_file_path, table_columns)
+    else:
+        print("Only models with id, x, y, z columns allowed")
 
 
 

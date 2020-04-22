@@ -20,14 +20,10 @@ def get_model_name_from_path(block_model_file_path):
     return model_name
 
 
-def retrieve_columns_types(block_model_file_path, model_has_id):
+def retrieve_columns_types(block_model_file_path):
     types = []
-    THIS_FOLDER = os.path.dirname(os.path.abspath(__file__))
-    block_model_file_path = os.path.join(THIS_FOLDER, block_model_file_path)
     with open(block_model_file_path, "r") as blocks:
-        first_line = list(blocks)[0].strip().split(" ")
-        if model_has_id:
-            first_line = first_line[1:]
+        first_line = list(blocks)[0].strip().split(" ")[1:]
         for item in first_line:
             if item.isdigit():
                 types.append("INT")
@@ -63,10 +59,10 @@ def create_table_query(model_name, table_columns, columns_types):
     return query
 
 
-def load_block_file(block_model_file_path, table_columns, model_has_id, db_name=DB_NAME):
+def load_block_file(block_model_file_path, table_columns, db_name=DB_NAME):
     model_name = get_model_name_from_path(block_model_file_path)
     conn = sqlite3.connect(db_name)
-    columns_types = retrieve_columns_types(block_model_file_path, model_has_id)
+    columns_types = retrieve_columns_types(block_model_file_path)
     conn.execute(create_table_query(model_name, table_columns, columns_types))
     conn.commit()
     with open(block_model_file_path, "r") as block_file:
@@ -74,12 +70,8 @@ def load_block_file(block_model_file_path, table_columns, model_has_id, db_name=
         for block in block_file:
             id_count = 1
             block_parsed = ",".join(parse_block_column_types(block.strip().split(" ")))
+            insert_query = "INSERT INTO {}({}) VALUES ({})".format(model_name, columns_for_query, block_parsed)
 
-            if model_has_id:
-                insert_query = "INSERT INTO {}({}) VALUES ({})".format(model_name, columns_for_query, block_parsed)
-            else:
-                insert_query = "INSERT INTO {}({}) VALUES ({},{})".format(model_name, columns_for_query, id_count,
-                                                                          ",".join(block_parsed))
             print(insert_query)
             conn.execute(insert_query)
         conn.commit()
