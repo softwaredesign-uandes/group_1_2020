@@ -1,6 +1,7 @@
 import load_block_model
 import os
 import block_model_proccesor
+import re
 
 from constants import CONTINUE_SHOWING_OPTIONS, ENTER_COLUMNS_OPTIONS, MAIN_MANU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS
 
@@ -15,21 +16,23 @@ def enter_block_model_information():
         print("FILE NOT FOUND")
         return
     table_columns = []
-    model_has_id = input("The model has id?(y/n): ")
+    model_has_id = input("The dataset has identification column?(y/n):")
     while model_has_id not in CONTINUE_SHOWING_OPTIONS:
         model_has_id = input("The dataset has identification column?(y/n): ")
     model_has_id = True if model_has_id == "y" else False
     if not model_has_id:
         table_columns.append("id")
-    while True:
-        print("Enter column name one by one\n(0) Finish\n(1) Reset")
-        user_input = input("Column name/options: ")
-        if user_input not in ENTER_COLUMNS_OPTIONS:
-            table_columns.append(user_input)
-        elif user_input == ENTER_COLUMNS_OPTIONS[0]:
-            break
-        elif user_input == ENTER_COLUMNS_OPTIONS[1]:
-            table_columns.clear()
+
+    user_input = input("How many columns does the model have: ")
+    while not user_input.isdigit():
+        user_input = input("Enter a valid option. How many columns does the model have:")
+    print("Enter columns one by one(Only alphabetic characters)")
+    for _ in range(int(user_input)):
+        column_name = input("Enter column name: ")
+        while not column_name.isalpha():
+            column_name = input("Enter a valid column name(Only alphabetic characters): ")
+        table_columns.append(column_name)
+    #TODO: Make the user capable of re insert column names
     load_block_model.load_block_file(file_name, table_columns, model_has_id)
 
 def main_menu():
