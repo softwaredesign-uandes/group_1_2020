@@ -4,10 +4,9 @@ import tabulate
 test_model_name = "mclaughlin_test"
 test_db_name = "block_model_test.db"
 test_json_name = "model_information_test.json"
+
+
 class TestBlockModelProcessor(unittest.TestCase):
-    def test_get_data_table_return_true(self):
-        # TODO: Check how blocks are shown and make test
-        return
 
     def test_check_if_model_exists_in_json_return_true(self):
         self.assertEqual(bmp.check_if_model_exists_in_json(test_model_name, test_json_name),True)
