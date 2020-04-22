@@ -70,8 +70,6 @@ def load_block_file(block_model_file_path, table_columns, db_name=DB_NAME, json_
             id_count = 1
             block_parsed = ",".join(parse_block_column_types(block.strip().split(" ")))
             insert_query = "INSERT INTO {}({}) VALUES ({})".format(model_name, columns_for_query, block_parsed)
-
-            print(insert_query)
             conn.execute(insert_query)
         conn.commit()
     dump_model_information_into_json(model_name, table_columns, json_file_name)
