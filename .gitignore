@@ -15,7 +15,7 @@
 *.blocks
 
 ### Models information file ###
-/*.json
+/models_information.json
 
 ### PyCharm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm

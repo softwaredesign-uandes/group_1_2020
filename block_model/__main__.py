@@ -1,6 +1,6 @@
 import sys
 import block_model_proccesor
-import query_console
+import CLI
 import json 
 import os
 import load_block_model
@@ -19,7 +19,7 @@ def main(args=None):
     if args is None:
         args = sys.argv[1:]
     check_neccesary_files_existence()
-    query_console.main_menu()
+    CLI.main_menu()
     # Do argument parsing here (eg. with argparse) and anything else
     # you want your project to do.
 if __name__ == "__main__":
