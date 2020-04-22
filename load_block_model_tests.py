@@ -9,12 +9,18 @@ test_block_file_path = "mclaughlin_test.blocks"
 class TestLoadBlockModel(unittest.TestCase):
 
     def test_get_model_name_from_path(self):
-        self.assertEqual(lbm.get_model_name_from_path("some\\text\\before\\name.name"), "name.name")
-        self.assertEqual(lbm.get_model_name_from_path("some/text/before/name.name"), "name.name")
+        self.assertEqual(lbm.get_model_name_from_path("some\\text\\before\\name.name"), "name")
+        self.assertEqual(lbm.get_model_name_from_path("some/text/before/name.name"), "name")
 
     def test_retrieve_columns_types_valid_types(self):
-        column_types = ["INT", "INT","INT", "INT","INT", "FLOAT", "INT", "INT", "FLOAT"]
+        column_types = ["INT", "INT", "INT", "INT", "FLOAT", "INT", "FLOAT"]
         self.assertEqual(lbm.retrieve_columns_types(test_block_file_path), column_types)
+
+    def test_retrieve_columns_types_invalid_types(self):
+        column_types = ["INT", "INT", "INT", "FLOAT", "INT", "FLOAT"]
+        column_types_empty = []
+        self.assertFalse(lbm.retrieve_columns_types(test_block_file_path), column_types)
+        self.assertFalse(lbm.retrieve_columns_types(test_block_file_path), column_types_empty)
 
     """def test_load_block_model_with_valid_file_return_valid_rows(self):
         rows = [
