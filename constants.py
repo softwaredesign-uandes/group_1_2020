@@ -3,7 +3,7 @@ MAIN_MANU_VALID_OPTIONS = ["0", "1", "2"]
 MAIN_MENU_OPTIONS = ["Load block file", "Open query console", "Exit"]
 QUERY_MENU_VALID_OPTIONS = ["0", "1", "2", "3", "4", "5"]
 QUERY_CONSOLE_OPTIONS = ["Block List",
-                         "Number of blocks in model",
+                         "Number of blocks",
                          "Mass of a block",
                          "Grade in percentage for each minerals",
                          "Block attributes",
