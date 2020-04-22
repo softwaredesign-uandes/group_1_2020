@@ -60,7 +60,7 @@ def get_mass_in_kilograms(block_model_name, x, y, z, mass_column_name, db_name=D
     return False
 
 
-def get_available_models(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME): #not you
+def get_available_models(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     models = get_models_information_json(json_file_name)
     models_names = models.keys()
     return list(models_names)

@@ -1,6 +1,7 @@
 import block_model_proccesor as bmp
 import unittest
 import tabulate
+
 test_model_name = "mclaughlin_test"
 test_db_name = "block_model_test.db"
 test_json_name = "model_information_test.json"
@@ -9,12 +10,12 @@ test_json_name = "model_information_test.json"
 class TestBlockModelProcessor(unittest.TestCase):
 
     def test_check_if_model_exists_in_json_return_true(self):
-        self.assertEqual(bmp.check_if_model_exists_in_json(test_model_name, test_json_name),True)
+        self.assertEqual(bmp.check_if_model_exists_in_json(test_model_name, test_json_name), True)
 
-    #def test_get_headers_tabulated_table_return_true(self):
-     #   self.assertEqual(bmp.get_headers_tabulated_table(test_db_name), True)
+    # def test_get_headers_tabulated_table_return_true(self):
+    #   self.assertEqual(bmp.get_headers_tabulated_table(test_db_name), True)
 
-    def test_get_model_data_table(self):
+    def test_get_model_data_table_returns_correct_rows(self):
         rows = [
             [0, 31, 208, 44, -646, 489.58, 0, 0.038],
             [1, 32, 208, 44, - 646, 489.58, 0, 0.039],
@@ -37,13 +38,17 @@ class TestBlockModelProcessor(unittest.TestCase):
     def test_get_number_of_blocks_in_model_return_true(self):
         self.assertEqual(bmp.get_number_of_blocks_in_model(test_model_name, test_db_name), 15)
 
+    # TODO: Test if get number of blocks return false with inexistent corrdinates
+
     def test_get_mass_in_kilograms_return_true(self):
         self.assertEqual(bmp.get_mass_in_kilograms(test_model_name, 31, 208, 44, "ton", test_db_name), 489580)
 
-    def test_get_tabulated_blocks_return_true(self):
+    # TODO: Test if get mass returns false with inexistent coordinates
+
+    def test_get_tabulated_blocks_with_mclaughlin_test_return_true(self):
         rows = [
             ["id", "x", "y", "z", "blockvalue", "ton", "destination", "Au"],
-            ["__","_","_","_","__________","___","___________","__"],
+            ["__", "_", "_", "_", "__________", "___", "___________", "__"],
             [0, 31, 208, 44, -646, 489.58, 0, 0.038],
             [1, 32, 208, 44, - 646, 489.58, 0, 0.039],
             [2, 33, 208, 44, 2759, 239.58, 1, 0.039],
@@ -51,5 +56,19 @@ class TestBlockModelProcessor(unittest.TestCase):
             [4, 32, 209, 44, 13843, 1010.42, 1, 0.042]
         ]
         rows = tabulate.tabulate(rows)
-        self.assertEqual(bmp.get_tabulated_blocks(test_model_name,0, 4, test_json_name, test_db_name), rows)
+        self.assertEqual(bmp.get_tabulated_blocks(test_model_name, 0, 4, test_json_name, test_db_name), rows)
 
+    # TODO: Test get attribute from block return true
+    # TODO: Test get attribute from block return true with wrong coordinates
+
+    # TODO: Test get percentage grade for mineral from copper proporion return true
+    # TODO: Test get percentage grade for mineral from copper proporion return false with wrong coordinates
+
+    # TODO: Test get percentage grade for mineral from different unit proporion return true
+    # TODO: Test get percentage grade for mineral from different unit proporion return false with wrong coordinates
+
+    # TODO: Test get percentage grade for mineral from gold proporion return true
+    # TODO: Test get percentage grade for mineral from gold proporion return false with wrong coordinates
+
+    # TODO: Test Get mineral value returns true
+    # TODO: Test get mineral value returns false with wrong coordinates
