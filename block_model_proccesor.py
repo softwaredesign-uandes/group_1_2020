@@ -63,7 +63,6 @@ def get_mass_in_kilograms(block_model_name, x, y, z, mass_column_name, db_name=D
 def get_available_models():
     models = get_models_information_json()
     models_names = models.keys()
-    print(models_names)
     return list(models_names)
 
 
