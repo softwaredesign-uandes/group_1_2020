@@ -4,11 +4,10 @@ import json
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
 
 
-def create_db():
-    DB_NAME = "block_model.db"
-    if os.path.isfile(DB_NAME):
-        os.remove(DB_NAME)
-    sqlite3.connect(DB_NAME)
+def create_db(db_name=DB_NAME):
+    if os.path.isfile(db_name):
+        os.remove(db_name)
+    sqlite3.connect(db_name)
 
 
 def get_model_name_from_path(block_model_file_path):
