@@ -27,8 +27,8 @@ def get_block_model_columns(block_model_name):
     return block_models_available[block_model_name]
 
 
-def check_if_model_exists_in_json(block_model_name):
-    model_information_json = get_models_information_json()
+def check_if_model_exists_in_json(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    model_information_json = get_models_information_json(json_file_name)
     try:
         info = model_information_json[block_model_name]
         return True
