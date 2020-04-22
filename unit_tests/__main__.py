@@ -12,10 +12,10 @@ def check_neccesary_files_existence_for_tests():
         with open(TEST_LOADED_MODELS_INFORMATION_FILE_NAME, "w+") as f:
             json.dump(TEST_JSON_INFO, f, sort_keys=True)
     if not os.path.isfile("block_model_test.db"):
-        load_block_model.create_db()
+        load_block_model.create_db("block_model_test.db")
 
 def fill_test_bd ():
-    file_name = "..\\mclaughlin_test.blocks"
+    file_name = "mclaughlin_test.blocks"
     model_name = "mclaughlin_test"
     column_names = []
     with open(TEST_LOADED_MODELS_INFORMATION_FILE_NAME, 'r') as json_file:
