@@ -12,6 +12,9 @@ def get_model_data_table(block_model_name, from_id, to_id, db_name=DB_NAME):
         data_table.append(list(row))
     return data_table
 
+
+
+
 def get_headers_tabulated_table(block_model_name):
     model_information_json = get_models_information_json()
     separator_lines = []
@@ -33,6 +36,7 @@ def check_if_model_exists_in_json(block_model_name):
     except:
         return False
 
+
 def get_models_information_json():
     with open(LOADED_MODELS_INFORMATION_FILE_NAME) as json_file:
         model_information_json = json.load(json_file)
@@ -46,6 +50,7 @@ def get_tabulated_blocks(block_model_name, from_id, to_id):
     return False
 
 def get_mass_in_kilograms(block_model_name, x, y, z, mass_column_name, db_name = DB_NAME):
+
     conn = sqlite3.connect(db_name)
     cursor = conn.execute("SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(mass_column_name, block_model_name, x, y, z))
     mass_in_tons = cursor.fetchone()
@@ -53,11 +58,13 @@ def get_mass_in_kilograms(block_model_name, x, y, z, mass_column_name, db_name =
         return mass_in_tons[0] * 1000
     return False
 
+
 def get_available_models():
     models = get_models_information_json()
     models_names = models.keys()
     print(models_names)
     return list(models_names)
+
 
 def get_number_of_blocks_in_model(block_model_name, db_name = DB_NAME):
     conn = sqlite3.connect(db_name)
@@ -65,3 +72,10 @@ def get_number_of_blocks_in_model(block_model_name, db_name = DB_NAME):
     return cursor.fetchall()[0][0]
 
 
+def get_attribute_from_block(block_model_name, x, y, z, attribute, db_name = DB_NAME):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.execute("SELECT {} from {} WHERE x = {} AND y = {} AND z = {}".format(attribute, block_model_name, x, y, z))
+    requested_attributed = cursor.fetchone()
+    if requested_attributed is not None:
+        return requested_attributed
+    return False
