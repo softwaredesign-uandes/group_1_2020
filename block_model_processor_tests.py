@@ -38,8 +38,14 @@ class TestBlockModelProcessor(unittest.TestCase):
     def test_get_number_of_blocks_in_model_return_true(self):
         self.assertEqual(bmp.get_number_of_blocks_in_model(test_model_name, test_db_name), 15)
 
+    #TODO: Test if get number of blocks return false with inexistent corrdinates
+
+
     def test_get_mass_in_kilograms_return_true(self):
         self.assertEqual(bmp.get_mass_in_kilograms(test_model_name, 31, 208, 44, "ton", test_db_name), 489580)
+
+
+    #TODO: Test if get mass returns false with inexistent coordinates
 
     def test_get_tabulated_blocks_return_true(self):
         rows = [
@@ -54,3 +60,7 @@ class TestBlockModelProcessor(unittest.TestCase):
         rows = tabulate.tabulate(rows)
         self.assertEqual(bmp.get_tabulated_blocks(test_model_name,0, 4, test_json_name, test_db_name), rows)
 
+
+    #TODO: Test get attribute from block return true
+    #TODO: Test get attribute from block return true with wrong coordinates
+    #TODO: Test
