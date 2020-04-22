@@ -1,22 +1,17 @@
 import load_block_model
 import os
 import block_model_proccesor
-import re
 
-from constants import CONTINUE_SHOWING_OPTIONS, QUERY_CONSOLE_OPTIONS, ENTER_COLUMNS_OPTIONS, MAIN_MANU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS
+from constants import CONTINUE_SHOWING_OPTIONS, MAIN_MENU_OPTIONS, QUERY_CONSOLE_OPTIONS, ENTER_COLUMNS_OPTIONS, \
+    MAIN_MANU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS
+
 
 def main_menu():
+    clear_console()
     while True:
-        print("What do you want to do\n"
-              "(1) Load block file\n"
-              "(2) Open query console\n"
-              "(0) Exit")
-
-        user_input = input("Option number: ")
-
-        while user_input not in MAIN_MANU_VALID_OPTIONS:
-            user_input = input("Choose a valid option: ")
-
+        show_menu_title("main menu")
+        print("What do you want to do")
+        user_input = show_options_from_list_and_get_user_input(MAIN_MENU_OPTIONS, is_menu=True)
         if user_input == MAIN_MANU_VALID_OPTIONS[0]:
             exit(0)
         elif user_input == MAIN_MANU_VALID_OPTIONS[1]:
@@ -32,13 +27,9 @@ def query_console():
     while True:
         print("What do you want to see")
         user_input = show_options_from_list_and_get_user_input(QUERY_CONSOLE_OPTIONS, is_menu=True)
-        while user_input not in QUERY_MENU_VALID_OPTIONS:
-            user_input = input("Choose a valid option: ")
-
         if user_input == QUERY_MENU_VALID_OPTIONS[0]:
             return
         block_model_name = get_model_name_to_work_with()
-
         if user_input == QUERY_MENU_VALID_OPTIONS[1]:
             show_blocks_in_model(block_model_name)
         elif user_input == QUERY_MENU_VALID_OPTIONS[2]:
@@ -49,6 +40,24 @@ def query_console():
             show_attribute_of_block(block_model_name)
             return
 
+
+def show_error_message(message):
+    print("\n ERROR: {} \n".format(message))
+
+
+def show_normal_message(message):
+    print(message)
+
+def clear_console(continueKey=False):
+    if continueKey:
+        input("Press any key to continue")
+    os.system("cls")
+
+
+def show_menu_title(text):
+    print("=" * (len(text) + 16))
+    print("\t" + text.upper())
+    print("=" * (len(text) + 16))
 
 def show_options_from_list_and_get_user_input(data_to_show, is_menu=False):
     valid_options = list(map(str, range(len(data_to_show))))
@@ -73,7 +82,7 @@ def enter_block_model_information():
     block_model_file_path = input("Enter file path: ")
 
     if not check_block_model_file_existence(block_model_file_path):
-        print("FILE NOT FOUND")
+        show_error_message("FILE NOT FOUND")
         return
     table_columns = []
     is_valid_model = input("The dataset has id, x, y, z columns?")
@@ -101,11 +110,6 @@ def enter_block_model_information():
         load_block_model.load_block_file(block_model_file_path, table_columns)
     else:
         print("Only models with id, x, y, z columns allowed")
-
-
-
-
-
 
 
 def get_model_name_to_work_with():
@@ -173,5 +177,3 @@ def show_attribute_of_block(block_model_name):
                                                                                  column_to_show_name, attribute))
     else:
         print("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
-
-
