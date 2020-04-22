@@ -93,7 +93,7 @@ def enter_block_model_information():
             column_name = input("Enter a valid column name(Only alphabetic characters): ")
         table_columns.append(column_name)
     # TODO: Make the user capable of re insert column names
-    load_block_model.load_block_file(file_name, table_columns, model_has_id)
+    load_block_model.load_block_file(block_model_file_path, table_columns, model_has_id)
 
 
 
