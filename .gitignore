@@ -12,7 +12,7 @@
 *.sqlite3
 
 ### Block files ###
-*.blocks
+# *.blocks #########################3
 
 ### Models information file ###
 /models_information.json

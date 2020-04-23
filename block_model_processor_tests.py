@@ -64,10 +64,6 @@ class TestBlockModelProcessor(unittest.TestCase):
     def test_get_attribute_from_block_wrong_coordinates_return_false(self):
         self.assertFalse(bmp.get_attribute_from_block(test_model_name,0,0,0, "blockvalue", test_db_name), True)
 
-
-    # TODO: Test get percentage grade for mineral from copper proportion return true
-    # TODO: Test get percentage grade for mineral from copper proportion return false with wrong coordinates
-
     def test_get_percentage_grade_for_mineral_from_copper_proportion_return_true(self):
         models_information_test = bmp.get_models_information_json(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)
         rock_tonnes_column_name = models_information_test["zuck_medium_test"][6]
@@ -81,10 +77,10 @@ class TestBlockModelProcessor(unittest.TestCase):
         self.assertEqual(bmp.get_percentage_grade_for_mineral_from_copper_proportion("zuck_medium_test", 0, 1, 2, rock_tonnes_column_name, ore_tonnes_column_name, test_db_name), False)
 
     def test_get_percentage_grade_for_mineral_from_different_unit_return_true(self):
-        self.assertEqual(bmp.get_percentage_grade_for_mineral_from_different_unit("p4hd", 53, 19, 63, "ag"), 0.004053)
+        self.assertEqual(bmp.get_percentage_grade_for_mineral_from_different_unit("p4hd_test", 53, 19, 63, "ag", test_db_name), 0.004053)
 
     def test_get_percentage_grade_for_mineral_from_different_unit_return_false_with_wrong_coordinates(self):
-        self.assertEqual(bmp.get_percentage_grade_for_mineral_from_different_unit("p4hd", 0, 38, 47, "au"), False)
+        self.assertEqual(bmp.get_percentage_grade_for_mineral_from_different_unit("p4hd_test", 0, 38, 47, "au", test_db_name), False)
 
     def test_get_percentage_grade_for_mineral_from_gold_proportion_return_true(self):
         models_information_test = bmp.get_models_information_json(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)
@@ -98,6 +94,7 @@ class TestBlockModelProcessor(unittest.TestCase):
 
     # TODO: Test Get mineral value returns true
     # TODO: Test get mineral value returns false with wrong coordinates
+
 
 if __name__ == "__main__":
     unittest.main()

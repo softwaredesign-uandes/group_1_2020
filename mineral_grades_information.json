@@ -41,5 +41,11 @@
 	"w23":
 	{
 		"au": "au_proportion"
+	},
+	"p4hd_test":
+	{
+		"au": "oz_per_ton",
+		"ag": "oz_per_ton",
+		"cu": "percentage"
 	}
 }
