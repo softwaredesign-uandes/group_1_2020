@@ -37,7 +37,6 @@ def retrieve_columns_types(block_model_file_path):
 
 def parse_block_column_types(block):
     parsed_block = []
-    print(block)
     for data in block:
         if data.isdigit():
             parsed_block.append(data.strip())
@@ -47,7 +46,6 @@ def parse_block_column_types(block):
             parsed_block.append(data.strip())
         else:
             parsed_block.append("\'{}\'".format(data.strip()))
-    print(parsed_block)
     return parsed_block
 
 

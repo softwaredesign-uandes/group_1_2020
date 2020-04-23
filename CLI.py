@@ -5,7 +5,8 @@ from CLI_helpers import clear_console, show_menu_title, show_normal_message, sho
     not_allowed_message, get_valid_user_input, show_error_message, get_user_decision_input, show_result, \
     show_submenu_title, show_success_message
 
-from constants import  MAIN_MENU_OPTIONS, QUERY_CONSOLE_OPTIONS, MAIN_MANU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS, DIFFERENT_UNITS, COPPER_PROPORTION, GOLD_PROPORTION
+from constants import MAIN_MENU_OPTIONS, QUERY_CONSOLE_OPTIONS, MAIN_MANU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS, \
+    DIFFERENT_UNITS, COPPER_PROPORTION, GOLD_PROPORTION
 
 
 def main_menu():
@@ -64,7 +65,6 @@ def query_console():
             show_submenu_title("Get attribute from block in {}".format(block_model_name))
             show_attribute_of_block(block_model_name)
             clear_console(continueKey=True)
-
 
 
 def check_block_model_file_existence(file_name):
@@ -174,7 +174,8 @@ def show_grade_of_mineral(block_model_name):
     unit = mineral_grades_information[block_model_name][mineral_name]
     grade = 0
     if unit in DIFFERENT_UNITS:
-        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_different_unit(block_model_name, x, y, z, mineral_name)
+        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_different_unit(block_model_name, x, y, z,
+                                                                                           mineral_name)
     elif unit == COPPER_PROPORTION:
         block_model_columns = block_model_proccesor.get_block_model_columns(block_model_name)
         show_normal_message("Select the column of tons of rock")
@@ -183,14 +184,19 @@ def show_grade_of_mineral(block_model_name):
         show_normal_message("Select the column of tons of ore (copper)")
         ore_tonnes_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
         ore_tonnes_column_name = block_model_columns[ore_tonnes_column_index]
-        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_copper_proportion(block_model_name, x, y, z, rock_tonnes_column_name, ore_tonnes_column_name)
+        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_copper_proportion(block_model_name, x, y, z,
+                                                                                              rock_tonnes_column_name,
+                                                                                              ore_tonnes_column_name)
     elif unit == GOLD_PROPORTION:
         block_model_columns = block_model_proccesor.get_block_model_columns(block_model_name)
         show_normal_message("Selects the column for the proportion of gold in the block (AuFa)")
         au_fa_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
         au_fa_column_name = block_model_columns[au_fa_column_index]
-        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_gold_proportion(block_model_name, x, y, z, au_fa_column_name)
+        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_gold_proportion(block_model_name, x, y, z,
+                                                                                            au_fa_column_name)
     if grade:
-        show_result("Grade of {} in the block in {} with coordinates {} {} {} is {}%".format(mineral_name, block_model_name, x, y, z, grade))
+        show_result(
+            "Grade of {} in the block in {} with coordinates {} {} {} is {}%".format(mineral_name, block_model_name, x,
+                                                                                     y, z, grade))
     else:
         show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
