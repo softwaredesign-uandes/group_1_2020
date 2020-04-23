@@ -1,6 +1,7 @@
 import block_model_proccesor as bmp
 import unittest
 import tabulate
+from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME
 
 test_model_name = "mclaughlin_test"
 test_db_name = "block_model_test.db"
@@ -12,8 +13,6 @@ class TestBlockModelProcessor(unittest.TestCase):
     def test_check_if_model_exists_in_json_return_true(self):
         self.assertEqual(bmp.check_if_model_exists_in_json(test_model_name, TEST_LOADED_MODELS_INFORMATION_FILE_NAME), True)
 
-    # def test_get_headers_tabulated_table_return_true(self):
-    #   self.assertEqual(bmp.get_headers_tabulated_table(test_db_name), True)
 
     def test_get_model_data_table_returns_correct_rows(self):
         rows = [
@@ -99,3 +98,6 @@ class TestBlockModelProcessor(unittest.TestCase):
 
     # TODO: Test Get mineral value returns true
     # TODO: Test get mineral value returns false with wrong coordinates
+
+if __name__ == "__main__":
+    unittest.main()
