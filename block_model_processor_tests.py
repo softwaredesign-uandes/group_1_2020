@@ -4,13 +4,13 @@ import tabulate
 
 test_model_name = "mclaughlin_test"
 test_db_name = "block_model_test.db"
-test_json_name = "model_information_test.json"
+from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME
 
 
 class TestBlockModelProcessor(unittest.TestCase):
 
     def test_check_if_model_exists_in_json_return_true(self):
-        self.assertEqual(bmp.check_if_model_exists_in_json(test_model_name, test_json_name), True)
+        self.assertEqual(bmp.check_if_model_exists_in_json(test_model_name, TEST_LOADED_MODELS_INFORMATION_FILE_NAME), True)
 
     # def test_get_headers_tabulated_table_return_true(self):
     #   self.assertEqual(bmp.get_headers_tabulated_table(test_db_name), True)
@@ -56,7 +56,7 @@ class TestBlockModelProcessor(unittest.TestCase):
             [4, 32, 209, 44, 13843, 1010.42, 1, 0.042]
         ]
         rows = tabulate.tabulate(rows)
-        self.assertEqual(bmp.get_tabulated_blocks(test_model_name, 0, 4, test_json_name, test_db_name), rows)
+        self.assertEqual(bmp.get_tabulated_blocks(test_model_name, 0, 4, TEST_LOADED_MODELS_INFORMATION_FILE_NAME, test_db_name), rows)
 
     # TODO: Test get attribute from block return true
     def test_get_attribute_from_block_return_true(self):
@@ -69,20 +69,33 @@ class TestBlockModelProcessor(unittest.TestCase):
     # TODO: Test get percentage grade for mineral from copper proportion return true
     # TODO: Test get percentage grade for mineral from copper proportion return false with wrong coordinates
 
-    # TODO: Test get percentage grade for mineral from different unit proporion return true
-    # TODO: Test get percentage grade for mineral from different unit proporion return false with wrong coordinates
+    def test_get_percentage_grade_for_mineral_from_copper_proportion_return_true(self):
+        models_information_test = bmp.get_models_information_json(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)
+        rock_tonnes_column_name = models_information_test["zuck_medium_test"][6]
+        ore_tonnes_column_name = models_information_test["zuck_medium_test"][7]
+        self.assertEqual(bmp.get_percentage_grade_for_mineral_from_copper_proportion("zuck_medium_test", 23, 33, 7, rock_tonnes_column_name, ore_tonnes_column_name, test_db_name), 72.727)
+
+    def test_get_percentage_grade_for_mineral_from_copper_proportion_return_false_with_wrong_coordinates(self):
+        models_information_test = bmp.get_models_information_json(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)
+        rock_tonnes_column_name = models_information_test["zuck_medium_test"][6]
+        ore_tonnes_column_name = models_information_test["zuck_medium_test"][7]
+        self.assertEqual(bmp.get_percentage_grade_for_mineral_from_copper_proportion("zuck_medium_test", 0, 1, 2, rock_tonnes_column_name, ore_tonnes_column_name, test_db_name), False)
+
     def test_get_percentage_grade_for_mineral_from_different_unit_return_true(self):
         self.assertEqual(bmp.get_percentage_grade_for_mineral_from_different_unit("p4hd", 53, 19, 63, "ag"), 0.004053)
 
     def test_get_percentage_grade_for_mineral_from_different_unit_return_false_with_wrong_coordinates(self):
         self.assertEqual(bmp.get_percentage_grade_for_mineral_from_different_unit("p4hd", 0, 38, 47, "au"), False)
 
-    # TODO: Test get percentage grade for mineral from gold proportion return false with wrong coordinates
-
     def test_get_percentage_grade_for_mineral_from_gold_proportion_return_true(self):
-        model_information_test = bmp.get_models_information_json(test_json_name)
-        au_fa_column_name = model_information_test["w23_test"][7]
+        models_information_test = bmp.get_models_information_json(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)
+        au_fa_column_name = models_information_test["w23_test"][7]
         self.assertEqual(bmp.get_percentage_grade_for_mineral_from_gold_proportion("w23_test", 58, 50, 18, au_fa_column_name, test_db_name), 9.787)
+
+    def test_get_percentage_grade_for_mineral_from_gold_proportion_with_wrongs_coordinates(self):
+        models_information_test = bmp.get_models_information_json(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)
+        au_fa_column_name = models_information_test["w23_test"][7]
+        self.assertEqual(bmp.get_percentage_grade_for_mineral_from_gold_proportion("w23_test", 13, 17, 41, au_fa_column_name, test_db_name), False)
 
     # TODO: Test Get mineral value returns true
     # TODO: Test get mineral value returns false with wrong coordinates

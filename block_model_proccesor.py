@@ -78,7 +78,7 @@ def get_attribute_from_block(block_model_name, x, y, z, attribute, db_name=DB_NA
         "SELECT {} from {} WHERE x = {} AND y = {} AND z = {}".format(attribute, block_model_name, x, y, z))
     requested_attributed = cursor.fetchone()
     if requested_attributed is not None:
-        return requested_attributed
+        return requested_attributed[0]
     return False
 
 
