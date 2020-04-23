@@ -89,10 +89,10 @@ def get_mineral_grades_information_json():
 
 
 def get_percentage_grade_for_mineral_from_different_unit(block_model_name, x, y, z, mineral_name, db_name = DB_NAME):
-    # mineral_name: au, cu, ag
+
     ore_grades_information_json = get_mineral_grades_information_json()
     unit = ore_grades_information_json[block_model_name][mineral_name.lower()]
-    # unit: ppm, percentage, oz_per_ton
+
     if unit == "percentage":
         percentage = get_mineral_value(block_model_name, x, y, z, mineral_name, db_name)
         if percentage is not None:

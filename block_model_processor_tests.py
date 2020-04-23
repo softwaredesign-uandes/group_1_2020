@@ -35,17 +35,17 @@ class TestBlockModelProcessor(unittest.TestCase):
         ]
         self.assertEqual(bmp.get_model_data_table(test_model_name, 0, 14, test_db_name), rows)
 
-    def test_get_number_of_blocks_in_model_return_true(self):
+    def test_get_number_of_blocks_in_model_return_correct_number(self):
         self.assertEqual(bmp.get_number_of_blocks_in_model(test_model_name, test_db_name), 15)
 
     # TODO: Test if get number of blocks return false with inexistent corrdinates
 
-    def test_get_mass_in_kilograms_return_true(self):
+    def test_get_mass_in_kilograms_return_correct_number(self):
         self.assertEqual(bmp.get_mass_in_kilograms(test_model_name, 31, 208, 44, "ton", test_db_name), 489580)
 
     # TODO: Test if get mass returns false with inexistent coordinates
 
-    def test_get_tabulated_blocks_with_mclaughlin_test_return_true(self):
+    def test_get_tabulated_blocks_with_mclaughlin_test_return_correct_information(self):
         rows = [
             ["id", "x", "y", "z", "blockvalue", "ton", "destination", "Au"],
             ["__", "_", "_", "_", "__________", "___", "___________", "__"],
@@ -58,8 +58,8 @@ class TestBlockModelProcessor(unittest.TestCase):
         rows = tabulate.tabulate(rows)
         self.assertEqual(bmp.get_tabulated_blocks(test_model_name, 0, 4, test_json_name, test_db_name), rows)
 
-    # TODO: Test get attribute from block return true
-    def test_get_attribute_from_block_return_true(self):
+
+    def test_get_attribute_from_block_return_correct_result(self):
         self.assertEqual(bmp.get_attribute_from_block(test_model_name, 31, 208, 44, "blockvalue", test_db_name), -646)
 
     def test_get_attribute_from_block_wrong_coordinates_return_false(self):
@@ -69,15 +69,12 @@ class TestBlockModelProcessor(unittest.TestCase):
     # TODO: Test get percentage grade for mineral from copper proportion return true
     # TODO: Test get percentage grade for mineral from copper proportion return false with wrong coordinates
 
-    # TODO: Test get percentage grade for mineral from different unit proporion return true
-    # TODO: Test get percentage grade for mineral from different unit proporion return false with wrong coordinates
-    def test_get_percentage_grade_for_mineral_from_different_unit_return_true(self):
+    def test_get_percentage_grade_for_mineral_from_different_unit_return_correct_result(self):
         self.assertEqual(bmp.get_percentage_grade_for_mineral_from_different_unit("p4hd", 53, 19, 63, "ag"), 0.004053)
 
     def test_get_percentage_grade_for_mineral_from_different_unit_return_false_with_wrong_coordinates(self):
         self.assertEqual(bmp.get_percentage_grade_for_mineral_from_different_unit("p4hd", 0, 38, 47, "au"), False)
 
-    # TODO: Test get percentage grade for mineral from gold proportion return false with wrong coordinates
 
     def test_get_percentage_grade_for_mineral_from_gold_proportion_return_true(self):
         model_information_test = bmp.get_models_information_json(test_json_name)
