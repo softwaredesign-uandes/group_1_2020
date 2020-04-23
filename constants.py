@@ -18,3 +18,4 @@ CONTINUE_SHOWING_OPTIONS = ["y", "n"]
 DEFAULT_USER_INPUT = "1"
 EXIT_INPUT = "0"
 DB_NAME = "block_model.db"
+TEST_DB_NAME = "block_model_test.db"

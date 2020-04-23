@@ -133,7 +133,7 @@ def get_percentage_grade_for_mineral_from_gold_proportion(block_model_name, x, y
     cursor = conn.execute("SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(au_fa, block_model_name, x, y, z))
     AuFa = cursor.fetchone()
     if AuFa is not None:
-        return AuFa[0] * 100
+        return round(AuFa[0] * 100, 3)
     return False
 
 def get_available_minerals(block_model_name, json_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME): #not you

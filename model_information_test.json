@@ -1,1 +1,1 @@
-{"mclaughlin_test": ["id", "x", "y", "z", "blockvalue", "ton", "destination", "Au"]}
+{"mclaughlin_test": ["id", "x", "y", "z", "blockvalue", "ton", "destination", "Au"], "w23_test": ["id", "x", "y", "z", "dest", "phase", "AuRec", "AuFa", "tons", "co3", "orgc", "sulf", "Mcost", "Pcost", "Tcost", "Tvalue", "Bvalue", "rc_Stockpile", "rc_RockChar"], "zuck_medium_test": ["id", "x", "y", "z", "cost", "value", "rock_tonnes", "ore_tonnes"]}
