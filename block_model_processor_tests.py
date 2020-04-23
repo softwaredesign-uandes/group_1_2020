@@ -59,12 +59,19 @@ class TestBlockModelProcessor(unittest.TestCase):
         self.assertEqual(bmp.get_tabulated_blocks(test_model_name, 0, 4, test_json_name, test_db_name), rows)
 
     # TODO: Test get attribute from block return true
-    # TODO: Test get attribute from block return true with wrong coordinates
+    def test_get_attribute_from_block_return_true(self):
+        self.assertEqual(bmp.get_attribute_from_block(test_model_name, 31, 208, 44, "blockvalue", test_db_name), -646)
+
+    def test_get_attribute_from_block_wrong_coordinates_return_false(self):
+        self.assertFalse(bmp.get_attribute_from_block(test_model_name,0,0,0, "blockvalue", test_db_name), True)
+
 
     # TODO: Test get percentage grade for mineral from copper proporion return true
     # TODO: Test get percentage grade for mineral from copper proporion return false with wrong coordinates
 
     # TODO: Test get percentage grade for mineral from different unit proporion return true
+    def test_get_percentage_grade_for_mineral_from_different_unit_return_true(self):
+
     # TODO: Test get percentage grade for mineral from different unit proporion return false with wrong coordinates
 
     # TODO: Test get percentage grade for mineral from gold proporion return true
