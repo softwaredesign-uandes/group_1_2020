@@ -12,10 +12,11 @@
 *.sqlite3
 
 ### Block files ###
-# *.blocks ####################################
+*.blocks
 
 ### Models information file ###
 /models_information.json
+/models_information_test.json
 
 ### PyCharm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
