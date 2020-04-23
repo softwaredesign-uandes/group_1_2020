@@ -1,124 +1,148 @@
-import sqlite3
 from tabulate import tabulate
-import os
+import sqlite3
+import json
 
-MAIN_MANU_VALID_OPTIONS = ["0", "1", "2"]
-QUERY_MENU_VALID_OPTIONS = ["0", "1"]
-CONTINUE_SHOWING_OPTIONS = ["y", "n"]
-DB_NAME = "block_model.db"
-INITIAL_HEADERS = [["-------", "---", "---", "---", "-----------", "-------", "-----------", "----------"],
-                ["ID", "x", "y", "z", "block value", "ton", "destination", "Au(oz/ton)"],
-                ["_______", "___", "___", "___", "___________", "_______", "___________", "__________"]]
-TABLE = [INITIAL_HEADERS[1], INITIAL_HEADERS[2]]
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME
 
-def show_blocks(conn):
-    cursor = conn.execute("SELECT * from BLOCK")
-    c = 1
+
+def get_model_data_table(block_model_name, from_id, to_id, db_name=DB_NAME):
+    data_table = []
+    conn = sqlite3.connect(db_name)
+    cursor = conn.execute("SELECT * FROM {} WHERE ID >= {} AND ID <= {}".format(block_model_name, from_id, to_id))
     for row in cursor:
-        TABLE.append([row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]])
-        if c % 500 == 0:
-            print(tabulate(TABLE))
-            continue_printing = input("Continue showing data(y/n): ").lower()
-            while continue_printing not in CONTINUE_SHOWING_OPTIONS:
-                continue_printing = input("Enter a valid option. Continue showing data(y/n): ").lower()
-            
-            if continue_printing == CONTINUE_SHOWING_OPTIONS[1]:
-                break
-        if c % 50 == 0:
-            for header in INITIAL_HEADERS:
-                TABLE.append(header)
-        c += 1
-    return
+        data_table.append(list(row))
+    return data_table
 
-def make_db(file_path):
+
+def get_headers_tabulated_table(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    model_information_json = get_models_information_json(json_file_name)
+    separator_lines = []
+    for column in model_information_json[block_model_name]:
+        separator_lines.append("_" * len(column))
+    return [model_information_json[block_model_name], separator_lines]
+
+
+def get_block_model_columns(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    block_models_available = get_models_information_json(json_file_name)
+    return block_models_available[block_model_name]
+
+
+def check_if_model_exists_in_json(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    model_information_json = get_models_information_json(json_file_name)
     try:
-        data = open(file_path)
-        conn = sqlite3.connect(DB_NAME)
-        conn.execute("CREATE TABLE IF NOT EXISTS BLOCK ("
-                         "ID INT PRIMARY KEY NOT NULL, "
-                         "X INT NOT NULL, "
-                         "Y INT NOT NULL,"
-                         "Z INT NOT NULL, "
-                         "VALUE INT NOT NULL, "
-                         "TON FLOAT NOT NULL, "
-                         "DESTINATION INT NOT NULL,"
-                         " AU FLOAT NOT NULL);")
-        for line in data:
-            columns = line.split()
-            id = int(columns[0])
-            x = int(columns[1])
-            y = int(columns[2])
-            z = int(columns[3])
-            value = int(columns[4])
-            ton = float(columns[5])
-            destination = int(columns[6])
-            au = float(columns[7])
-            conn.execute(
-                "INSERT INTO BLOCK (ID, X, Y, Z, VALUE, TON, DESTINATION, AU) VALUES ({}, {}, {}, {}, {}, {}, {}, {})".format(
-                    id, x, y, z, value, ton, destination, au))
-        conn.commit()
-        print("File loaded")
-        conn.close()
+        info = model_information_json[block_model_name]
         return True
     except:
-        print("ERROR MAKING DB")
         return False
 
-def load_block_file(is_test=False, file=None):
 
-    if not file:
-        file_path = input("File path: ")
-    else:
-        file_path = file
-    if is_test:
-        if os.path.isfile("block_model.db"):
-            print("DB is already loaded, removing it in order to test...")
-            os.remove(DB_NAME)
-        return make_db(file_path)
-    else:
-        if os.path.isfile("block_model.db"):
-            print("DB is already loaded")
-        else:
-            return make_db(file_path)
+def get_models_information_json(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    with open(json_file_name) as json_file:
+        model_information_json = json.load(json_file)
+    return model_information_json
 
-def query_console():
-    if os.path.isfile("block_model.db"):
-        conn = sqlite3.connect("block_model.db")
-        while True:
-            print("What do you want to see \n"
-                   "(1) Block List\n"
-                   "(0) Exit to main menu\n")
 
-            user_input = input("Option number: ")
-            while user_input not in QUERY_MENU_VALID_OPTIONS:
-                user_input = input("Choose a valid option: ")
+def get_tabulated_blocks(block_model_name, from_id, to_id, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME,
+                         db_name=DB_NAME):  # needs test
+    if check_if_model_exists_in_json(block_model_name, json_file_name):
+        table = get_headers_tabulated_table(block_model_name, json_file_name)
+        table.extend(get_model_data_table(block_model_name, from_id, to_id, db_name))
+        return tabulate(table)
+    return False
 
-            if user_input == QUERY_MENU_VALID_OPTIONS[0]:
-                conn.close()
-                return
-            elif user_input == QUERY_MENU_VALID_OPTIONS[1]:
-                show_blocks(conn)
-    else:
-        print("The database does not exist")
 
-def main_menu():
-    while True:
-        print("What do you want to do \n"
-              "(1) Load block file\n"
-              "(2) Open query console\n"
-              "(0) Exit")
+def get_mass_in_kilograms(block_model_name, x, y, z, mass_column_name, db_name=DB_NAME):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.execute(
+        "SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(mass_column_name, block_model_name, x, y, z))
+    mass_in_tons = cursor.fetchone()
+    if mass_in_tons is not None:
+        return mass_in_tons[0] * 1000
+    return False
 
-        user_input = input("Option number: ")
 
-        while user_input not in MAIN_MANU_VALID_OPTIONS:
-            user_input = input("Choose a valid option: ")
+def get_available_models(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    models = get_models_information_json(json_file_name)
+    models_names = models.keys()
+    return list(models_names)
 
-        if user_input == MAIN_MANU_VALID_OPTIONS[0]:
-            exit(0)
-        elif user_input == MAIN_MANU_VALID_OPTIONS[1]:
-            load_block_file()
-        elif user_input == MAIN_MANU_VALID_OPTIONS[2]:
-            query_console()
 
-if __name__ == "__main__":
-    main_menu()
+def get_number_of_blocks_in_model(block_model_name, db_name=DB_NAME):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.execute("SELECT COUNT(*) FROM {}".format(block_model_name))
+    return cursor.fetchall()[0][0]
+
+
+def get_attribute_from_block(block_model_name, x, y, z, attribute, db_name=DB_NAME):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.execute(
+        "SELECT {} from {} WHERE x = {} AND y = {} AND z = {}".format(attribute, block_model_name, x, y, z))
+    requested_attributed = cursor.fetchone()
+    if requested_attributed is not None:
+        return requested_attributed[0]
+    return False
+
+
+def get_mineral_grades_information_json():
+    with open(MINERAL_GRADES_INFORMATION_FILE_NAME) as json_file:
+        mineral_grades_information_json = json.load(json_file)
+    return mineral_grades_information_json
+
+
+def get_percentage_grade_for_mineral_from_different_unit(block_model_name, x, y, z, mineral_name, db_name=DB_NAME):
+    ore_grades_information_json = get_mineral_grades_information_json()
+    unit = ore_grades_information_json[block_model_name][mineral_name.lower()]
+
+    if unit == "percentage":
+        percentage = get_mineral_value(block_model_name, x, y, z, mineral_name, db_name)
+        if percentage is not None:
+            return percentage[0]
+        return False
+    elif unit == "ppm":
+        ppm = get_mineral_value(block_model_name, x, y, z, mineral_name, db_name)
+        if ppm is not None:
+            return round(ppm[0] / 10000, 6)
+        return False
+    elif unit == "oz_per_ton":
+        oz_per_ton = get_mineral_value(block_model_name, x, y, z, mineral_name, db_name)
+        if oz_per_ton is not None:
+            return round(oz_per_ton[0] * 0.00342853, 6)
+        return False
+
+
+def get_mineral_value(block_model_name, x, y, z, mineral_name, db_name=DB_NAME):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.execute(
+        "SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(mineral_name, block_model_name, x, y, z))
+    return cursor.fetchone()
+
+
+def get_percentage_grade_for_mineral_from_copper_proportion(block_model_name, x, y, z, rock_tonnes_column,
+                                                            ore_tonnes_column, db_name=DB_NAME):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.execute(
+        "SELECT {}, {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(rock_tonnes_column, ore_tonnes_column,
+                                                                          block_model_name, x, y, z))
+    tonnes = cursor.fetchone()
+    if tonnes is not None:
+        rock_tonnes = tonnes[0]
+        ore_tonnes = tonnes[1]
+        total_tonnes = ore_tonnes + rock_tonnes
+        return round((ore_tonnes / total_tonnes) * 100, 3)
+    return False
+
+
+def get_percentage_grade_for_mineral_from_gold_proportion(block_model_name, x, y, z, au_fa, db_name=DB_NAME):
+    conn = sqlite3.connect(db_name)
+    cursor = conn.execute(
+        "SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(au_fa, block_model_name, x, y, z))
+    AuFa = cursor.fetchone()
+    if AuFa is not None:
+        return round(AuFa[0] * 100, 3)
+    return False
+
+
+def get_available_minerals(block_model_name, json_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
+    minerals = get_models_information_json(json_file_name)
+    minerals_names = minerals[block_model_name].keys()
+    return list(minerals_names)

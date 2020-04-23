@@ -11,6 +11,14 @@
 *.pdb
 *.sqlite3
 
+### Block files ###
+
+*.blocks
+
+### Models information file ###
+/models_information.json
+/models_information_test.json
+
 ### PyCharm ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio and WebStorm
 # Reference: https://intellij-support.jetbrains.com/hc/en-us/articles/206544839
@@ -21,7 +29,7 @@
 .idea/**/tasks.xml
 .idea/**/usage.statistics.xml
 .idea/**/dictionaries
-.idea/**/shelf
+.idea/**/shelff
 
 # Generated files
 .idea/**/contentModel.xml
