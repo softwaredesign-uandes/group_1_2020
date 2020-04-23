@@ -15,9 +15,8 @@ def check_necessary_files_existence_for_tests():
         load_block_model.create_db(TEST_DB_NAME)
 
 def fill_test_bd():
-    local_path = "C:\\Users\\vicen\\OneDrive\\Escritorio\\Vicente\\U\\Este semestre\\Software Design\\block_process\\group_1_2020\\"
+    local_path = os.getcwd() + "\\"
     file_names = [local_path + "mclaughlin_test.blocks", local_path + "w23_test.blocks", local_path + "zuck_medium_test.blocks"]
-    # model_names = ["mclaughlin_test", "w23", "zuck_medium"]
     column_names = [['id', 'x', 'y', 'z', 'blockvalue', 'ton', 'destination', 'Au'],
                     ['id', 'x', 'y', 'z', 'dest', 'phase', 'AuRec', 'AuFa', 'tons', 'co3', 'orgc', 'sulf', 'Mcost', 'Pcost', 'Tcost', 'Tvalue', 'Bvalue', 'rc_Stockpile', 'rc_RockChar'],
                     ['id', 'x', 'y', 'z', 'cost', 'value', 'rock_tonnes', 'ore_tonnes']]
