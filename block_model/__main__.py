@@ -15,12 +15,11 @@ def check_neccesary_files_existence():
         load_block_model.create_db()
 
 def main(args=None):
-    """The main routine."""
+
     if args is None:
         args = sys.argv[1:]
     check_neccesary_files_existence()
     CLI.main_menu()
-    # Do argument parsing here (eg. with argparse) and anything else
-    # you want your project to do.
+
 if __name__ == "__main__":
     main()

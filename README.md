@@ -26,3 +26,12 @@ anyway, run the following command
 python -m unit_tests
 ```
 
+##Considerations
+
+While entering the elements that conforms a block model, please enter the 
+chemical symbol. (Ej: Gold must be entered as au)\\
+
+Test models are available to load but they cannot be used in the query console
+
+The "Grade in percentage for each mineral function only work for 
+block models in http://mansci-web.uai.cl/minelib/kd.xhtml"

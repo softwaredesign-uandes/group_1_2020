@@ -40,6 +40,9 @@ def query_console():
             return
         clear_console()
         block_model_name = get_model_name_to_work_with()
+        if not block_model_name:
+            show_error_message("No available models")
+            continue
         if user_input == QUERY_MENU_VALID_OPTIONS[1]:
             clear_console()
             show_submenu_title("Show blocks in {}".format(block_model_name))
@@ -103,7 +106,10 @@ def enter_block_model_information():
 def get_model_name_to_work_with():
     show_normal_message("In which model? ")
     available_block_models = block_model_proccesor.get_available_models()
-    block_model_index = show_options_from_list_and_get_user_input(available_block_models)
+    available_block_models_without_test = list(filter(lambda x: False if "test" in x else True, available_block_models))
+    if len(available_block_models_without_test) == 0:
+        return False
+    block_model_index = show_options_from_list_and_get_user_input(available_block_models_without_test)
     return available_block_models[int(block_model_index)]
 
 

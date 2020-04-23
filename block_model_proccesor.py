@@ -42,7 +42,8 @@ def get_models_information_json(json_file_name=LOADED_MODELS_INFORMATION_FILE_NA
     return model_information_json
 
 
-def get_tabulated_blocks(block_model_name, from_id, to_id, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME): #needs test
+def get_tabulated_blocks(block_model_name, from_id, to_id, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME,
+                         db_name=DB_NAME):  # needs test
     if check_if_model_exists_in_json(block_model_name, json_file_name):
         table = get_headers_tabulated_table(block_model_name, json_file_name)
         table.extend(get_model_data_table(block_model_name, from_id, to_id, db_name))
@@ -83,13 +84,12 @@ def get_attribute_from_block(block_model_name, x, y, z, attribute, db_name=DB_NA
 
 
 def get_mineral_grades_information_json():
-    with open (MINERAL_GRADES_INFORMATION_FILE_NAME) as json_file:
+    with open(MINERAL_GRADES_INFORMATION_FILE_NAME) as json_file:
         mineral_grades_information_json = json.load(json_file)
     return mineral_grades_information_json
 
 
-def get_percentage_grade_for_mineral_from_different_unit(block_model_name, x, y, z, mineral_name, db_name = DB_NAME):
-
+def get_percentage_grade_for_mineral_from_different_unit(block_model_name, x, y, z, mineral_name, db_name=DB_NAME):
     ore_grades_information_json = get_mineral_grades_information_json()
     unit = ore_grades_information_json[block_model_name][mineral_name.lower()]
 
@@ -110,15 +110,19 @@ def get_percentage_grade_for_mineral_from_different_unit(block_model_name, x, y,
         return False
 
 
-def get_mineral_value(block_model_name, x, y, z, mineral_name, db_name = DB_NAME):
+def get_mineral_value(block_model_name, x, y, z, mineral_name, db_name=DB_NAME):
     conn = sqlite3.connect(db_name)
-    cursor = conn.execute("SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(mineral_name, block_model_name, x, y, z))
+    cursor = conn.execute(
+        "SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(mineral_name, block_model_name, x, y, z))
     return cursor.fetchone()
 
 
-def get_percentage_grade_for_mineral_from_copper_proportion(block_model_name, x, y, z, rock_tonnes_column, ore_tonnes_column, db_name = DB_NAME):
+def get_percentage_grade_for_mineral_from_copper_proportion(block_model_name, x, y, z, rock_tonnes_column,
+                                                            ore_tonnes_column, db_name=DB_NAME):
     conn = sqlite3.connect(db_name)
-    cursor = conn.execute("SELECT {}, {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(rock_tonnes_column, ore_tonnes_column, block_model_name, x, y, z))
+    cursor = conn.execute(
+        "SELECT {}, {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(rock_tonnes_column, ore_tonnes_column,
+                                                                          block_model_name, x, y, z))
     tonnes = cursor.fetchone()
     if tonnes is not None:
         rock_tonnes = tonnes[0]
@@ -128,15 +132,17 @@ def get_percentage_grade_for_mineral_from_copper_proportion(block_model_name, x,
     return False
 
 
-def get_percentage_grade_for_mineral_from_gold_proportion(block_model_name, x, y, z, au_fa, db_name = DB_NAME):
+def get_percentage_grade_for_mineral_from_gold_proportion(block_model_name, x, y, z, au_fa, db_name=DB_NAME):
     conn = sqlite3.connect(db_name)
-    cursor = conn.execute("SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(au_fa, block_model_name, x, y, z))
+    cursor = conn.execute(
+        "SELECT {} FROM {} WHERE x = {} AND y = {} AND z = {}".format(au_fa, block_model_name, x, y, z))
     AuFa = cursor.fetchone()
     if AuFa is not None:
         return round(AuFa[0] * 100, 3)
     return False
 
-def get_available_minerals(block_model_name, json_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME): #not you
+
+def get_available_minerals(block_model_name, json_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
     minerals = get_models_information_json(json_file_name)
     minerals_names = minerals[block_model_name].keys()
     return list(minerals_names)
