@@ -1,16 +1,16 @@
 import block_model_proccesor as bmp
 import unittest
 import tabulate
+from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME
 
 test_model_name = "mclaughlin_test"
 test_db_name = "block_model_test.db"
-test_json_name = "model_information_test.json"
 
 
 class TestBlockModelProcessor(unittest.TestCase):
 
     def test_check_if_model_exists_in_json_return_true(self):
-        self.assertEqual(bmp.check_if_model_exists_in_json(test_model_name, test_json_name), True)
+        self.assertEqual(bmp.check_if_model_exists_in_json(test_model_name, TEST_LOADED_MODELS_INFORMATION_FILE_NAME), True)
 
 
     def test_get_model_data_table_returns_correct_rows(self):
@@ -54,7 +54,7 @@ class TestBlockModelProcessor(unittest.TestCase):
             [4, 32, 209, 44, 13843, 1010.42, 1, 0.042]
         ]
         rows = tabulate.tabulate(rows)
-        self.assertEqual(bmp.get_tabulated_blocks(test_model_name, 0, 4, test_json_name, test_db_name), rows)
+        self.assertEqual(bmp.get_tabulated_blocks(test_model_name, 0, 4, TEST_LOADED_MODELS_INFORMATION_FILE_NAME, test_db_name), rows)
 
     # TODO: Test get attribute from block return true
     def test_get_attribute_from_block_return_true(self):
