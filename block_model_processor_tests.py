@@ -64,14 +64,21 @@ class TestBlockModelProcessor(unittest.TestCase):
     # TODO: Test get attribute from block return true
     # TODO: Test get attribute from block return true with wrong coordinates
 
-    # TODO: Test get percentage grade for mineral from copper proporion return true
-    # TODO: Test get percentage grade for mineral from copper proporion return false with wrong coordinates
+    # TODO: Test get percentage grade for mineral from copper proportion return true
+    # TODO: Test get percentage grade for mineral from copper proportion return false with wrong coordinates
 
-    # TODO: Test get percentage grade for mineral from different unit proporion return true
-    # TODO: Test get percentage grade for mineral from different unit proporion return false with wrong coordinates
+    def test_get_percentage_grade_for_mineral_from_different_unit_return_true(self):
+        self.assertEqual(bmp.get_percentage_grade_for_mineral_from_different_unit("p4hd", 53, 19, 63, "ag"), 0.004053)
 
-    # TODO: Test get percentage grade for mineral from gold proporion return true
-    # TODO: Test get percentage grade for mineral from gold proporion return false with wrong coordinates
+    def test_get_percentage_grade_for_mineral_from_different_unit_return_false_with_wrong_coordinates(self):
+        self.assertEqual(bmp.get_percentage_grade_for_mineral_from_different_unit("p4hd", 0, 38, 47, "au"), False)
+
+    # TODO: Test get percentage grade for mineral from gold proportion return false with wrong coordinates
+
+    def test_get_percentage_grade_for_mineral_from_gold_proportion_return_true(self):
+        model_information_test = bmp.get_models_information_json(test_json_name)
+        au_fa_column_name = model_information_test["w23_test"][7]
+        self.assertEqual(bmp.get_percentage_grade_for_mineral_from_gold_proportion("w23_test", 58, 50, 18, au_fa_column_name, test_db_name), 9.787)
 
     # TODO: Test Get mineral value returns true
     # TODO: Test get mineral value returns false with wrong coordinates
