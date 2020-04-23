@@ -27,7 +27,6 @@ class TestLoadBlockModel(unittest.TestCase):
                                              TEST_DB_NAME,
                                              TEST_LOADED_MODELS_INFORMATION_FILE_NAME), True)
 
-
     def test_load_existent_block_file_return_false(self):
         columns = ['id', 'x', 'y', 'z', 'blockvalue', 'ton', 'destination', 'Au']
         self.assertEqual(

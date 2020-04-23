@@ -13,6 +13,7 @@
 
 ### Block files ###
 
+*.blocks
 
 ### Models information file ###
 /models_information.json

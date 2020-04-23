@@ -5,7 +5,7 @@ from CLI_helpers import clear_console, show_menu_title, show_normal_message, sho
     not_allowed_message, get_valid_user_input, show_error_message, get_user_decision_input, show_result, \
     show_submenu_title, show_success_message
 
-from constants import MAIN_MENU_OPTIONS, QUERY_CONSOLE_OPTIONS, MAIN_MANU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS, \
+from constants import MAIN_MENU_OPTIONS, QUERY_CONSOLE_OPTIONS, MAIN_MENU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS, \
     DIFFERENT_UNITS, COPPER_PROPORTION, GOLD_PROPORTION
 
 
@@ -15,14 +15,14 @@ def main_menu():
         show_menu_title("main menu")
         show_normal_message("What do you want to do")
         user_input = show_options_from_list_and_get_user_input(MAIN_MENU_OPTIONS, is_menu=True)
-        if user_input == MAIN_MANU_VALID_OPTIONS[0]:
+        if user_input == MAIN_MENU_VALID_OPTIONS[0]:
             exit(0)
-        elif user_input == MAIN_MANU_VALID_OPTIONS[1]:
+        elif user_input == MAIN_MENU_VALID_OPTIONS[1]:
             clear_console()
             show_menu_title("load block model")
             enter_block_model_information()
-            clear_console(continueKey=True)
-        elif user_input == MAIN_MANU_VALID_OPTIONS[2]:
+            clear_console(continue_key=True)
+        elif user_input == MAIN_MENU_VALID_OPTIONS[2]:
             if len(block_model_proccesor.get_available_models()) > 0:
                 query_console()
             else:
@@ -47,27 +47,27 @@ def query_console():
             clear_console()
             show_submenu_title("Show blocks in {}".format(block_model_name))
             show_blocks_in_model(block_model_name)
-            clear_console(continueKey=True)
+            clear_console(continue_key=True)
         elif user_input == QUERY_MENU_VALID_OPTIONS[2]:
             clear_console()
             show_submenu_title("Show number of blocks in {}".format(block_model_name))
             show_number_of_blocks_in_model(block_model_name)
-            clear_console(continueKey=True)
+            clear_console(continue_key=True)
         elif user_input == QUERY_MENU_VALID_OPTIONS[3]:
             clear_console()
             show_submenu_title("Show mass of block in {}".format(block_model_name))
             show_mass_of_block(block_model_name)
-            clear_console(continueKey=True)
+            clear_console(continue_key=True)
         elif user_input == QUERY_MENU_VALID_OPTIONS[4]:
             clear_console()
             show_submenu_title("Grade in Percentage of mineral in {}".format(block_model_name))
             show_grade_of_mineral(block_model_name)
-            clear_console(continueKey=True)
+            clear_console(continue_key=True)
         elif user_input == QUERY_MENU_VALID_OPTIONS[5]:
             clear_console()
             show_submenu_title("Get attribute from block in {}".format(block_model_name))
             show_attribute_of_block(block_model_name)
-            clear_console(continueKey=True)
+            clear_console(continue_key=True)
 
 
 def check_block_model_file_existence(file_name):

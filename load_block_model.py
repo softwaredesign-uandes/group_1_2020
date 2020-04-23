@@ -57,7 +57,8 @@ def create_table_query(model_name, table_columns, columns_types):
     return query
 
 
-def load_block_file(block_model_file_path, table_columns, db_name=DB_NAME, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+def load_block_file(block_model_file_path, table_columns, db_name=DB_NAME,
+                    json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     try:
         model_name = get_model_name_from_path(block_model_file_path)
         conn = sqlite3.connect(db_name)
@@ -75,6 +76,7 @@ def load_block_file(block_model_file_path, table_columns, db_name=DB_NAME, json_
         return True
     except:
         return False
+
 
 def dump_model_information_into_json(model_name, column_names, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     with open(json_file_name, 'r') as json_file:

@@ -19,15 +19,14 @@ def show_success_message(message):
     print("SUCCESS: " + message.upper())
 
 
-def clear_console(continueKey=False):
-    if continueKey:
+def clear_console(continue_key=False):
+    if continue_key:
         input("Press any key to continue...")
     os.system("cls")
 
 
 def show_result(message):
     print(message)
-
 
 
 def show_menu_title(text):
@@ -38,6 +37,7 @@ def show_menu_title(text):
 
 def show_submenu_title(text):
     print(text.upper() + "\n")
+
 
 def get_valid_user_input(message, validate_alpha=False, validate_digit=False):
     user_input = input(message)

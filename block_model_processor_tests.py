@@ -2,9 +2,9 @@ import block_model_proccesor as bmp
 import unittest
 import tabulate
 from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME
+
 test_model_name = "mclaughlin_test"
 test_db_name = "block_model_test.db"
-
 
 
 class TestBlockModelProcessor(unittest.TestCase):
@@ -128,7 +128,6 @@ class TestBlockModelProcessor(unittest.TestCase):
                                                                       13, 17, 41,
                                                                       au_fa_column_name,
                                                                       TEST_DB_NAME), False)
-
 
 
 if __name__ == "__main__":
