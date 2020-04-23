@@ -3,6 +3,9 @@ import block_model_proccesor
 import load_block_model
 import json
 import os
+import unittest
+import block_model_processor_tests
+import load_block_model_tests
 
 from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME
 
@@ -24,6 +27,9 @@ def fill_test_bd():
     for i in range(len(file_names)):
         load_block_model.load_block_file(file_names[i], column_names[i], TEST_DB_NAME, TEST_LOADED_MODELS_INFORMATION_FILE_NAME)
 
+def delete_test_files():
+    os.remove(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)
+    os.remove("block_model_test.db")
 
 def main(args=None):
     """The main routine."""
@@ -32,7 +38,12 @@ def main(args=None):
     print("Running tests")
     check_necessary_files_existence_for_tests()
     fill_test_bd()
+    block_model_processor_tester = unittest.TestLoader().loadTestsFromModule(block_model_processor_tests)
+    unittest.TextTestRunner(verbosity=2).run(block_model_processor_tester)
+    #load_block_model_tester = unittest.TestLoader().loadTestsFromModule(load_block_model_tests)
+    #unittest.TextTestRunner(verbosity=2).run(load_block_model_tester)
     print("Done testing")
+    #delete_test_files()
 
     # Do argument parsing here (eg. with argparse) and anything else
     # you want your project to do.
