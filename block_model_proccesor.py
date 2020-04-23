@@ -72,13 +72,13 @@ def get_number_of_blocks_in_model(block_model_name, db_name=DB_NAME):
     return cursor.fetchall()[0][0]
 
 
-def get_attribute_from_block(block_model_name, x, y, z, attribute, db_name=DB_NAME): #need test
+def get_attribute_from_block(block_model_name, x, y, z, attribute, db_name=DB_NAME):
     conn = sqlite3.connect(db_name)
     cursor = conn.execute(
         "SELECT {} from {} WHERE x = {} AND y = {} AND z = {}".format(attribute, block_model_name, x, y, z))
     requested_attributed = cursor.fetchone()
     if requested_attributed is not None:
-        return requested_attributed
+        return requested_attributed[0]
     return False
 
 
