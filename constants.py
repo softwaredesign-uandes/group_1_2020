@@ -4,8 +4,8 @@ DIFFERENT_UNITS = ["ppm", "percentage", "oz_per_ton"]
 COPPER_PROPORTION = "cu_proportion"
 GOLD_PROPORTION = "au_proportion"
 TEST_LOADED_MODELS_INFORMATION_FILE_NAME = "models_information_test.json"
-MAIN_MENU_VALID_OPTIONS = ["0", "1", "2"]
-MAIN_MENU_OPTIONS = ["Load block file", "Open query console", "Exit"]
+MAIN_MENU_VALID_OPTIONS = ["0", "1", "2", "3"]
+MAIN_MENU_OPTIONS = ["Load block file", "Open query console", "Reblock model", "Exit"]
 QUERY_MENU_VALID_OPTIONS = ["0", "1", "2", "3", "4", "5"]
 QUERY_CONSOLE_OPTIONS = ["Block List",
                          "Number of blocks",

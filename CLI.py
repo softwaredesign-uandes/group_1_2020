@@ -27,6 +27,11 @@ def main_menu():
                 query_console()
             else:
                 not_allowed_message("There are no available models")
+        elif user_input == MAIN_MENU_VALID_OPTIONS[3]:
+            if len(load_block_model.get_available_models()) > 0:
+                reblock_console()
+            else:
+                not_allowed_message("There are no available models")
 
 
 def query_console():
@@ -75,6 +80,10 @@ def query_console():
             clear_console(continue_key=True)
 
 
+def reblock_console():
+    block_model_name = get_model_name_to_work_with("Choose the model to reblock")
+
+
 def check_block_model_file_existence(file_name):
     return os.path.isfile(file_name)
 
@@ -108,8 +117,8 @@ def enter_block_model_information():
         not_allowed_message("Only models with id, x, y, z columns allowed")
 
 
-def get_model_name_to_work_with():
-    show_normal_message("In which model? ")
+def get_model_name_to_work_with(message):
+    show_normal_message(message)
     available_block_models = load_block_model.get_available_models()
     available_block_models_without_test = list(filter(lambda x: False if "test" in x else True, available_block_models))
     if len(available_block_models_without_test) == 0:
