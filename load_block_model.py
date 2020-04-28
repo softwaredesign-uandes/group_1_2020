@@ -76,7 +76,7 @@ def load_block_file(block_model_file_path, table_columns, db_name=DB_NAME,
             conn.commit()
         dump_model_information_into_json(model_name, table_columns, json_file_name)
         return True
-    except:
+    except sqlite3.IntegrityError:
         return False
 
 
@@ -108,10 +108,9 @@ def get_available_models(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
 
 def check_if_model_exists_in_json(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     model_information_json = get_models_information_json(json_file_name)
-    try:
-        info = model_information_json[block_model_name]
+    if block_model_name in model_information_json.keys():
         return True
-    except KeyError:
+    else:
         return False
 
 

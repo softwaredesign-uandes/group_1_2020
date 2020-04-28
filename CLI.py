@@ -211,5 +211,3 @@ def show_grade_of_mineral(block_model):
                                                                                      y, z, grade))
     else:
         show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model.name, x, y, z))
-
-main_menu()
