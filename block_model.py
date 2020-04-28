@@ -1,12 +1,8 @@
 from block_group import BlockGroup
-from blocks import Block
+from block import Block
 
 class BlockModel:
     def __init__(self, name, blocks, columns, minerals):
-        """
-
-        :rtype: object
-        """
         self.name = name
         self.blocks = blocks
         self.columns = columns
@@ -50,7 +46,7 @@ class BlockModel:
             for j in range(0, len(self.blocks[0]), ry):
                 new_k = 0
                 for k in range(0, len(self.blocks[0][0]), rz):
-                    new_blocks[new_i][new_j][new_k] = self.get_reblock_coming_from_group_of_blocks(i, j, k , rx, ry, rz)
+                    new_blocks[new_i][new_j][new_k] = self.get_reblock_coming_from_group_of_blocks(i, j, k, rx, ry, rz)
                     new_k += 1
                 new_j += 1
             new_i += 1
