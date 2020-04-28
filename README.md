@@ -15,7 +15,7 @@ pip install -r requirements.txt
 To use application please run the following command
 
 ```console
-python -m block_model
+python -m block_model_cli
 ```
 
 ## Run tests

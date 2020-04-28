@@ -3,6 +3,10 @@ from blocks import Block
 
 class BlockModel:
     def __init__(self, name, blocks, columns, minerals):
+        """
+
+        :rtype: object
+        """
         self.name = name
         self.blocks = blocks
         self.columns = columns
@@ -16,7 +20,8 @@ class BlockModel:
         return blocks
 
     def get_block_by_coordinates(self, x, y, z):
-        block = list(filter(lambda b: b.attributes["x"] == int(x) and b.attributes["y"] == int(y) and b.attributes["z"] == int(z), self.blocks))
+        block = list(filter(lambda b: b.attributes["x"] == int(x) and b.attributes["y"] == int(y)
+                                      and b.attributes["z"] == int(z), self.blocks))
         if len(block) == 0:
             return None
         else:
