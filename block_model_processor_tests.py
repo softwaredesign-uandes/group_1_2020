@@ -2,7 +2,7 @@ import block_model_proccesor
 import unittest
 import tabulate
 from block_model import BlockModel
-from blocks import Block
+from block import Block
 
 test_model_name = "mclaughlin_test"
 test_db_name = "block_model_test.db"

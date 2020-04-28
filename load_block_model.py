@@ -1,7 +1,7 @@
 import os
 import sqlite3
 import json
-from blocks import Block
+from block import Block
 from block_model import BlockModel
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME
 
