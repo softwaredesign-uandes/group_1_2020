@@ -1,7 +1,9 @@
 import os
 import sqlite3
 import json
-from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
+from blocks import Block
+from block_model import BlockModel
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME
 
 
 def create_db(db_name=DB_NAME):
@@ -85,3 +87,42 @@ def dump_model_information_into_json(model_name, column_names, json_file_name=LO
     with open(json_file_name, 'w') as json_file:
         json.dump(data, json_file, sort_keys=True)
 
+
+def get_models_information_json(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    with open(json_file_name) as json_file:
+        model_information_json = json.load(json_file)
+    return model_information_json
+
+
+def get_mineral_grades_information_json(json_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
+    with open(json_file_name) as json_file:
+        mineral_grades_information_json = json.load(json_file)
+    return mineral_grades_information_json
+
+
+def get_available_models(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    models = get_models_information_json(json_file_name)
+    models_names = models.keys()
+    return list(models_names)
+
+
+def check_if_model_exists_in_json(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    model_information_json = get_models_information_json(json_file_name)
+    try:
+        info = model_information_json[block_model_name]
+        return True
+    except KeyError:
+        return False
+
+
+def get_block_model_object(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME):
+    if check_if_model_exists_in_json(block_model_name):
+        columns = get_models_information_json(json_file_name)[block_model_name]
+        columns_query_format = ",".join(columns)
+        conn = sqlite3.connect(db_name)
+        cursor = conn.execute("SELECT {} FROM {}".format(columns_query_format, block_model_name))
+        blocks = []
+        for row in cursor.fetchall():
+            blocks.append(Block({attribute: value for (attribute, value) in zip(columns, row)}))
+        minerals = get_mineral_grades_information_json()[block_model_name]
+        return BlockModel(block_model_name, blocks, columns, minerals)

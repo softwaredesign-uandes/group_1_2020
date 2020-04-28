@@ -17,5 +17,5 @@ ENTER_COLUMNS_OPTIONS = ["0", "1"]
 CONTINUE_SHOWING_OPTIONS = ["y", "n"]
 DEFAULT_USER_INPUT = "1"
 EXIT_INPUT = "0"
-DB_NAME = "block_model.db"
+DB_NAME = "block_model_cli.db"
 TEST_DB_NAME = "block_model_test.db"

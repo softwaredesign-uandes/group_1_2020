@@ -23,7 +23,7 @@ def main_menu():
             enter_block_model_information()
             clear_console(continue_key=True)
         elif user_input == MAIN_MENU_VALID_OPTIONS[2]:
-            if len(block_model_proccesor.get_available_models()) > 0:
+            if len(load_block_model.get_available_models()) > 0:
                 query_console()
             else:
                 not_allowed_message("There are no available models")
@@ -46,27 +46,32 @@ def query_console():
         if user_input == QUERY_MENU_VALID_OPTIONS[1]:
             clear_console()
             show_submenu_title("Show blocks in {}".format(block_model_name))
-            show_blocks_in_model(block_model_name)
+            block_model = load_block_model.get_block_model_object(block_model_name)
+            show_blocks_in_model(block_model)
             clear_console(continue_key=True)
         elif user_input == QUERY_MENU_VALID_OPTIONS[2]:
             clear_console()
             show_submenu_title("Show number of blocks in {}".format(block_model_name))
-            show_number_of_blocks_in_model(block_model_name)
+            block_model = load_block_model.get_block_model_object(block_model_name)
+            show_number_of_blocks_in_model(block_model)
             clear_console(continue_key=True)
         elif user_input == QUERY_MENU_VALID_OPTIONS[3]:
             clear_console()
             show_submenu_title("Show mass of block in {}".format(block_model_name))
-            show_mass_of_block(block_model_name)
+            block_model = load_block_model.get_block_model_object(block_model_name)
+            show_mass_of_block(block_model)
             clear_console(continue_key=True)
         elif user_input == QUERY_MENU_VALID_OPTIONS[4]:
             clear_console()
             show_submenu_title("Grade in Percentage of mineral in {}".format(block_model_name))
-            show_grade_of_mineral(block_model_name)
+            block_model = load_block_model.get_block_model_object(block_model_name)
+            show_grade_of_mineral(block_model)
             clear_console(continue_key=True)
         elif user_input == QUERY_MENU_VALID_OPTIONS[5]:
             clear_console()
             show_submenu_title("Get attribute from block in {}".format(block_model_name))
-            show_attribute_of_block(block_model_name)
+            block_model = load_block_model.get_block_model_object(block_model_name)
+            show_attribute_of_block(block_model)
             clear_console(continue_key=True)
 
 
@@ -105,7 +110,7 @@ def enter_block_model_information():
 
 def get_model_name_to_work_with():
     show_normal_message("In which model? ")
-    available_block_models = block_model_proccesor.get_available_models()
+    available_block_models = load_block_model.get_available_models()
     available_block_models_without_test = list(filter(lambda x: False if "test" in x else True, available_block_models))
     if len(available_block_models_without_test) == 0:
         return False
@@ -113,18 +118,19 @@ def get_model_name_to_work_with():
     return available_block_models[int(block_model_index)]
 
 
-def show_blocks_in_model(model_name_to_work_with):
-    continue_user_input = "y"
+def show_blocks_in_model(block_model):
+    continue_user_input = True
     index_to_show = 0
-    while continue_user_input == "y":
-        print(block_model_proccesor.get_tabulated_blocks(model_name_to_work_with, index_to_show, index_to_show + 50))
+    while continue_user_input:
+        print(block_model_proccesor.get_tabulated_blocks(block_model, index_to_show, index_to_show + 50))
         index_to_show += 51
         continue_user_input = get_user_decision_input("Continue showing data")
 
 
-def show_number_of_blocks_in_model(block_model_name):
-    number_of_blocks = block_model_proccesor.get_number_of_blocks_in_model(block_model_name)
-    show_result("{} has {} blocks".format(block_model_name, number_of_blocks))
+def show_number_of_blocks_in_model(block_model):
+
+    number_of_blocks = block_model.get_number_of_blocks()
+    show_result("{} has {} blocks".format(block_model.name, number_of_blocks))
 
 
 def check_valid_coordinates(coordinates):
@@ -142,67 +148,68 @@ def get_coordinates_from_user():
     return x, y, z
 
 
-def show_mass_of_block(block_model_name):
+def show_mass_of_block(block_model):
     x, y, z = get_coordinates_from_user()
-    block_model_columns = block_model_proccesor.get_block_model_columns(block_model_name)
+    block_model_columns = block_model.columns
     show_normal_message("Select the column that represents the mass")
     mass_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
     mass_column_name = block_model_columns[mass_column_index]
-    block_mass = block_model_proccesor.get_mass_in_kilograms(block_model_name, x, y, z, mass_column_name)
+    block_mass = block_model_proccesor.get_mass_in_kilograms(block_model, x, y, z, mass_column_name)
     if block_mass:
-        show_result("Block in {} with coordinates {} {} {} has a mass of {} kilograms".format(block_model_name, x, y, z,
+        show_result("Block in {} with coordinates {} {} {} has a mass of {} kilograms".format(block_model.name, x, y, z,
                                                                                               block_mass))
     else:
-        show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
+        show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model.name, x, y, z))
 
 
-def show_attribute_of_block(block_model_name):
+def show_attribute_of_block(block_model):
     x, y, z = get_coordinates_from_user()
-    block_model_columns = block_model_proccesor.get_block_model_columns(block_model_name)
+    block_model_columns = block_model.columns
     show_normal_message("Which column do you want to see?")
     column_to_show_index = int(show_options_from_list_and_get_user_input(block_model_columns))
     column_to_show_name = block_model_columns[column_to_show_index]
-    attribute = block_model_proccesor.get_attribute_from_block(block_model_name, x, y, z, column_to_show_name)
+    attribute = block_model_proccesor.get_attribute_from_block(block_model, x, y, z, column_to_show_name)
     if attribute:
-        show_result("Block in {} with coordinates {} {} {}, attribute {} is {}".format(block_model_name, x, y, z,
+        show_result("Block in {} with coordinates {} {} {}, attribute {} is {}".format(block_model.name, x, y, z,
                                                                                        column_to_show_name, attribute))
     else:
-        show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
+        show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model.name, x, y, z))
 
 
-def show_grade_of_mineral(block_model_name):
+def show_grade_of_mineral(block_model):
     x, y, z = get_coordinates_from_user()
-    minerals = block_model_proccesor.get_available_minerals(block_model_name)
+    minerals = block_model_proccesor.get_available_minerals(block_model)
     show_normal_message("What mineral you want to get the grade from?")
     mineral_index = int(show_options_from_list_and_get_user_input(minerals))
-    mineral_grades_information = block_model_proccesor.get_mineral_grades_information_json()
     mineral_name = minerals[mineral_index]
-    unit = mineral_grades_information[block_model_name][mineral_name]
+    unit = block_model.minerals[mineral_name]
     grade = 0
     if unit in DIFFERENT_UNITS:
-        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_different_unit(block_model_name, x, y, z,
+        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_different_unit(block_model, x, y, z,
                                                                                            mineral_name)
     elif unit == COPPER_PROPORTION:
-        block_model_columns = block_model_proccesor.get_block_model_columns(block_model_name)
+        block_model_columns = block_model_proccesor.get_block_model_columns(block_model.name)
         show_normal_message("Select the column of tons of rock")
         rock_tonnes_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
         rock_tonnes_column_name = block_model_columns[rock_tonnes_column_index]
         show_normal_message("Select the column of tons of ore (copper)")
         ore_tonnes_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
         ore_tonnes_column_name = block_model_columns[ore_tonnes_column_index]
-        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_copper_proportion(block_model_name, x, y, z,
+        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_copper_proportion(block_model, x, y, z,
                                                                                               rock_tonnes_column_name,
                                                                                               ore_tonnes_column_name)
     elif unit == GOLD_PROPORTION:
-        block_model_columns = block_model_proccesor.get_block_model_columns(block_model_name)
+        block_model_columns = block_model.columns
         show_normal_message("Selects the column for the proportion of gold in the block (AuFa)")
         au_fa_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
         au_fa_column_name = block_model_columns[au_fa_column_index]
-        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_gold_proportion(block_model_name, x, y, z,
+        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_gold_proportion(block_model, x, y, z,
                                                                                             au_fa_column_name)
     if grade:
         show_result(
-            "Grade of {} in the block in {} with coordinates {} {} {} is {}%".format(mineral_name, block_model_name, x,
+            "Grade of {} in the block in {} with coordinates {} {} {} is {}%".format(mineral_name, block_model.name, x,
                                                                                      y, z, grade))
     else:
-        show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model_name, x, y, z))
+        show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model.name, x, y, z))
+
+main_menu()
