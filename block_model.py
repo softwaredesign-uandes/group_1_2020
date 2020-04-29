@@ -23,6 +23,9 @@ class BlockModel:
         else:
             return block[0]
 
+    def get_column_names(self):
+        return self.columns
+
     def get_list_of_blocks_coming_from_matrix_three_d(self, matrix):
         return sorted([matrix[i][j][k] for k in range(len(matrix[0][0])) for j in range(len(matrix[0])) for i in range(len(matrix))], key=lambda attribute: attribute["id"])
 
