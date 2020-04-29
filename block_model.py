@@ -27,7 +27,8 @@ class BlockModel:
         return self.columns
 
     def get_list_of_blocks_coming_from_matrix_three_d(self, matrix):
-        return sorted([matrix[i][j][k] for k in range(len(matrix[0][0])) for j in range(len(matrix[0])) for i in range(len(matrix))], key=lambda attribute: attribute["id"])
+        return sorted([matrix[i][j][k] for k in range(len(matrix[0][0])) for j in range(len(matrix[0])) for i in range(len(matrix))],
+                      key=lambda attribute: attribute["id"])
 
     def get_matrix_three_d_from_blocks_list(self):
         max_x = self.get_max_coordinate("x")
@@ -38,18 +39,28 @@ class BlockModel:
     def get_max_coordinate(self, coordinate):
         return max([block.attributes[coordinate] for block in self.blocks])
 
-    def reblock(self, rx, ry, rz):
+    def get_offset(self, coordinate):
+        return max([block.attributes[coordinate] for block in self.blocks])
+
+    def reblock(self, rx, ry, rz, continuous_attributes, proportional_attributes, categorical_attributes, mass_column):
         new_x_length = len(self.blocks) // rx
         new_y_length = 0 if new_x_length == 0 else len(self.blocks[0]) // ry
         new_z_length = 0 if new_y_length == 0 else len(self.blocks[0][0]) // rz
         new_blocks = self.get_new_empty_blocks(new_x_length, new_y_length, new_z_length)
+        x_offset = self.get_offset("x")
+        y_offset = self.get_offset("y")
+        z_offset = self.get_offset("z")
         new_i = 0
+        new_id = 0
         for i in range(0, len(self.blocks), rx):
             new_j = 0
             for j in range(0, len(self.blocks[0]), ry):
                 new_k = 0
                 for k in range(0, len(self.blocks[0][0]), rz):
-                    new_blocks[new_i][new_j][new_k] = self.get_reblock_coming_from_group_of_blocks(i, j, k, rx, ry, rz)
+                    new_blocks[new_i][new_j][new_k] = self.get_reblock_coming_from_group_of_blocks(i, j, k, rx, ry, rz, new_id, x_offset, y_offset, z_offset,
+                                                                                                   continuous_attributes, proportional_attributes,
+                                                                                                   categorical_attributes, mass_column)
+                    new_id += 1
                     new_k += 1
                 new_j += 1
             new_i += 1
@@ -59,7 +70,9 @@ class BlockModel:
     def get_new_empty_blocks(self, new_x_length, new_y_length, new_z_length):
         return [[[None for k in range(new_z_length)] for j in range(new_y_length)] for i in range(new_x_length)]
 
-    def get_reblock_coming_from_group_of_blocks(self, first_block_x_index, first_block_y_index, first_block_z_index, rx, ry, rz):
+    def get_reblock_coming_from_group_of_blocks(self, first_block_x_index, first_block_y_index, first_block_z_index, rx, ry, rz,
+                                                new_id, x_offset, y_offset, z_offset, continuous_attributes, proportional_attributes,
+                                                categorical_attributes, mass_column):
         group = []
         for i in range(first_block_x_index, first_block_x_index + rx):
             for j in range(first_block_y_index, first_block_y_index + ry):
@@ -69,4 +82,8 @@ class BlockModel:
         real_number_of_blocks = len(group)
         if theoretical_number_of_blocks > real_number_of_blocks:
             group.extend([Block({attribute: 0 for attribute in self.blocks[0].attributes}) for _ in range(theoretical_number_of_blocks - real_number_of_blocks)])
-        return group[0] if len(group) == 1 else BlockGroup(group)
+        if len(group) == 1:
+            return group[0]
+        else:
+            new_block_group = BlockGroup(group, x_offset, y_offset, z_offset, new_id, mass_column)
+            return new_block_group.convert_to_block(continuous_attributes, proportional_attributes, categorical_attributes)
