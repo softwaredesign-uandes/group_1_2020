@@ -5,6 +5,7 @@ import os
 import unittest
 import block_model_processor_tests
 import load_block_model_tests
+import block_model_tests
 
 from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME
 
@@ -32,8 +33,10 @@ def main(args=None):
     unittest.TextTestRunner(verbosity=2).run(block_model_processor_tester)
     load_block_model_tester = unittest.TestLoader().loadTestsFromModule(load_block_model_tests)
     unittest.TextTestRunner(verbosity=2).run(load_block_model_tester)
+    block_model_tester = unittest.TestLoader().loadTestsFromModule(block_model_tests)
+    unittest.TextTestRunner(verbosity=2).run(block_model_tester)
     print("Done testing")
-    #delete_test_files()
+    delete_test_files()
 
 
 if __name__ == "__main__":

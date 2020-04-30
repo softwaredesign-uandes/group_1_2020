@@ -13,26 +13,10 @@ class BlockGroup:
         self.rz = rz
 
     def convert_to_block(self, continuous_attributes, proportional_attributes, categorical_attributes):
-        # blocks_to_remove = []
-        # for block in self.blocks:
-        #     if block.attributes["id"] == -1 and block.attributes["x"] < self.x_offset:
-        #         blocks_to_remove.append(block)
-        #     elif block.attributes["id"] == -1 and block.attributes["y"] < self.y_offset:
-        #         blocks_to_remove.append(block)
-        #     elif block.attributes["id"] == -1 and block.attributes["z"] < self.z_offset:
-        #         blocks_to_remove.append(block)
-        # for block in blocks_to_remove:
-        #     self.blocks.remove(block)
-        # if len(self.blocks) == 0:
-        #     return Block({"id": -2})
         new_x = ((self.blocks[0].attributes["x"] - self.x_offset) // self.rx) + self.x_offset
         new_y = ((self.blocks[0].attributes["y"] - self.y_offset) // self.ry) + self.y_offset
         new_z = ((self.blocks[0].attributes["z"] - self.z_offset) // self.rz) + self.z_offset
-        # print(self.blocks[0].attributes["y"], self.y_offset)
         new_attributes = {"id": self.new_id, "x": new_x, "y": new_y, "z": new_z}
-        # print(self.blocks)
-        # print(new_attributes)
-        # print()
         for attribute in continuous_attributes:
             new_attributes[attribute] = sum([b.attributes[attribute] for b in self.blocks])
         for attr, unit in proportional_attributes.items():
@@ -51,5 +35,4 @@ class BlockGroup:
         for at in categorical_attributes:
             values = [b.attributes[at] for b in self.blocks]
             new_attributes[at] = max(set(values), key=values.count)
-
         return Block(new_attributes)
