@@ -1,12 +1,6 @@
 from tabulate import tabulate
-import sqlite3
-import json
-from block_model import BlockModel
-
-from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME
 
 
-# ready
 def get_model_data_table(block_model, from_id, to_id):
     data_table = []
     data = block_model.get_blocks_range(from_id, to_id)
@@ -46,7 +40,6 @@ def get_attribute_from_block(block_model, x, y, z, attribute):
         return False
 
 
-
 def get_percentage_grade_for_mineral_from_different_unit(block_model, x, y, z, mineral_name):
     unit = block_model.minerals[mineral_name.lower()]
     attribute = get_attribute_from_block(block_model, x, y, z, mineral_name)
@@ -60,7 +53,7 @@ def get_percentage_grade_for_mineral_from_different_unit(block_model, x, y, z, m
         return False
     elif unit == "oz_per_ton":
         if attribute is not None:
-            return round(attribute* 0.00342853, 6)
+            return round(attribute * 0.00342853, 6)
         return False
 
 

@@ -25,7 +25,8 @@
 		"au": "oz_per_ton",
 		"ag": "oz_per_ton",
 		"cu": "percentage"
-	},
+	}
+	,
 	"zuck_small":
 	{
 		"cu": "cu_proportion"

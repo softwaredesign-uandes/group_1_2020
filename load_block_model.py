@@ -1,7 +1,7 @@
 import os
 import sqlite3
 import json
-from blocks import Block
+from block import Block
 from block_model import BlockModel
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME
 
@@ -76,7 +76,7 @@ def load_block_file(block_model_file_path, table_columns, db_name=DB_NAME,
             conn.commit()
         dump_model_information_into_json(model_name, table_columns, json_file_name)
         return True
-    except:
+    except sqlite3.IntegrityError:
         return False
 
 
@@ -108,10 +108,9 @@ def get_available_models(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
 
 def check_if_model_exists_in_json(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     model_information_json = get_models_information_json(json_file_name)
-    try:
-        info = model_information_json[block_model_name]
+    if block_model_name in model_information_json.keys():
         return True
-    except KeyError:
+    else:
         return False
 
 
@@ -126,3 +125,38 @@ def get_block_model_object(block_model_name, json_file_name=LOADED_MODELS_INFORM
             blocks.append(Block({attribute: value for (attribute, value) in zip(columns, row)}))
         minerals = get_mineral_grades_information_json()[block_model_name]
         return BlockModel(block_model_name, blocks, columns, minerals)
+
+
+def get_column_types_from_block(block_model):
+    types = []
+    block = block_model.blocks[0]
+    for column in block_model.columns:
+        if type(block.attributes[column]) == int:
+            types.append("INT")
+        elif type(block.attributes[column]) == float:
+            types.append("FLOAT")
+        elif type(block.attributes[column]) == str:
+            types.append("TEXT")
+    return types
+
+
+def load_block_model_object(block_model, db_name=DB_NAME, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    columns_types = get_column_types_from_block(block_model)
+
+    try:
+        conn = sqlite3.connect(db_name)
+        conn.execute(create_table_query(block_model.name, block_model.columns, columns_types))
+        conn.commit()
+        for block in block_model.blocks:
+            block_parsed = ",".join(parse_block_column_types(list(map(str, [block.attributes[column]
+                                                                            for column in block_model.columns]))))
+            columns_for_query = ",".join(block_model.columns)
+            model_name = block_model.name
+            insert_query = "INSERT INTO {}({}) VALUES ({})".format(model_name, columns_for_query, block_parsed)
+            conn.execute(insert_query)
+        conn.commit()
+        dump_model_information_into_json(model_name, block_model.columns, json_file_name)
+        return True
+    except:
+        return False
+
