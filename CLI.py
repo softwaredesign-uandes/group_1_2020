@@ -102,9 +102,9 @@ def reblock_console():
             mass_proportional_attributes[column] = mass_unit
         elif user_input == "2":
             categorical_attributes.append(column)
-    rx = get_valid_user_input("Enter x reblocking factor: ", validate_digit=True)
-    ry = get_valid_user_input("Enter y reblocking factor: ", validate_digit=True)
-    rz = get_valid_user_input("Enter z reblocking factor: ", validate_digit=True)
+    rx = int(get_valid_user_input("Enter x reblocking factor: ", validate_digit=True))
+    ry = int(get_valid_user_input("Enter y reblocking factor: ", validate_digit=True))
+    rz = int(get_valid_user_input("Enter z reblocking factor: ", validate_digit=True))
 
 
 
@@ -253,7 +253,7 @@ def show_grade_of_mineral(block_model):
         grade = block_model_proccesor.get_percentage_grade_for_mineral_from_different_unit(block_model, x, y, z,
                                                                                            mineral_name)
     elif unit == COPPER_PROPORTION:
-        block_model_columns = block_model_proccesor.get_block_model_columns(block_model.name)
+        block_model_columns = block_model.columns
         show_normal_message("Select the column of tons of rock")
         rock_tonnes_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
         rock_tonnes_column_name = block_model_columns[rock_tonnes_column_index]
