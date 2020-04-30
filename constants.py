@@ -1,6 +1,7 @@
 LOADED_MODELS_INFORMATION_FILE_NAME = "models_information.json"
 MINERAL_GRADES_INFORMATION_FILE_NAME = "mineral_grades_information.json"
 DIFFERENT_UNITS = ["ppm", "percentage", "oz_per_ton"]
+MASS_UNIT_FOR_REBLOCK = ["ppm", "percentage", "oz_per_ton", "proportion"]
 COPPER_PROPORTION = "cu_proportion"
 GOLD_PROPORTION = "au_proportion"
 TEST_LOADED_MODELS_INFORMATION_FILE_NAME = "models_information_test.json"
@@ -14,6 +15,10 @@ QUERY_CONSOLE_OPTIONS = ["Block List",
                          "Block attributes",
                          "Exit to main menu"]
 ENTER_COLUMNS_OPTIONS = ["0", "1"]
+TYPES_OF_COLUMN_ATTRIBUTES = ["Continuous attribute",
+                              "Mass Proportional Attribute",
+                              "Categorical Attributes",
+                              "Exit"]
 CONTINUE_SHOWING_OPTIONS = ["y", "n"]
 DEFAULT_USER_INPUT = "1"
 EXIT_INPUT = "0"

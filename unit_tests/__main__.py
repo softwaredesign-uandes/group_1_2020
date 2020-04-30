@@ -33,7 +33,7 @@ def main(args=None):
     load_block_model_tester = unittest.TestLoader().loadTestsFromModule(load_block_model_tests)
     unittest.TextTestRunner(verbosity=2).run(load_block_model_tester)
     print("Done testing")
-    delete_test_files()
+    #delete_test_files()
 
 
 if __name__ == "__main__":

@@ -36,6 +36,9 @@ class BlockModel:
         else:
             return block[0]
 
+    def get_column_names(self):
+        return self.columns
+
     def get_list_of_blocks_coming_from_matrix_three_d(self, matrix):
         new_list = []
         for i in matrix:
