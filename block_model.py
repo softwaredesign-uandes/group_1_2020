@@ -44,29 +44,35 @@ class BlockModel:
         for i in matrix:
             for j in i:
                 for k in j:
-                    print("k:", k)
+                    # print("k:", k)
                     new_list.append(k)
         return sorted(new_list, key=lambda block: block.attributes["id"])
         #return sorted([matrix[i][j][k] for k in range(len(matrix[0][0])) for j in range(len(matrix[0])) for i in range(len(matrix))], key=lambda block: block.attributes["id"])
 
+    def normalize_factor(self, number, factor, offset):
+        while len(range(offset, number + 1)) % factor != 0:
+            number += 1
+        return number
+
     def get_matrix_three_d_from_blocks_list_including_air_blocks(self, rx, ry, rz):
-        max_x = self.get_max_coordinate("x")
-        max_x += len(range(max_x + 1)) % rx + 1
-        max_y = self.get_max_coordinate("y")
-        max_y += len(range(max_y + 1)) % ry + 1
-        max_z = self.get_max_coordinate("z")
-        max_z += len(range(max_z + 1)) % rz + 1
-        print("maximos:", max_x, max_y, max_z)
         x_offset = self.get_offset("x")
         y_offset = self.get_offset("y")
         z_offset = self.get_offset("z")
+        max_x = self.get_max_coordinate("x")
+        max_y = self.get_max_coordinate("y")
+        max_z = self.get_max_coordinate("z")
+        max_x = self.normalize_factor(max_x, rx, x_offset) + 1
+        max_y = self.normalize_factor(max_y, ry, y_offset) + 1
+        max_z = self.normalize_factor(max_z, rz, z_offset) + 1
+
+        print("maximos:", max_x, max_y, max_z)
+
         matrix = []
         for i in range(x_offset, max_x):
             matrix.append([])
             for j in range(y_offset, max_y):
                 matrix[i - x_offset].append([])
                 for k in range(z_offset, max_z):
-                    # print(i, j, k)
 
                     # matrix[i - x_offset][j - y_offset].append("")
                     block = self.get_block_by_coordinates(i, j, k)
@@ -77,6 +83,7 @@ class BlockModel:
                         matrix[i - x_offset][j - y_offset].append(Block(block_attributes))
                     else:
                         matrix[i - x_offset][j - y_offset].append(block)
+                    # print("matrix {} {} {} con x: {}, y: {}, z: {}".format(i - x_offset, j - y_offset, k - z_offset, i, j, k))
         return matrix
 
     def get_max_coordinate(self, coordinate):
@@ -95,14 +102,15 @@ class BlockModel:
         x_offset = self.get_offset("x")
         y_offset = self.get_offset("y")
         z_offset = self.get_offset("z")
-        new_i = 0
         new_id = 0
         print("largos:", len(blocks_matrix), len(blocks_matrix[0]), len(blocks_matrix[0][0]))
-        for i in range(x_offset, len(blocks_matrix) + x_offset, rx):
+        len_x, len_y, len_z = len(blocks_matrix), len(blocks_matrix[0]), len(blocks_matrix[0][0])
+        new_i = 0
+        for i in range(x_offset, len_x + x_offset, rx):
             new_j = 0
-            for j in range(y_offset, len(blocks_matrix[0]) + y_offset, ry):
+            for j in range(y_offset, len_y + y_offset, ry):
                 new_k = 0
-                for k in range(z_offset, len(blocks_matrix[0][0]) + z_offset, rz):
+                for k in range(z_offset, len_z + z_offset, rz):
                     new = self.get_reblock_coming_from_group_of_blocks(i, j, k, rx, ry, rz, new_id, x_offset, y_offset, z_offset,
                                                                                                    continuous_attributes, proportional_attributes,
                                                                                                    categorical_attributes, mass_columns, blocks_matrix)
@@ -113,12 +121,13 @@ class BlockModel:
                     new_k += 1
                 new_j += 1
             new_i += 1
-        for a in new_blocks:
-            for b in a:
-                to_remove = b.count(None)
-                # print(to_remove)
-                for c in range(to_remove):
-                    b.remove(None)
+        print("FINAL:", new_id)
+        # for a in new_blocks:
+        #     for b in a:
+        #         to_remove = b.count(None)
+        #         print("to_remove:", to_remove)
+        #         for c in range(to_remove):
+        #             b.remove(None)
         # blocks_to_remove = []
         # for block in new_blocks:
         #     if block is None:
@@ -137,15 +146,21 @@ class BlockModel:
                                                 new_id, x_offset, y_offset, z_offset, continuous_attributes, proportional_attributes,
                                                 categorical_attributes, mass_columns, blocks_matrix):
         group = []
+        g = 0
+        # print(list(range(first_block_x_index, first_block_x_index + rx)))
+        # print(list(range(first_block_y_index, first_block_y_index + ry)))
+        # print(list(range(first_block_z_index, first_block_z_index + rz)))
         for a in range(first_block_x_index, first_block_x_index + rx):
             for b in range(first_block_y_index, first_block_y_index + ry):
                 for c in range(first_block_z_index, first_block_z_index + rz):
-                    print("append to group:", a, b, c)
-                    group.append(blocks_matrix[a][b][c])
+                    # print("append to group:", a - x_offset, b - y_offset, c - z_offset)
+                    g += 1
+                    group.append(blocks_matrix[a - x_offset][b - y_offset][c - z_offset])
                     # print("append to group:", a - x_offset, b - y_offset, c - z_offset)
                     # group.append(blocks_matrix[a - x_offset][b - y_offset][c - z_offset])
         # if len(group) == 1:
         #     return group[0]
         # else:
+        print(g, "agregados")
         new_block_group = BlockGroup(group, x_offset, y_offset, z_offset, new_id, mass_columns, rx, ry, rz)
         return new_block_group.convert_to_block(continuous_attributes, proportional_attributes, categorical_attributes)

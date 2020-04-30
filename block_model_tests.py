@@ -4,12 +4,15 @@ from block import Block
 
 test_block_attributes = []
 test_id = 0
-test_x_length = 5 # 1 2 3 4 5                                         # 0 2 4 ## 1     3    # 5
-test_y_length = 7 # 2 4 6       ## 3     5    # 7
-test_z_length = 8 # 1 4 7       ## 2 3   5 6  # 8 9
+test_x_length = 7
+test_y_length = 6
+test_z_length = 11
 for i in range(1, test_x_length):
+    # 1 2 3 4 5 6
     for j in range(2, test_y_length, 2):
+        # 2 3 4
         for k in range(1, test_z_length, 3):
+            # 1 2 3 4 5 6 7 8 9 10
             test_block_attributes.append({"id": test_id, "x": i, "y": j, "z": k, "ton": i + j + k,
                                           "au": i * j, "ag": j * k, "cu": k * i, "destination": test_id % 2})
             test_id += 1
@@ -20,7 +23,9 @@ test_columns = ["id", "x", "y", "z", "ton", "au", "ag", "cu", "destination"]
 test_minerals = {"au": "proportion", "ag": "oz_per_ton", "cu": "ppm"}
 test_block_model = BlockModel("test_block_model", test_blocks, test_columns, test_minerals)
 
-rx, ry, rz = 2, 2, 3
+rx, ry, rz = 6, 4, 10
+# rx, ry, rz = 1, 1, 1
+
 test_continuous_attributes = ["ton"]
 test_proportional_attributes = {"au": "proportion", "ag": "oz_per_ton", "cu": "ppm"}
 test_categorical_attributes = ["destination"]
