@@ -106,7 +106,7 @@ def reblock_console():
     ry = int(get_valid_user_input("Enter y reblocking factor: ", validate_digit=True))
     rz = int(get_valid_user_input("Enter z reblocking factor: ", validate_digit=True))
 
-
+    show_normal_message("\nReblocking...")
 
     reblock_model = block_model.reblock(rx, ry, rz, continuous_attribute_columns, mass_proportional_attributes,
                                         categorical_attributes, columns_with_mass)
