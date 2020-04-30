@@ -103,11 +103,11 @@ class BlockModel:
             for j in range(y_offset, len(blocks_matrix[0]) + y_offset, ry):
                 new_k = 0
                 for k in range(z_offset, len(blocks_matrix[0][0]) + z_offset, rz):
-                    # new = self.get_reblock_coming_from_group_of_blocks(i, j, k, rx, ry, rz, new_id, x_offset, y_offset, z_offset,
-                    #                                                                                continuous_attributes, proportional_attributes,
-                    #                                                                                categorical_attributes, mass_columns, blocks_matrix)
-                    # #print("new:", new.attributes)
-                    # new_blocks[new_i][new_j][new_k] = new
+                    new = self.get_reblock_coming_from_group_of_blocks(i, j, k, rx, ry, rz, new_id, x_offset, y_offset, z_offset,
+                                                                                                   continuous_attributes, proportional_attributes,
+                                                                                                   categorical_attributes, mass_columns, blocks_matrix)
+                    #print("new:", new.attributes)
+                    new_blocks[new_i][new_j][new_k] = new
                     print(i, j , k, " ---> ", new_i, new_j, new_k)
                     new_id += 1
                     new_k += 1
