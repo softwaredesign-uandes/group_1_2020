@@ -156,6 +156,7 @@ def load_block_model_object(block_model, db_name=DB_NAME, json_file_name=LOADED_
             conn.execute(insert_query)
         conn.commit()
         dump_model_information_into_json(model_name, block_model.columns, json_file_name)
+        dump_model_information_into_json(model_name, block_model.minerals, MINERAL_GRADES_INFORMATION_FILE_NAME)
         return True
     except:
         return False

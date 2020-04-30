@@ -105,9 +105,6 @@ def reblock_console():
     rx = get_valid_user_input("Enter x reblocking factor: ", validate_digit=True)
     ry = get_valid_user_input("Enter y reblocking factor: ", validate_digit=True)
     rz = get_valid_user_input("Enter z reblocking factor: ", validate_digit=True)
-
-
-
     reblock_model = block_model.reblock(rx, ry, rz, continuous_attribute_columns, mass_proportional_attributes,
                                         categorical_attributes, columns_with_mass)
 
@@ -277,4 +274,3 @@ def show_grade_of_mineral(block_model):
     else:
         show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model.name, x, y, z))
 
-reblock_console()
