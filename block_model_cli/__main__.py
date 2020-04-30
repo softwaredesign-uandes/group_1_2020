@@ -18,8 +18,6 @@ def main(args=None):
     if args is None:
         args = sys.argv[1:]
     check_neccesary_files_existence()
-    print("hola")
-    a = input()
     CLI.main_menu()
 
 
