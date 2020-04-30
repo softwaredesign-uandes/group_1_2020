@@ -87,37 +87,51 @@ def reblock_console():
     continuous_attribute_columns = []
     mass_proportional_attributes = {}
     categorical_attributes = []
-    block_model_columns = load_block_model.get_block_model_object(block_model_name).columns[4:]
+    block_model = load_block_model.get_block_model_object(block_model_name)
+    block_model_columns = block_model.columns[4:]
     copy_of_columns = block_model_columns[:]
     columns_with_mass = ask_columns_with_mass_attribute(copy_of_columns)
     for column in block_model_columns:
         show_normal_message("Indicate the column types in the model"
                             "\n Column name: " + column)
         user_input = show_options_from_list_and_get_user_input(TYPES_OF_COLUMN_ATTRIBUTES)
-        if user_input == "0": #continuos
+        if user_input == "0":
             continuous_attribute_columns.append(column)
-        elif user_input == "1": # mass proportional
+        elif user_input == "1":
             mass_unit = ask_for_mass_unit(column)
             mass_proportional_attributes[column] = mass_unit
-        elif user_input == "2": # categorical
+        elif user_input == "2":
             categorical_attributes.append(column)
-    print(continuous_attribute_columns)
-    print(mass_proportional_attributes)
-    print(categorical_attributes)
+    rx = get_valid_user_input("Enter x reblocking factor: ", validate_digit=True)
+    ry = get_valid_user_input("Enter y reblocking factor: ", validate_digit=True)
+    rz = get_valid_user_input("Enter z reblocking factor: ", validate_digit=True)
+
+
+
+    reblock_model = block_model.reblock(rx, ry, rz, continuous_attribute_columns, mass_proportional_attributes,
+                                        categorical_attributes, columns_with_mass)
+
+    if reblock_model:
+        if load_block_model.load_block_model_object(reblock_model):
+            show_success_message("Model loaded")
+        else:
+            show_error_message("can not upload model")
+    else:
+        show_error_message("Block model can not be reblocked")
     clear_console(True)
-    return columns_with_mass, continuous_attribute_columns, mass_proportional_attributes, categorical_attributes
-    # for column_attribute_types in column_attribute_types:
+
 
 def ask_for_mass_unit (column):
-    show_normal_message("What unit of mass does " + column + "use?")
+    show_normal_message("What unit of mass does " + column + " use?")
     user_input = int(show_options_from_list_and_get_user_input(MASS_UNIT_FOR_REBLOCK))
     return MASS_UNIT_FOR_REBLOCK[user_input]
+
 
 def ask_columns_with_mass_attribute(columns):
     columns_with_mass = []
     show_normal_message("How many columns represent mass?")
     number_of_mass_columns = get_valid_user_input("Mass column number: ", validate_digit=True)
-    for x in range (0, int(number_of_mass_columns)):
+    for x in range(0, int(number_of_mass_columns)):
         show_normal_message("Which Columns represent mass?")
         column_chosen = int(show_options_from_list_and_get_user_input(columns))
         columns_with_mass.append(columns[column_chosen])
@@ -160,7 +174,7 @@ def enter_block_model_information():
 
 def get_model_name_to_work_with(message):
     show_normal_message(message)
-    print("in get_model_name_to_work_with")
+
     available_block_models = load_block_model.get_available_models()
     available_block_models_without_test = list(filter(lambda x: False if "test" in x else True, available_block_models))
     if len(available_block_models_without_test) == 0:
@@ -262,3 +276,5 @@ def show_grade_of_mineral(block_model):
                                                                                      y, z, grade))
     else:
         show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model.name, x, y, z))
+
+reblock_console()
