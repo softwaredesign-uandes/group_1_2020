@@ -75,6 +75,7 @@ def load_block_file(block_model_file_path, table_columns, db_name=DB_NAME,
                 conn.execute(insert_query)
             conn.commit()
         dump_model_information_into_json(model_name, table_columns, json_file_name)
+        dump_model_information_into_json(model_name, block_model.minerals, MINERAL_GRADES_INFORMATION_FILE_NAME)
         return True
     except sqlite3.IntegrityError:
         return False

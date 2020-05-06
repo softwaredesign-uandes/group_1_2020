@@ -160,13 +160,19 @@ def enter_block_model_information():
         show_normal_message("ID, X, Y, Z columns added")
         user_input = get_valid_user_input("How many extra columns does the model have: ", validate_digit=True)
         show_normal_message("Enter the extra columns one by one(Only alphabetic characters)")
+        minerals_grades_info = {}
         for _ in range(int(user_input)):
             column_name = get_valid_user_input("Enter column name: ", validate_alpha=True)
+            is_proportional_attribute = get_user_decision_input("Is a proportional attribute?")
+            if is_proportional_attribute:
+                mass_column = ask_for_mass_unit(column_name)
+                minerals_grades_info[column_name] = mass_column
             table_columns.append(column_name)
-        if load_block_model.load_block_file(block_model_file_path, table_columns):
+        if load_block_model.load_block_file(block_model_file_path, table_columns, minerals_grades_info):
             show_success_message("Block model loaded")
         else:
             show_error_message("Can not load block model")
+
 
     else:
         not_allowed_message("Only models with id, x, y, z columns allowed")
