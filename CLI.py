@@ -145,7 +145,6 @@ def check_block_model_file_existence(file_name):
 
 def enter_block_model_information():
     block_model_file_path = get_valid_user_input("Enter file path: ")
-
     if not check_block_model_file_existence(block_model_file_path):
         show_error_message("FILE NOT FOUND")
         return
@@ -168,12 +167,11 @@ def enter_block_model_information():
                 mass_column = ask_for_mass_unit(column_name)
                 minerals_grades_info[column_name] = mass_column
             table_columns.append(column_name)
+
         if load_block_model.load_block_file(block_model_file_path, table_columns, minerals_grades_info):
             show_success_message("Block model loaded")
         else:
             show_error_message("Can not load block model")
-
-
     else:
         not_allowed_message("Only models with id, x, y, z columns allowed")
 

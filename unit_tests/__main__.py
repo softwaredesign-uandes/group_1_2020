@@ -7,7 +7,7 @@ import block_model_processor_tests
 import load_block_model_tests
 import block_model_tests
 
-from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME
+from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME
 
 
 def check_necessary_files_existence_for_tests():
@@ -16,11 +16,14 @@ def check_necessary_files_existence_for_tests():
             json.dump({}, f, sort_keys=True)
     if not os.path.isfile(TEST_DB_NAME):
         load_block_model.create_db(TEST_DB_NAME)
-
+    if not os.path.isfile(TEST_MINERAL_GRADES_INFORMATION_FILE_NAME):
+        with open(TEST_MINERAL_GRADES_INFORMATION_FILE_NAME, "w+") as f:
+            json.dump({}, f, sort_keys=True)
 
 def delete_test_files():
     os.remove(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)
-    os.remove("block_model_test.db")
+    os.remove(TEST_DB_NAME)
+    os.remove(TEST_MINERAL_GRADES_INFORMATION_FILE_NAME)
 
 
 def main(args=None):

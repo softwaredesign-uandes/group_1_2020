@@ -3,7 +3,7 @@ import json
 import CLI
 import os
 import load_block_model
-from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME
 
 
 def check_neccesary_files_existence():
@@ -12,6 +12,9 @@ def check_neccesary_files_existence():
             json.dump({}, f, sort_keys=True)
     if not os.path.isfile(DB_NAME):
         load_block_model.create_db()
+    if not os.path.isfile(MINERAL_GRADES_INFORMATION_FILE_NAME):
+        with open(MINERAL_GRADES_INFORMATION_FILE_NAME, "w+") as f:
+            json.dump({}, f, sort_keys=True)
 
 
 def main(args=None):
