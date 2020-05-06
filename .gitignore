@@ -17,6 +17,7 @@
 
 ### Models information file ###
 /models_information.json
+/mineral_grades_information.json
 /models_information_test.json
 
 ### PyCharm ###
