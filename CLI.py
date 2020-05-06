@@ -277,7 +277,7 @@ def show_grade_of_mineral(block_model):
                                                                                               rock_tonnes_column_name,
                                                                                               ore_tonnes_column_name)
 
-    if grade:
+    if grade is not None:
         show_result(
             "Grade of {} in the block in {} with coordinates {} {} {} is {}%".format(mineral_name, block_model.name, x,
                                                                                      y, z, grade))
