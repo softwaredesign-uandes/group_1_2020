@@ -31,6 +31,14 @@ class BlockModel:
     def get_column_names(self):
         return self.columns
 
+    def get_block_by_coordinates(self, x, y, z):
+        block = list(filter(lambda b: b.attributes["x"] == int(x) and b.attributes["y"] == int(y)
+                                      and b.attributes["z"] == int(z), self.blocks))
+        if len(block) == 0:
+            return None
+        else:
+            return block[0]
+
     def reblock(self, rx, ry, rz, continuous_attributes, proportional_attributes, categorical_attributes, mass_columns):
         if rx == 0 or ry == 0 or rz == 0:
             return False
@@ -106,7 +114,7 @@ class BlockModel:
             for j in range(y_offset, max_y):
                 matrix[i - x_offset].append([])
                 for k in range(z_offset, max_z):
-                    block = self.__get_block_by_coordinates(i, j, k)
+                    block = self.get_block_by_coordinates(i, j, k)
                     if block is None:
                         block_attributes = {"id": -1, "x": i, "y": j, "z": k}
                         for column in self.columns[4:]:
@@ -121,11 +129,3 @@ class BlockModel:
 
     def __get_offset(self, coordinate):
         return min([block.attributes[coordinate] for block in self.blocks])
-
-    def __get_block_by_coordinates(self, x, y, z):
-        block = list(filter(lambda b: b.attributes["x"] == int(x) and b.attributes["y"] == int(y)
-                                      and b.attributes["z"] == int(z), self.blocks))
-        if len(block) == 0:
-            return None
-        else:
-            return block[0]
