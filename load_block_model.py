@@ -59,8 +59,8 @@ def create_table_query(model_name, table_columns, columns_types):
     return query
 
 
-def load_block_file(block_model_file_path, table_columns, db_name=DB_NAME,
-                    json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+def load_block_file(block_model_file_path, table_columns, mineral_grades_info, db_name=DB_NAME,
+                    models_json=LOADED_MODELS_INFORMATION_FILE_NAME, minerals_json=MINERAL_GRADES_INFORMATION_FILE_NAME):
     try:
         model_name = get_model_name_from_path(block_model_file_path)
         conn = sqlite3.connect(db_name)
@@ -74,7 +74,8 @@ def load_block_file(block_model_file_path, table_columns, db_name=DB_NAME,
                 insert_query = "INSERT INTO {}({}) VALUES ({})".format(model_name, columns_for_query, block_parsed)
                 conn.execute(insert_query)
             conn.commit()
-        dump_model_information_into_json(model_name, table_columns, json_file_name)
+        dump_model_information_into_json(model_name, table_columns, models_json)
+        dump_model_information_into_json(model_name, mineral_grades_info, minerals_json)
         return True
     except sqlite3.IntegrityError:
         return False
@@ -140,7 +141,8 @@ def get_column_types_from_block(block_model):
     return types
 
 
-def load_block_model_object(block_model, db_name=DB_NAME, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+def load_block_model_object(block_model, db_name=DB_NAME, models_json=LOADED_MODELS_INFORMATION_FILE_NAME,
+                            minerals_json = MINERAL_GRADES_INFORMATION_FILE_NAME):
     columns_types = get_column_types_from_block(block_model)
 
     try:
@@ -155,8 +157,8 @@ def load_block_model_object(block_model, db_name=DB_NAME, json_file_name=LOADED_
             insert_query = "INSERT INTO {}({}) VALUES ({})".format(model_name, columns_for_query, block_parsed)
             conn.execute(insert_query)
         conn.commit()
-        dump_model_information_into_json(model_name, block_model.columns, json_file_name)
-        dump_model_information_into_json(model_name, block_model.minerals, MINERAL_GRADES_INFORMATION_FILE_NAME)
+        dump_model_information_into_json(model_name, block_model.columns, models_json)
+        dump_model_information_into_json(model_name, block_model.minerals, minerals_json)
         return True
     except:
         return False

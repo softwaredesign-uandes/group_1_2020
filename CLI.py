@@ -6,7 +6,8 @@ from CLI_helpers import clear_console, show_menu_title, show_normal_message, sho
     show_submenu_title, show_success_message
 
 from constants import MAIN_MENU_OPTIONS, QUERY_CONSOLE_OPTIONS, MAIN_MENU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS, \
-    DIFFERENT_UNITS, COPPER_PROPORTION, GOLD_PROPORTION, TYPES_OF_COLUMN_ATTRIBUTES, MASS_UNIT_FOR_REBLOCK
+    DIFFERENT_UNITS, COPPER_PROPORTION, GOLD_PROPORTION, TYPES_OF_COLUMN_ATTRIBUTES, MASS_UNIT_FOR_REBLOCK,\
+    TYPES_OF_PROPORTION_OPTIONS
 
 
 def main_menu():
@@ -145,7 +146,6 @@ def check_block_model_file_existence(file_name):
 
 def enter_block_model_information():
     block_model_file_path = get_valid_user_input("Enter file path: ")
-
     if not check_block_model_file_existence(block_model_file_path):
         show_error_message("FILE NOT FOUND")
         return
@@ -160,14 +160,19 @@ def enter_block_model_information():
         show_normal_message("ID, X, Y, Z columns added")
         user_input = get_valid_user_input("How many extra columns does the model have: ", validate_digit=True)
         show_normal_message("Enter the extra columns one by one(Only alphabetic characters)")
+        minerals_grades_info = {}
         for _ in range(int(user_input)):
             column_name = get_valid_user_input("Enter column name: ", validate_alpha=True)
+            is_proportional_attribute = get_user_decision_input("Is a proportional attribute?")
+            if is_proportional_attribute:
+                mass_column = ask_for_mass_unit(column_name)
+                minerals_grades_info[column_name] = mass_column
             table_columns.append(column_name)
-        if load_block_model.load_block_file(block_model_file_path, table_columns):
+
+        if load_block_model.load_block_file(block_model_file_path, table_columns, minerals_grades_info):
             show_success_message("Block model loaded")
         else:
             show_error_message("Can not load block model")
-
     else:
         not_allowed_message("Only models with id, x, y, z columns allowed")
 
@@ -244,14 +249,23 @@ def show_attribute_of_block(block_model):
 def show_grade_of_mineral(block_model):
     x, y, z = get_coordinates_from_user()
     minerals = block_model_proccesor.get_available_minerals(block_model)
-    show_normal_message("What mineral you want to get the grade from?")
-    mineral_index = int(show_options_from_list_and_get_user_input(minerals))
-    mineral_name = minerals[mineral_index]
-    unit = block_model.minerals[mineral_name]
+    mineral_name = ""
+    show_normal_message("What type is the proportion?")
+    unit = TYPES_OF_PROPORTION_OPTIONS[int(show_options_from_list_and_get_user_input(TYPES_OF_PROPORTION_OPTIONS))]
     grade = 0
-    if unit in DIFFERENT_UNITS:
+    if unit == DIFFERENT_UNITS:
+        show_normal_message("What mineral you want to get the grade from?")
+        mineral_index = int(show_options_from_list_and_get_user_input(minerals))
+        mineral_name = minerals[mineral_index]
         grade = block_model_proccesor.get_percentage_grade_for_mineral_from_different_unit(block_model, x, y, z,
                                                                                            mineral_name)
+    elif unit == GOLD_PROPORTION:
+        block_model_columns = block_model.columns
+        show_normal_message("Selects the column for the proportion of gold in the block (AuFa)")
+        au_fa_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
+        au_fa_column_name = block_model_columns[au_fa_column_index]
+        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_gold_proportion(block_model, x, y, z,
+                                                                                            au_fa_column_name)
     elif unit == COPPER_PROPORTION:
         block_model_columns = block_model.columns
         show_normal_message("Select the column of tons of rock")
@@ -263,14 +277,8 @@ def show_grade_of_mineral(block_model):
         grade = block_model_proccesor.get_percentage_grade_for_mineral_from_copper_proportion(block_model, x, y, z,
                                                                                               rock_tonnes_column_name,
                                                                                               ore_tonnes_column_name)
-    elif unit == GOLD_PROPORTION:
-        block_model_columns = block_model.columns
-        show_normal_message("Selects the column for the proportion of gold in the block (AuFa)")
-        au_fa_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
-        au_fa_column_name = block_model_columns[au_fa_column_index]
-        grade = block_model_proccesor.get_percentage_grade_for_mineral_from_gold_proportion(block_model, x, y, z,
-                                                                                            au_fa_column_name)
-    if grade:
+
+    if grade is not None:
         show_result(
             "Grade of {} in the block in {} with coordinates {} {} {} is {}%".format(mineral_name, block_model.name, x,
                                                                                      y, z, grade))
