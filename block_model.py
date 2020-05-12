@@ -1,8 +1,13 @@
 from block_group import BlockGroup
 from block import Block
+from publisher import Publisher
+from constants import MATRIX_PROCESS_NAME, PROCESS_STATES, NOTIFICATION_EVENT_ARGS, REBLOCKING_PROCESS_NAME, \
+    CONVERT_TO_LIST_PROCESS_NAME
 
-class BlockModel:
+
+class BlockModel(Publisher):
     def __init__(self, name, blocks, columns, minerals):
+        Publisher.__init__(self)
         self.name = name
         self.blocks = blocks
         self.columns = columns
@@ -42,10 +47,21 @@ class BlockModel:
     def reblock(self, rx, ry, rz, continuous_attributes, proportional_attributes, categorical_attributes, mass_columns):
         if rx == 0 or ry == 0 or rz == 0:
             return False
+        NOTIFICATION_EVENT_ARGS['process'] = MATRIX_PROCESS_NAME
+        NOTIFICATION_EVENT_ARGS['state'] = PROCESS_STATES[0]
+        self.notify(NOTIFICATION_EVENT_ARGS)
         blocks_matrix = self.__get_matrix_three_d_from_blocks_list_including_air_blocks(rx, ry, rz)
-        new_x_length = len(blocks_matrix) // rx if float(len(blocks_matrix) // rx) == len(blocks_matrix) / rx else len(blocks_matrix) // rx + 1
-        new_y_length = 0 if new_x_length == 0 else (len(blocks_matrix[0]) // ry if float(len(blocks_matrix[0]) // ry) == len(blocks_matrix[0]) / ry else len(blocks_matrix[0]) // ry + 1)
-        new_z_length = 0 if new_y_length == 0 else (len(blocks_matrix[0][0]) // rz if float(len(blocks_matrix[0][0]) // rz) == len(blocks_matrix[0][0]) / rz else len(blocks_matrix[0][0]) // rz + 1)
+        NOTIFICATION_EVENT_ARGS['state'] = PROCESS_STATES[2]
+        self.notify(NOTIFICATION_EVENT_ARGS)
+        new_x_length = len(blocks_matrix) // rx if float(len(blocks_matrix) // rx) == len(blocks_matrix) / rx else len(
+            blocks_matrix) // rx + 1
+        new_y_length = 0 if new_x_length == 0 else (
+            len(blocks_matrix[0]) // ry if float(len(blocks_matrix[0]) // ry) == len(blocks_matrix[0]) / ry else len(
+                blocks_matrix[0]) // ry + 1)
+        new_z_length = 0 if new_y_length == 0 else (
+            len(blocks_matrix[0][0]) // rz if float(len(blocks_matrix[0][0]) // rz) == len(
+                blocks_matrix[0][0]) / rz else len(blocks_matrix[0][0]) // rz + 1)
+        total_blocks = len(blocks_matrix) * len(blocks_matrix[0]) * len(blocks_matrix[0][0])
         new_blocks = self.__get_new_empty_blocks(new_x_length, new_y_length, new_z_length)
         x_offset = self.__get_offset("x")
         y_offset = self.__get_offset("y")
@@ -53,30 +69,49 @@ class BlockModel:
         new_id = 0
         len_x, len_y, len_z = len(blocks_matrix), len(blocks_matrix[0]), len(blocks_matrix[0][0])
         new_i = 0
+        NOTIFICATION_EVENT_ARGS['process'] = REBLOCKING_PROCESS_NAME
+        NOTIFICATION_EVENT_ARGS['state'] = PROCESS_STATES[0]
+        self.notify(NOTIFICATION_EVENT_ARGS)
+        NOTIFICATION_EVENT_ARGS['state'] = PROCESS_STATES[1]
+        NOTIFICATION_EVENT_ARGS['actual'] = 0
+        NOTIFICATION_EVENT_ARGS['total'] = total_blocks
         for i in range(x_offset, len_x + x_offset, rx):
             new_j = 0
             for j in range(y_offset, len_y + y_offset, ry):
                 new_k = 0
                 for k in range(z_offset, len_z + z_offset, rz):
-                    new = self.__get_reblock_coming_from_group_of_blocks(i, j, k, rx, ry, rz, new_id, x_offset, y_offset, z_offset,
-                                                                                                   continuous_attributes, proportional_attributes,
-                                                                                                   categorical_attributes, mass_columns, blocks_matrix)
+                    new = self.__get_reblock_coming_from_group_of_blocks(i, j, k, rx, ry, rz, new_id, x_offset,
+                                                                         y_offset, z_offset,
+                                                                         continuous_attributes, proportional_attributes,
+                                                                         categorical_attributes, mass_columns,
+                                                                         blocks_matrix)
+                    NOTIFICATION_EVENT_ARGS["actual"] += rx * ry * rz
+                    self.notify(NOTIFICATION_EVENT_ARGS)
                     new_blocks[new_i][new_j][new_k] = new
                     new_id += 1
                     new_k += 1
                 new_j += 1
             new_i += 1
+        NOTIFICATION_EVENT_ARGS['state'] = PROCESS_STATES[2]
+        self.notify(NOTIFICATION_EVENT_ARGS)
+        NOTIFICATION_EVENT_ARGS['state'] = PROCESS_STATES[0]
+        NOTIFICATION_EVENT_ARGS['process'] = CONVERT_TO_LIST_PROCESS_NAME
+        self.notify(NOTIFICATION_EVENT_ARGS)
         list_of_blocks = self.__get_list_of_blocks_coming_from_matrix_three_d(new_blocks)
-
-        new_block_model = BlockModel(name="{}_reblocked_{}_{}_{}".format(self.name, rx, ry, rz), blocks=list_of_blocks, columns=self.columns, minerals=self.minerals)
+        NOTIFICATION_EVENT_ARGS['state'] = PROCESS_STATES[2]
+        self.notify(NOTIFICATION_EVENT_ARGS)
+        new_block_model = BlockModel(name="{}_reblocked_{}_{}_{}".format(self.name, rx, ry, rz), blocks=list_of_blocks,
+                                     columns=self.columns, minerals=self.minerals)
         return new_block_model
 
     def __get_new_empty_blocks(self, new_x_length, new_y_length, new_z_length):
         return [[[None for k in range(new_z_length)] for j in range(new_y_length)] for i in range(new_x_length)]
 
-    def __get_reblock_coming_from_group_of_blocks(self, first_block_x_index, first_block_y_index, first_block_z_index, rx, ry, rz,
-                                                new_id, x_offset, y_offset, z_offset, continuous_attributes, proportional_attributes,
-                                                categorical_attributes, mass_columns, blocks_matrix):
+    def __get_reblock_coming_from_group_of_blocks(self, first_block_x_index, first_block_y_index, first_block_z_index,
+                                                  rx, ry, rz,
+                                                  new_id, x_offset, y_offset, z_offset, continuous_attributes,
+                                                  proportional_attributes,
+                                                  categorical_attributes, mass_columns, blocks_matrix):
         group = []
         for a in range(first_block_x_index, first_block_x_index + rx):
             for b in range(first_block_y_index, first_block_y_index + ry):
@@ -109,6 +144,10 @@ class BlockModel:
         max_y = self.__normalize_factor(max_y, ry, y_offset) + 1
         max_z = self.__normalize_factor(max_z, rz, z_offset) + 1
         matrix = []
+        matrix_blocks_quantity = (max_x - x_offset) * (max_y - y_offset) * (max_z - z_offset)
+        NOTIFICATION_EVENT_ARGS['actual'] = 0
+        NOTIFICATION_EVENT_ARGS['total'] = matrix_blocks_quantity
+        NOTIFICATION_EVENT_ARGS['state'] = PROCESS_STATES[1]
         for i in range(x_offset, max_x):
             matrix.append([])
             for j in range(y_offset, max_y):
@@ -122,6 +161,8 @@ class BlockModel:
                         matrix[i - x_offset][j - y_offset].append(Block(block_attributes))
                     else:
                         matrix[i - x_offset][j - y_offset].append(block)
+                    NOTIFICATION_EVENT_ARGS["actual"] += 1
+                    self.notify(NOTIFICATION_EVENT_ARGS)
         return matrix
 
     def __get_max_coordinate(self, coordinate):

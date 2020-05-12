@@ -1,16 +1,17 @@
 import load_block_model
 import os
 import block_model_proccesor
+from subscriber import Subscriber
 from CLI_helpers import clear_console, show_menu_title, show_normal_message, show_options_from_list_and_get_user_input, \
     not_allowed_message, get_valid_user_input, show_error_message, get_user_decision_input, show_result, \
-    show_submenu_title, show_success_message
+    show_submenu_title, show_success_message, status_bar
 
 from constants import MAIN_MENU_OPTIONS, QUERY_CONSOLE_OPTIONS, MAIN_MENU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS, \
-    DIFFERENT_UNITS, COPPER_PROPORTION, GOLD_PROPORTION, TYPES_OF_COLUMN_ATTRIBUTES, MASS_UNIT_FOR_REBLOCK,\
-    TYPES_OF_PROPORTION_OPTIONS
+    DIFFERENT_UNITS, COPPER_PROPORTION, GOLD_PROPORTION, TYPES_OF_COLUMN_ATTRIBUTES, MASS_UNIT_FOR_REBLOCK, \
+    TYPES_OF_PROPORTION_OPTIONS, PROCESS_STATES
 
 
-class CLI:
+class CLI(Subscriber):
 
     def main_menu(self):
         while True:
@@ -89,6 +90,7 @@ class CLI:
         mass_proportional_attributes = {}
         categorical_attributes = []
         block_model = load_block_model.get_block_model_object(block_model_name)
+        block_model.add_subscriber(self)
         block_model_columns = block_model.columns[4:]
         copy_of_columns = block_model_columns[:]
         columns_with_mass = self.ask_columns_with_mass_attribute(copy_of_columns)
@@ -121,13 +123,14 @@ class CLI:
             show_error_message("Block model can not be reblocked")
         clear_console(True)
 
-    def ask_for_mass_unit(self, column):
+    @staticmethod
+    def ask_for_mass_unit(column):
         show_normal_message("What unit of mass does " + column + " use?")
         user_input = int(show_options_from_list_and_get_user_input(MASS_UNIT_FOR_REBLOCK))
         return MASS_UNIT_FOR_REBLOCK[user_input]
 
-
-    def ask_columns_with_mass_attribute(self, columns):
+    @staticmethod
+    def ask_columns_with_mass_attribute(columns):
         columns_with_mass = []
         show_normal_message("How many columns represent mass?")
         number_of_mass_columns = get_valid_user_input("Mass column number: ", validate_digit=True)
@@ -138,7 +141,8 @@ class CLI:
             columns.remove(columns[column_chosen])
         return columns_with_mass
 
-    def check_block_model_file_existence(self, file_name):
+    @staticmethod
+    def check_block_model_file_existence(file_name):
         return os.path.isfile(file_name)
 
     def enter_block_model_information(self):
@@ -173,17 +177,20 @@ class CLI:
         else:
             not_allowed_message("Only models with id, x, y, z columns allowed")
 
-    def get_model_name_to_work_with(self, message):
+    @staticmethod
+    def get_model_name_to_work_with(message):
         show_normal_message(message)
 
         available_block_models = load_block_model.get_available_models()
-        available_block_models_without_test = list(filter(lambda x: False if "test" in x else True, available_block_models))
+        available_block_models_without_test = list(
+            filter(lambda x: False if "test" in x else True, available_block_models))
         if len(available_block_models_without_test) == 0:
             return False
         block_model_index = show_options_from_list_and_get_user_input(available_block_models_without_test)
         return available_block_models[int(block_model_index)]
 
-    def show_blocks_in_model(self, block_model):
+    @staticmethod
+    def show_blocks_in_model(block_model):
         continue_user_input = True
         index_to_show = 0
         while continue_user_input:
@@ -191,16 +198,17 @@ class CLI:
             index_to_show += 51
             continue_user_input = get_user_decision_input("Continue showing data")
 
-    def show_number_of_blocks_in_model(self, block_model):
+    @staticmethod
+    def show_number_of_blocks_in_model(block_model):
         number_of_blocks = block_model.get_number_of_blocks()
         show_result("{} has {} blocks".format(block_model.name, number_of_blocks))
 
-    def check_valid_coordinates(self, coordinates):
+    @staticmethod
+    def check_valid_coordinates(coordinates):
         coordinates = coordinates.replace("-", "").strip().split(" ")
         if len(list(filter(lambda x: x.isdigit(), coordinates))) == len(coordinates) == 3:
             return True
         return False
-
 
     def get_coordinates_from_user(self):
         coordinates = input("Enter coordinates separated by space(x y z): ")
@@ -208,7 +216,6 @@ class CLI:
             coordinates = input("Enter valid coordinates(x y z): ")
         x, y, z = coordinates.strip().split(" ")
         return x, y, z
-
 
     def show_mass_of_block(self, block_model):
         x, y, z = self.get_coordinates_from_user()
@@ -218,11 +225,11 @@ class CLI:
         mass_column_name = block_model_columns[mass_column_index]
         block_mass = block_model_proccesor.get_mass_in_kilograms(block_model, x, y, z, mass_column_name)
         if block_mass:
-            show_result("Block in {} with coordinates {} {} {} has a mass of {} kilograms".format(block_model.name, x, y, z,
-                                                                                                  block_mass))
+            show_result(
+                "Block in {} with coordinates {} {} {} has a mass of {} kilograms".format(block_model.name, x, y, z,
+                                                                                          block_mass))
         else:
             show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model.name, x, y, z))
-
 
     def show_attribute_of_block(self, block_model):
         x, y, z = self.get_coordinates_from_user()
@@ -233,10 +240,10 @@ class CLI:
         attribute = block_model_proccesor.get_attribute_from_block(block_model, x, y, z, column_to_show_name)
         if attribute:
             show_result("Block in {} with coordinates {} {} {}, attribute {} is {}".format(block_model.name, x, y, z,
-                                                                                           column_to_show_name, attribute))
+                                                                                           column_to_show_name,
+                                                                                           attribute))
         else:
             show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model.name, x, y, z))
-
 
     def show_grade_of_mineral(self, block_model):
         x, y, z = self.get_coordinates_from_user()
@@ -272,8 +279,17 @@ class CLI:
 
         if grade is not None:
             show_result(
-                "Grade of {} in the block in {} with coordinates {} {} {} is {}%".format(mineral_name, block_model.name, x,
+                "Grade of {} in the block in {} with coordinates {} {} {} is {}%".format(mineral_name, block_model.name,
+                                                                                         x,
                                                                                          y, z, grade))
         else:
             show_result("Block in {} with coordinates {} {} {} does not exists".format(block_model.name, x, y, z))
 
+    def handle(self, event):
+        if event["state"] == PROCESS_STATES[0]:
+            show_normal_message('STARTING {}'.format(event["process"]))
+        if event["state"] == PROCESS_STATES[1]:
+            percentage = event["actual"] * 100 / event["total"] // 1
+            print("{}{}%".format(status_bar(percentage), int(percentage)), end="\r")
+        if event["state"] == PROCESS_STATES[2]:
+            print('{} COMPLETED'.format(event["process"]))

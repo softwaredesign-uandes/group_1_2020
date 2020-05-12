@@ -67,6 +67,11 @@ def show_options_from_list_and_get_user_input(data_to_show, is_menu=False):
     return user_input
 
 
+def status_bar(actual):
+    completed_steps = int(actual // 5)
+    not_completed_steps = int(20-completed_steps)
+    return "[{}{}]".format("#"*completed_steps, "="*not_completed_steps)
+
 def get_user_decision_input(message):
     message = message + "(y/n): "
     user_input = input(message)
