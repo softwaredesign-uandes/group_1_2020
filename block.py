@@ -1,4 +1,6 @@
-class Block:
+from reblockable import Reblockable
+
+class Block(Reblockable):
     def __init__(self, attributes):
         self.attributes = attributes
 

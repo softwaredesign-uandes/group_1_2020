@@ -82,8 +82,8 @@ class BlockModel:
             for b in range(first_block_y_index, first_block_y_index + ry):
                 for c in range(first_block_z_index, first_block_z_index + rz):
                     group.append(blocks_matrix[a - x_offset][b - y_offset][c - z_offset])
-        new_block_group = BlockGroup(group, x_offset, y_offset, z_offset, new_id, mass_columns, rx, ry, rz)
-        return new_block_group.convert_to_block(continuous_attributes, proportional_attributes, categorical_attributes)
+        new_block_group = BlockGroup(group, x_offset, y_offset, z_offset, new_id, mass_columns, rx, ry, rz, continuous_attributes, proportional_attributes, categorical_attributes)
+        return new_block_group
 
     def __get_list_of_blocks_coming_from_matrix_three_d(self, matrix):
         new_list = []
