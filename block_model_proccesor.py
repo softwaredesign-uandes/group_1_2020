@@ -37,24 +37,24 @@ def get_attribute_from_block(block_model, x, y, z, attribute):
         attribute = block.get_attribute_value(attribute)
         return attribute
     else:
-        return False
+        return None
 
 
 def get_percentage_grade_for_mineral_from_different_unit(block_model, x, y, z, mineral_name):
     unit = block_model.minerals[mineral_name.lower()]
+    print(unit)
     attribute = get_attribute_from_block(block_model, x, y, z, mineral_name)
+
     if unit == "percentage":
         if attribute is not None:
             return attribute
-        return False
     elif unit == "ppm":
         if attribute is not None:
             return round(attribute / 10000, 6)
-        return False
     elif unit == "oz_per_ton":
         if attribute is not None:
             return round(attribute * 0.00342853, 6)
-        return False
+    return None
 
 
 def get_percentage_grade_for_mineral_from_copper_proportion(block_model, x, y, z, rock_tonnes_column,
