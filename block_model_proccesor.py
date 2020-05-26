@@ -87,3 +87,12 @@ def get_block_list(block_model_name):
         for block in block_model.blocks:
             block_list.append(block.attributes)
     return block_list
+
+def get_model_names_to_dictionary():
+    model_names = load_block_model.get_available_models()
+    model_names_dict_array = []
+    for model_name in model_names:
+        model_name_dict = {"name": model_name}
+        model_names_dict_array.append(model_name_dict)
+    return model_names_dict_array
+
