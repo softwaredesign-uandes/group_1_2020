@@ -88,6 +88,7 @@ def get_block_list(block_model_name):
             block_list.append(block.attributes)
     return block_list
 
+
 def get_model_names_to_dictionary():
     model_names = load_block_model.get_available_models()
     model_names_dict_array = []
