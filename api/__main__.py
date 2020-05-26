@@ -15,7 +15,6 @@ def get_block_models_names():
 
 
 @app.route('/api/block_models/<name>/blocks/', methods=['GET'])
-
 def get_block_model_blocks(name=None):
     response = Response(json.dumps(block_model_proccesor.get_block_list(name)))
     response.headers["Access-Control-Allow-Origin"] = "*"
