@@ -111,11 +111,11 @@ class TestBlockModelProcessor(unittest.TestCase):
                                                                               53, 19, 63,
                                                                               "ag"), 0.004053)
 
-    def test_get_percentage_grade_for_mineral_from_different_unit_return_false_with_wrong_coordinates(self):
+    def test_get_percentage_grade_for_mineral_from_different_unit_return_None_with_wrong_coordinates(self):
         self.assertEqual(
             block_model_proccesor.get_percentage_grade_for_mineral_from_different_unit(p4hd_block_model_test,
                                                                                        0, 38, 47,
-                                                                                       "au"), False)
+                                                                                       "au"), None)
 
     def test_get_percentage_grade_for_mineral_from_gold_proportion_return_true(self):
         self.assertEqual(
