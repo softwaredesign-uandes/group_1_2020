@@ -1,6 +1,6 @@
 import sys
 import json
-import CLI
+from CLI import CLI
 import os
 import load_block_model
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME
@@ -21,7 +21,7 @@ def main(args=None):
     if args is None:
         args = sys.argv[1:]
     check_neccesary_files_existence()
-    CLI.main_menu()
+    CLI().main_menu()
 
 
 if __name__ == "__main__":

@@ -8,6 +8,9 @@ class Block:
         for attribute in self.attributes:
             if self.attributes[attribute] != other.attributes[attribute]:
                 return False
+        for attribute in other.attributes:
+            if self.attributes[attribute] != other.attributes[attribute]:
+                return False
         return True
 
     def __repr__(self):

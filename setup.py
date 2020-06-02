@@ -5,7 +5,8 @@ setup(name='block_model_cli',
       entry_points={
           'console_scripts': [
               'block_model_cli = block_model_cli.__main__:main',
-              'unit_tests = unit_tests.__main__:main'
+              'unit_tests = unit_tests.__main__:main',
+              'api = api.__main__:main'
           ]
       },
       )
