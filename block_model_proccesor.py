@@ -1,5 +1,5 @@
 from tabulate import tabulate
-
+import load_block_model
 
 def get_model_data_table(block_model, from_id, to_id):
     data_table = []
@@ -77,3 +77,23 @@ def get_percentage_grade_for_mineral_from_gold_proportion(block_model, x, y, z, 
 def get_available_minerals(block_model):
     minerals_names = block_model.minerals.keys()
     return list(minerals_names)
+
+
+def get_block_list(block_model_name):
+    block_list = []
+    if block_model_name in load_block_model.get_available_models():
+        block_model = load_block_model.get_block_model_object(block_model_name)
+
+        for block in block_model.blocks:
+            block_list.append(block.attributes)
+    return block_list
+
+
+def get_model_names_to_dictionary():
+    model_names = load_block_model.get_available_models()
+    model_names_dict_array = []
+    for model_name in model_names:
+        model_name_dict = {"name": model_name}
+        model_names_dict_array.append(model_name_dict)
+    return model_names_dict_array
+
