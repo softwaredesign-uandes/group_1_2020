@@ -22,4 +22,4 @@ def get_block_model_blocks(name=None):
     return response
 
 if __name__ == '__main__':
-    app.run(port=3000, debug=True)
+    app.run()
