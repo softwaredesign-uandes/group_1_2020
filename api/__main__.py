@@ -31,7 +31,21 @@ def get_block_model_blocks(name=None):
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
+@app.route('/api/block_models/<name>/blocks/<index>', methods=['GET'])
+def get_block_model_blocks_info(name, index):
+    feature_flags_json = get_feature_flags()
+    if not feature_flags_json["block_info"]:
+        return "block_info flag is disabled"
+    else:
+        #TODO return more structured version of the block info
+        data = {"block": block_model_proccesor.get_block_info_by_index(name, int(index))}
+        response = Response(json.dumps(data))
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        return response
+
+
 def get_feature_flags():
+    #TODO change this url to https://dry-brushlands-69779.herokuapp.com/api/feature_flags for the delivery
     feature_flags_service_url = "http://localhost:8001/api/feature_flags"
     response = requests.get(feature_flags_service_url)
     feature_flags_json = response.json()
