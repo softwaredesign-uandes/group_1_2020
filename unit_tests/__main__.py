@@ -6,6 +6,7 @@ import unittest
 import block_model_processor_tests
 import load_block_model_tests
 import block_model_tests
+import api_tests
 
 from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME
 
@@ -38,6 +39,8 @@ def main(args=None):
     unittest.TextTestRunner(verbosity=2).run(load_block_model_tester)
     block_model_tester = unittest.TestLoader().loadTestsFromModule(block_model_tests)
     unittest.TextTestRunner(verbosity=2).run(block_model_tester)
+    api_tester = unittest.TestLoader().loadTestsFromModule(api_tests)
+    unittest.TextTestRunner(verbosity=2).run(api_tester)
     print("Done testing")
     delete_test_files()
 

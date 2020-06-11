@@ -88,6 +88,15 @@ def get_block_list(block_model_name):
             block_list.append(block.attributes)
     return block_list
 
+
+def get_block_info_by_index(block_model_name, index):
+    if block_model_name in load_block_model.get_available_models():
+        block_model = load_block_model.get_block_model_object(block_model_name)
+        for block in block_model.blocks:
+            if block.attributes["id"] == index:
+                return block.attributes
+
+
 def get_model_names_to_dictionary():
     model_names = load_block_model.get_available_models()
     model_names_dict_array = []

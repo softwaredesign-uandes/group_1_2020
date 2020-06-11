@@ -11,7 +11,6 @@ from constants import MAIN_MENU_OPTIONS, QUERY_CONSOLE_OPTIONS, MAIN_MENU_VALID_
 
 
 class CLI:
-
     def main_menu(self):
         while True:
             clear_console()
@@ -108,10 +107,7 @@ class CLI:
         rz = int(get_valid_user_input("Enter z reblocking factor: ", validate_digit=True))
 
         show_normal_message("\nReblocking...")
-
-        reblock_model = block_model.reblock(rx, ry, rz, continuous_attribute_columns, mass_proportional_attributes,
-                                            categorical_attributes, columns_with_mass)
-
+        reblock_model = block_model.reblock(rx, ry, rz, continuous_attribute_columns, mass_proportional_attributes,categorical_attributes, columns_with_mass)
         if reblock_model:
             if load_block_model.load_block_model_object(reblock_model):
                 show_success_message("Model loaded")
