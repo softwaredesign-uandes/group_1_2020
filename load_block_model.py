@@ -100,6 +100,9 @@ def get_mineral_grades_information_json(json_file_name=MINERAL_GRADES_INFORMATIO
         mineral_grades_information_json = json.load(json_file)
     return mineral_grades_information_json
 
+def get_model_columns_names(model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    models_information = get_models_information_json(json_file_name)
+    return models_information[model_name]
 
 def get_available_models(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     models = get_models_information_json(json_file_name)

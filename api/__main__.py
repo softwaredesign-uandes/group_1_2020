@@ -1,7 +1,7 @@
-from flask import Flask, jsonify, Response
-import json
-import block_model_proccesor
-import requests
+from flask import Flask, jsonify, Response, request
+import json, requests
+import block_model_proccesor, api_verification, load_block_model
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME
 app = Flask(__name__)
 
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
@@ -19,7 +19,6 @@ def get_block_models_names(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     response = Response(json.dumps(data))
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
-
 
 @app.route('/api/block_models/<name>/blocks/', methods=['GET'])
 def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME):
@@ -44,6 +43,14 @@ def get_block_model_blocks_info(name, index):
         response.headers["Access-Control-Allow-Origin"] = "*"
         return response
 
+@app.route('/api/block_models/<name>/reblock', methods=['POST'])
+def reblock_block_model(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    data = request.get_json()
+    valid_information = api_verification.verificate_reblock_information(data, name, json_file_name)
+    if valid_information:
+        block_model = load_block_model.get_block_model_object(name)
+        block_model.reblock(data["rx"], data["ry"], data["rz"], data["continuous_attributes"], data["proportional_attributes"], data["categorical_attributes"], data["columns_with_mass"])
+    return
 
 def get_feature_flags():
     #TODO change this url to https://dry-brushlands-69779.herokuapp.com/api/feature_flags for the delivery
@@ -51,6 +58,5 @@ def get_feature_flags():
     response = requests.get(feature_flags_service_url)
     feature_flags_json = response.json()
     return feature_flags_json
-
 if __name__ == '__main__':
     app.run()
