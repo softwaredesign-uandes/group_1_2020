@@ -3,7 +3,7 @@ import json, requests
 import block_model_proccesor, api_verification, load_block_model
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
 app = Flask(__name__)
-
+:wq
 @app.route('/')
 def Index():
     return 'Hello World'
