@@ -1,6 +1,8 @@
 from abstract_calculation_strategy import AbstractCalculationStrategy
 
+
 class MassProportionalCalculationStrategy(AbstractCalculationStrategy):
+
     def calculate(self, unit_values, mass_values, denominator, unit):
         multiplier = 1
         if unit == "percentage":
