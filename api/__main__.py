@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, Response, request
 import json, requests
 import block_model_proccesor, api_verification, load_block_model
-from constants import LOADED_MODELS_INFORMATION_FILE_NAME
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
 app = Flask(__name__)
 
 @app.route('/')
@@ -9,9 +9,9 @@ def Index():
     return 'Hello World'
 
 @app.route('/api/block_models/', methods=['GET'])
-def get_block_models_names():
+def get_block_models_names(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     feature_flags_json = get_feature_flags()
-    data = block_model_proccesor.get_model_names_to_dictionary()
+    data = block_model_proccesor.get_model_names_to_dictionary(json_file_name)
     if feature_flags_json["restful_response"]:
          data = {"block_models": data}
     response = Response(json.dumps(data))
@@ -19,14 +19,15 @@ def get_block_models_names():
     return response
 
 @app.route('/api/block_models/<name>/blocks/', methods=['GET'])
-def get_block_model_blocks(name=None):
+def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME):
     feature_flags_json = get_feature_flags()
-    data = block_model_proccesor.get_block_list(name)
+    data = block_model_proccesor.get_block_list(name, json_file_name, db_name)
     if feature_flags_json["restful_response"]:
         data = {"block_model": {"blocks": data}}
     response = Response(json.dumps(data))
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
+
 
 @app.route('/api/block_models/<name>/blocks/<index>', methods=['GET'])
 def get_block_model_blocks_info(name, index):
