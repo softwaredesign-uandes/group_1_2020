@@ -37,8 +37,10 @@ def verify_reblock_information(data, block_model_name, loaded_models_json=LOADED
     for column in data["categorical_attributes"]:
         if column not in model_columns:
             return False
-    for unit in data["proportional_attributes"].values():
+    for column,unit in data["proportional_attributes"].items():
         if unit not in MASS_UNIT_FOR_REBLOCK:
+            return False
+        if type(column) != str:
             return False
     return True
 
