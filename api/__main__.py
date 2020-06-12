@@ -46,7 +46,7 @@ def block_models_controller(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
 def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME):
     feature_flags_json = get_feature_flags()
     response = Response()
-    valid_model = api_verification.verificate_model_exists(name, json_file_name)
+    valid_model = api_verification.verify_model_exists(name, json_file_name)
     if valid_model:
         data = block_model_proccesor.get_block_list(name, json_file_name, db_name)
         if feature_flags_json["restful_response"]:
@@ -86,7 +86,7 @@ def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFOR
     if None:
         data = request.get_json()
     response = Response()
-    valid_information = api_verification.verificate_reblock_information(data, name, json_file_name)
+    valid_information = api_verification.verify_reblock_information(data, name, json_file_name)
     if valid_information:
         block_model = load_block_model.get_block_model_object(name, json_file_name, db_name)
         try:
