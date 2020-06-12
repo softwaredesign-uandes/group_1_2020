@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, Response, request
 import json, requests
 import block_model_proccesor, api_verification, load_block_model
-from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME
 app = Flask(__name__)
 @app.route('/')
 def Index():
@@ -18,9 +18,9 @@ def get_block_models_names(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     return response
 
 @app.route('/api/block_models/<name>/blocks/', methods=['GET'])
-def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME):
+def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=TEST_MINERAL_GRADES_INFORMATION_FILE_NAME):
     feature_flags_json = get_feature_flags()
-    data = block_model_proccesor.get_block_list(name, json_file_name, db_name)
+    data = block_model_proccesor.get_block_list(name, json_file_name, db_name, json_mineral_grades_file_name)
     if feature_flags_json["restful_response"]:
         data = {"block_model": {"blocks": data}}
     response = Response(json.dumps(data))
@@ -52,13 +52,13 @@ def get_block_model_blocks_info(name, index):
 
 
 @app.route('/api/block_models/<name>/reblock', methods=['POST'])
-def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME):
+def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=TEST_MINERAL_GRADES_INFORMATION_FILE_NAME):
     if None:
         data = request.get_json()
     response = Response()
     valid_information = api_verification.verificate_reblock_information(data, name, json_file_name)
     if valid_information:
-        block_model = load_block_model.get_block_model_object(name, json_file_name, db_name)
+        block_model = load_block_model.get_block_model_object(name, json_file_name, db_name, json_mineral_grades_file_name)
         try:
             block_model.reblock(data["rx"], data["ry"], data["rz"], data["continuous_attributes"],
                                 data["proportional_attributes"],

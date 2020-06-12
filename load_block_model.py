@@ -4,7 +4,6 @@ import json
 from block import Block
 from block_model import BlockModel
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME, EXTRA_INFORMATION_JSON_ENTRY
-import block_model_proccesor
 
 def create_db(db_name=DB_NAME):
     if os.path.isfile(db_name):
@@ -123,7 +122,7 @@ def check_if_model_exists_in_json(block_model_name, json_file_name=LOADED_MODELS
         return False
 
 
-def get_block_model_object(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME):
+def get_block_model_object(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
     if check_if_model_exists_in_json(block_model_name, json_file_name):
         columns = get_models_information_json(json_file_name)[block_model_name]
         columns_query_format = ",".join(columns)
@@ -132,8 +131,7 @@ def get_block_model_object(block_model_name, json_file_name=LOADED_MODELS_INFORM
         blocks = []
         for row in cursor.fetchall():
             blocks.append(Block({attribute: value for (attribute, value) in zip(columns, row)}))
-        block_model_name = block_model_proccesor.get_pure_block_model_name(block_model_name)
-        minerals = get_mineral_grades_information_json()[block_model_name]
+        minerals = get_mineral_grades_information_json(json_mineral_grades_file_name)[block_model_name]
         return BlockModel(block_model_name, blocks, columns, minerals)
 
 
