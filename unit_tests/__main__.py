@@ -34,19 +34,35 @@ def main(args=None):
     print("Running tests")
     check_necessary_files_existence_for_tests()
     failures = 0
+    errors = 0
+
     block_model_processor_tester = unittest.TestLoader().loadTestsFromModule(block_model_processor_tests)
-    failures += len(unittest.TextTestRunner(verbosity=2).run(block_model_processor_tester).failures)
+    block_model_processor_tests_run = unittest.TextTestRunner(verbosity=2).run(block_model_processor_tester)
+    failures += len(block_model_processor_tests_run.failures)
+    errors += len(block_model_processor_tests_run.errors)
+
     load_block_model_tester = unittest.TestLoader().loadTestsFromModule(load_block_model_tests)
-    failures += len(unittest.TextTestRunner(verbosity=2).run(load_block_model_tester).failures)
+    load_block_model_tests_run = unittest.TextTestRunner(verbosity=2).run(load_block_model_tester)
+    failures += len(load_block_model_tests_run.failures)
+    errors += len(load_block_model_tests_run.errors)
+
     block_model_tester = unittest.TestLoader().loadTestsFromModule(block_model_tests)
-    failures += len(unittest.TextTestRunner(verbosity=2).run(block_model_tester).failures)
+    block_model_tests_run = unittest.TextTestRunner(verbosity=2).run(block_model_tester)
+    failures += len(block_model_tests_run.failures)
+    errors += len(block_model_tests_run.errors)
+
     api_tester = unittest.TestLoader().loadTestsFromModule(api_tests)
-    failures += len(unittest.TextTestRunner(verbosity=2).run(api_tester).failures)
+    api_tests_run = unittest.TextTestRunner(verbosity=2).run(api_tester)
+    failures += len(api_tests_run.failures)
+    errors += len(api_tests_run.errors)
 
     delete_test_files()
-    if failures > 0:
+    #If there are errors or fail in tests, tests exits with code 1 (error)
+    if failures > 0 or errors > 0:
         print("Failures:", failures)
         exit(1)
+    else:
+        exit(0)
 
 if __name__ == "__main__":
     main()
