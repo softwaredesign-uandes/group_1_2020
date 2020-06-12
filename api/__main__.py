@@ -5,7 +5,7 @@ from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
 app = Flask(__name__)
 @app.route('/')
 def Index():
-    return 'Hello World 1'
+    return 'Hello World 2'
 
 @app.route('/api/block_models/', methods=['GET'])
 def get_block_models_names(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
