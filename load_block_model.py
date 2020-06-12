@@ -4,7 +4,7 @@ import json
 from block import Block
 from block_model import BlockModel
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME
-
+import block_model_proccesor
 
 def create_db(db_name=DB_NAME):
     if os.path.isfile(db_name):
@@ -127,8 +127,7 @@ def get_block_model_object(block_model_name, json_file_name=LOADED_MODELS_INFORM
         blocks = []
         for row in cursor.fetchall():
             blocks.append(Block({attribute: value for (attribute, value) in zip(columns, row)}))
-        if db_name.__contains__("test") or json_file_name.__contains__("test"):
-            block_model_name = block_model_name.split("_test")[0]
+        block_model_name = block_model_proccesor.get_pure_block_model_name(block_model_name)
         minerals = get_mineral_grades_information_json()[block_model_name]
         return BlockModel(block_model_name, blocks, columns, minerals)
 

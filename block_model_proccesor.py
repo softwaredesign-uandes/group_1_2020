@@ -94,7 +94,21 @@ def get_block_info_by_index(block_model_name, index):
         block_model = load_block_model.get_block_model_object(block_model_name)
         for block in block_model.blocks:
             if block.attributes["id"] == index:
-                return block.attributes
+                block_data = {"index": index, "x": block.attributes["x"], "y": block.attributes["y"], "z": block.attributes["z"]}
+                pure_block_model_name = get_pure_block_model_name(block_model_name)
+                minerals_and_calculations = load_block_model.get_mineral_grades_information_json()[pure_block_model_name]
+                block_model = load_block_model.get_block_model_object(block_model_name)
+                for mineral in minerals_and_calculations:
+                    if minerals_and_calculations[mineral] in ["percentage", "ppm", "oz_per_ton"]:
+                        minerals_and_calculations[mineral] = get_percentage_grade_for_mineral_from_different_unit(block_model,
+                                                              block.attributes["x"], block.attributes["y"], block.attributes["z"], mineral)
+                    elif minerals_and_calculations[mineral] == "cu_proportion":
+                        minerals_and_calculations[mineral] = "grado de {} en %".format(minerals_and_calculations[mineral])
+                    elif minerals_and_calculations[mineral] == "au_proportion":
+                        minerals_and_calculations[mineral] = "grado de {} en %".format(minerals_and_calculations[mineral])
+                block_data["grades"] = minerals_and_calculations
+                block_data["mass"] = "masa en kg"
+                return block_data
 
 
 def get_model_names_to_dictionary(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
@@ -105,3 +119,7 @@ def get_model_names_to_dictionary(json_file_name=LOADED_MODELS_INFORMATION_FILE_
         model_names_dict_array.append(model_name_dict)
     return model_names_dict_array
 
+
+def get_pure_block_model_name(block_model_name):
+    pure_block_model_name = block_model_name.split("_reblocked")[0].split("_test")[0]
+    return pure_block_model_name

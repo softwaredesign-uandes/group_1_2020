@@ -35,9 +35,19 @@ def get_block_model_blocks_info(name, index):
         return "block_info flag is disabled"
     else:
         #TODO return more structured version of the block info
-        data = {"block": block_model_proccesor.get_block_info_by_index(name, int(index))}
-        response = Response(json.dumps(data))
+        status_code = 200
+        final_data = {}
+        try:
+            block_data = block_model_proccesor.get_block_info_by_index(name, int(index))
+            if block_data is None:
+                status_code = 400
+            else:
+                final_data = {"block": block_data}
+        except:
+            status_code = 500
+        response = Response(json.dumps(final_data))
         response.headers["Access-Control-Allow-Origin"] = "*"
+        response.status_code = status_code
         return response
 
 
