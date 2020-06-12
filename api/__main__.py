@@ -5,7 +5,7 @@ from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
 app = Flask(__name__)
 @app.route('/')
 def Index():
-    return 'Hello World'
+    return 'Hello World 1'
 
 @app.route('/api/block_models/', methods=['GET'])
 def get_block_models_names(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
@@ -52,12 +52,13 @@ def get_block_model_blocks_info(name, index):
 
 
 @app.route('/api/block_models/<name>/reblock', methods=['POST'])
-def reblock_block_model(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
-    data = request.get_json()
+def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME):
+    if None:
+        data = request.get_json()
     response = Response()
     valid_information = api_verification.verificate_reblock_information(data, name, json_file_name)
     if valid_information:
-        block_model = load_block_model.get_block_model_object(name)
+        block_model = load_block_model.get_block_model_object(name, json_file_name, db_name)
         try:
             block_model.reblock(data["rx"], data["ry"], data["rz"], data["continuous_attributes"],
                                 data["proportional_attributes"],
@@ -72,7 +73,7 @@ def reblock_block_model(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE
 
 def get_feature_flags():
     #TODO change this url to https://dry-brushlands-69779.herokuapp.com/api/feature_flags for the delivery
-    feature_flags_service_url = "http://localhost:8001/api/feature_flags"
+    feature_flags_service_url = "https://dry-brushlands-69779.herokuapp.com/api/feature_flags" #"http://localhost:8001/api/feature_flags"
     response = requests.get(feature_flags_service_url)
     feature_flags_json = response.json()
     return feature_flags_json
