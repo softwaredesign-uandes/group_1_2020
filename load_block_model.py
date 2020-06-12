@@ -3,8 +3,8 @@ import sqlite3
 import json
 from block import Block
 from block_model import BlockModel
-from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME
-
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME, EXTRA_INFORMATION_JSON_ENTRY
+import block_model_proccesor
 
 def create_db(db_name=DB_NAME):
     if os.path.isfile(db_name):
@@ -60,7 +60,7 @@ def create_table_query(model_name, table_columns, columns_types):
 
 
 def load_block_file(block_model_file_path, table_columns, mineral_grades_info, db_name=DB_NAME,
-                    models_json=LOADED_MODELS_INFORMATION_FILE_NAME, minerals_json=MINERAL_GRADES_INFORMATION_FILE_NAME):
+                    models_json=LOADED_MODELS_INFORMATION_FILE_NAME, minerals_json=MINERAL_GRADES_INFORMATION_FILE_NAME, extra_info=None):
     try:
         model_name = get_model_name_from_path(block_model_file_path)
         conn = sqlite3.connect(db_name)
@@ -76,18 +76,23 @@ def load_block_file(block_model_file_path, table_columns, mineral_grades_info, d
             conn.commit()
         dump_model_information_into_json(model_name, table_columns, models_json)
         dump_model_information_into_json(model_name, mineral_grades_info, minerals_json)
+        if extra_info:
+            have_extra_info = True
+            dump_model_information_into_json(model_name, extra_info, minerals_json, have_extra_info)
         return True
     except sqlite3.IntegrityError:
         return False
 
 
-def dump_model_information_into_json(model_name, column_names, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+def dump_model_information_into_json(model_name, column_names, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, have_extra_info=False):
     with open(json_file_name, 'r') as json_file:
         data = json.load(json_file)
-    data[model_name] = column_names
+    if not have_extra_info:
+        data[model_name] = column_names
+    else:
+        data[model_name][EXTRA_INFORMATION_JSON_ENTRY] = column_names
     with open(json_file_name, 'w') as json_file:
         json.dump(data, json_file, sort_keys=True)
-
 
 def get_models_information_json(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     with open(json_file_name) as json_file:
@@ -119,7 +124,7 @@ def check_if_model_exists_in_json(block_model_name, json_file_name=LOADED_MODELS
 
 
 def get_block_model_object(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME):
-    if check_if_model_exists_in_json(block_model_name):
+    if check_if_model_exists_in_json(block_model_name, json_file_name):
         columns = get_models_information_json(json_file_name)[block_model_name]
         columns_query_format = ",".join(columns)
         conn = sqlite3.connect(db_name)
@@ -127,6 +132,7 @@ def get_block_model_object(block_model_name, json_file_name=LOADED_MODELS_INFORM
         blocks = []
         for row in cursor.fetchall():
             blocks.append(Block({attribute: value for (attribute, value) in zip(columns, row)}))
+        block_model_name = block_model_proccesor.get_pure_block_model_name(block_model_name)
         minerals = get_mineral_grades_information_json()[block_model_name]
         return BlockModel(block_model_name, blocks, columns, minerals)
 
@@ -165,4 +171,3 @@ def load_block_model_object(block_model, db_name=DB_NAME, models_json=LOADED_MOD
         return True
     except:
         return False
-
