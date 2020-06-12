@@ -38,7 +38,7 @@ def retrieve_columns_types(block_model_file_path):
 
 
 def retrieve_columns_types_from_dict(blocks):
-    first_line = list(blocks[0].values())[1:]
+    first_line = list(map(str, list(blocks[0].values())[1:]))
     types = []
     for item in first_line:
         if item.isdigit():
@@ -54,6 +54,7 @@ def retrieve_columns_types_from_dict(blocks):
 
 def parse_block_column_types(block):
     parsed_block = []
+    block = list(map(str, block))
     for data in block:
         if data.isdigit():
             parsed_block.append(data.strip())
@@ -190,7 +191,7 @@ def get_column_types_from_block(block_model):
 
 
 def load_block_model_object(block_model, db_name=DB_NAME, models_json=LOADED_MODELS_INFORMATION_FILE_NAME,
-                            minerals_json = MINERAL_GRADES_INFORMATION_FILE_NAME):
+                            minerals_json=MINERAL_GRADES_INFORMATION_FILE_NAME):
     columns_types = get_column_types_from_block(block_model)
 
     try:
