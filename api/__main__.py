@@ -12,7 +12,7 @@ def Index():
 
 
 @app.route('/api/block_models/', methods=['GET', 'POST'])
-def get_block_models_names(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+def block_models_controller(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     if request.method == 'GET':
         feature_flags_json = get_feature_flags()
         data = block_model_proccesor.get_model_names_to_dictionary(json_file_name)

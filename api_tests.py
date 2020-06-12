@@ -12,7 +12,7 @@ class TestApi(unittest.TestCase):
         self.app = api_main.app.test_client()
 
     def test_get_block_models_names_return_ok_status_code(self):
-        self.assertEqual(api_main.get_block_models_names(TEST_LOADED_MODELS_INFORMATION_FILE_NAME).status_code, 200)
+        self.assertEqual(api_main.block_models_controller(TEST_LOADED_MODELS_INFORMATION_FILE_NAME).status_code, 200)
 
     def test_get_block_model_blocks_return_ok_status_code(self):
         first_block_model_name = \
@@ -23,7 +23,7 @@ class TestApi(unittest.TestCase):
 
     def test_get_block_models_names_return_correct(self):
         self.assertEqual(block_model_proccesor.get_model_names_to_dictionary(TEST_LOADED_MODELS_INFORMATION_FILE_NAME),
-                         json.loads(api_main.get_block_models_names(TEST_LOADED_MODELS_INFORMATION_FILE_NAME).data))
+                         json.loads(api_main.block_models_controller(TEST_LOADED_MODELS_INFORMATION_FILE_NAME).data))
 
     def test_get_block_model_blocks_return_correct(self):
         first_block_model_name = \
