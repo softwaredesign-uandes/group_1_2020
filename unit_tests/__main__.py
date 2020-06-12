@@ -33,17 +33,20 @@ def main(args=None):
         args = sys.argv[1:]
     print("Running tests")
     check_necessary_files_existence_for_tests()
+    failures = 0
     block_model_processor_tester = unittest.TestLoader().loadTestsFromModule(block_model_processor_tests)
-    unittest.TextTestRunner(verbosity=2).run(block_model_processor_tester)
+    failures += len(unittest.TextTestRunner(verbosity=2).run(block_model_processor_tester).failures)
     load_block_model_tester = unittest.TestLoader().loadTestsFromModule(load_block_model_tests)
-    unittest.TextTestRunner(verbosity=2).run(load_block_model_tester)
+    failures += len(unittest.TextTestRunner(verbosity=2).run(load_block_model_tester).failures)
     block_model_tester = unittest.TestLoader().loadTestsFromModule(block_model_tests)
-    unittest.TextTestRunner(verbosity=2).run(block_model_tester)
+    failures += len(unittest.TextTestRunner(verbosity=2).run(block_model_tester).failures)
     api_tester = unittest.TestLoader().loadTestsFromModule(api_tests)
-    unittest.TextTestRunner(verbosity=2).run(api_tester)
-    print("Done testing")
-    delete_test_files()
+    failures += len(unittest.TextTestRunner(verbosity=2).run(api_tester).failures)
 
+    delete_test_files()
+    if failures > 0:
+        print("Failures:", failures)
+        exit(1)
 
 if __name__ == "__main__":
     main()

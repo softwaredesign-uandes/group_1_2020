@@ -5,6 +5,7 @@ from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME
 
 
 class TestApi(unittest.TestCase):
+
     def setUp(self):
         api_main.app.config['TESTING'] = True
         api_main.app.config['DEBUG'] = False
