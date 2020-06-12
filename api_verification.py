@@ -42,3 +42,9 @@ def verificate_reblock_information(data, block_model_name, loaded_models_json=LO
     return True
 
 
+def verificate_model_exists(block_model_name, loaded_models_json=LOADED_MODELS_INFORMATION_FILE_NAME):
+    available_models = get_available_models(loaded_models_json)
+    if block_model_name not in available_models:
+        return False
+    else:
+        return True
