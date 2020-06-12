@@ -117,7 +117,7 @@ class TestApi(unittest.TestCase):
                                                          TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME).status_code, 200)
 
     def test_get_block_model_blocks_unexistent_model_returns_400(self):
-        self.assertEqual(api_main.get_block_model_blocks("mclaughlin_limit",
+        self.assertEqual(api_main.get_block_model_blocks("unexistent_model",
                                                          TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
                                                          TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME).status_code, 400)
 # first_block_model_name = block_model_proccesor.get_model_names_to_dictionary(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)[0]['name']
