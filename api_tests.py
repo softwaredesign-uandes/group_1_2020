@@ -109,6 +109,6 @@ class TestApi(unittest.TestCase):
         model_name = "mclaughlin_limit"
         response = api_main.reblock_block_model(model_name, data, TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
                                                 TEST_DB_NAME)
-        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.status_code, 400)
 # first_block_model_name = block_model_proccesor.get_model_names_to_dictionary(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)[0]['name']
 # print(first_block_model_name)
