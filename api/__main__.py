@@ -24,6 +24,10 @@ def block_models_controller(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     elif request.method == 'POST':
         response = Response()
         block_json = request.get_json()
+        verify_blocks = api_verification.verify_json_block_post(block_json)
+        if not verify_blocks:
+            response.status_code = 400
+            return response
         block_values = block_json["blocks"]
         block_array = []
         for block_attributes in block_values:

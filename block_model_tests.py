@@ -91,7 +91,7 @@ class TestBlockModel(unittest.TestCase):
         reblocked_test = test_block_model.reblock(
             4, 1, 1, test_continuous_attributes, test_proportional_attributes, test_categorical_attributes, test_mass_columns)
         result_of_calculation = reblocked_test.get_blocks_range(0, 1)[0].get_attribute_value("au")
-        self.assertEqual(result_of_calculation, 56.0)
+        self.assertEqual(result_of_calculation, 13.9)
 
     def test_reblock_for_oz_per_ton_attribute_return_correct(self):
         test_blocks = [
