@@ -2,28 +2,68 @@ from flask import Flask, jsonify, Response, request
 import json, requests
 import block_model_proccesor, api_verification, load_block_model
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME
+from block import Block
+from block_model import BlockModel
+
+
 app = Flask(__name__)
 @app.route('/')
 def Index():
     return 'Hello World 2'
 
-@app.route('/api/block_models/', methods=['GET'])
-def get_block_models_names(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
-    feature_flags_json = get_feature_flags()
-    data = block_model_proccesor.get_model_names_to_dictionary(json_file_name)
-    if feature_flags_json["restful_response"]:
-         data = {"block_models": data}
-    response = Response(json.dumps(data))
-    response.headers["Access-Control-Allow-Origin"] = "*"
-    return response
+
+@app.route('/api/block_models/', methods=['GET', 'POST'])
+def get_block_models_names(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, there_is_request=True):
+    if there_is_request:
+        if request.method == 'GET':
+            feature_flags_json = get_feature_flags()
+            data = block_model_proccesor.get_model_names_to_dictionary(json_file_name)
+            if feature_flags_json["restful_response"]:
+                 data = {"block_models": data}
+            response = Response(json.dumps(data))
+            response.headers["Access-Control-Allow-Origin"] = "*"
+            return response
+        elif request.method == 'POST':
+            response = Response()
+            block_json = request.get_json()
+            block_values = block_json["blocks"]
+            block_array = []
+            for block_attributes in block_values:
+                aux_block = Block(block_attributes)
+                block_array.append(aux_block)
+            block_model_in = BlockModel(block_json["name"],
+                                        block_array,
+                                        block_json["columns"],
+                                        block_json["minerals"])
+            block_loaded = load_block_model.load_block_model_object(block_model_in)
+            if block_loaded:
+                response.status_code = 200
+            else:
+                response.status_code = 500
+            return response
+            # return block_json
+    else:
+        feature_flags_json = get_feature_flags()
+        data = block_model_proccesor.get_model_names_to_dictionary(json_file_name)
+        if feature_flags_json["restful_response"]:
+            data = {"block_models": data}
+        response = Response(json.dumps(data))
+        response.headers["Access-Control-Allow-Origin"] = "*"
+        return response
+
 
 @app.route('/api/block_models/<name>/blocks/', methods=['GET'])
 def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=TEST_MINERAL_GRADES_INFORMATION_FILE_NAME):
     feature_flags_json = get_feature_flags()
-    data = block_model_proccesor.get_block_list(name, json_file_name, db_name, json_mineral_grades_file_name)
-    if feature_flags_json["restful_response"]:
-        data = {"block_model": {"blocks": data}}
-    response = Response(json.dumps(data))
+    response = Response()
+    valid_model = api_verification.verificate_model_exists(name, json_file_name)
+    if valid_model:
+        data = block_model_proccesor.get_block_list(name, json_file_name, db_name, json_mineral_grades_file_name)
+        if feature_flags_json["restful_response"]:
+            data = {"block_model": {"blocks": data}}
+        response = Response(json.dumps(data))
+    else:
+        response.status_code = 400
     response.headers["Access-Control-Allow-Origin"] = "*"
     return response
 
