@@ -5,7 +5,7 @@ from block import Block
 from block_model import BlockModel
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME, EXTRA_INFORMATION_JSON_ENTRY
 import block_model_proccesor
-import time
+
 def create_db(db_name=DB_NAME):
     if os.path.isfile(db_name):
         os.remove(db_name)
@@ -91,10 +91,6 @@ def dump_model_information_into_json(model_name, column_names, json_file_name=LO
         data[model_name] = column_names
     else:
         data[model_name][EXTRA_INFORMATION_JSON_ENTRY] = column_names
-    print("_______________________________________________________________________________________")
-    print("model_name:", model_name, "data[model_name]:", data[model_name])
-    print("_______________________________________________________________________________________")
-    time.sleep(20)
     with open(json_file_name, 'w') as json_file:
         json.dump(data, json_file, sort_keys=True)
 
