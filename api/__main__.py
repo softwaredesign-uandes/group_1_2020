@@ -1,6 +1,8 @@
 from flask import Flask, jsonify, Response, request
 import json, requests
 import block_model_proccesor, api_verification, load_block_model
+from block import Block
+from block_model import BlockModel
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME
 app = Flask(__name__)
 
@@ -55,10 +57,23 @@ def reblock_block_model(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE
 
 
 @app.route('/api/block_models/post/', methods=['POST'])
-def post_block_model_blocks():
+def post_block_model_blocks(): #recieves json from post request
     block_json = request.get_json()
-    print(block_json)
-    return block_json
+    block_values = block_json["blocks"]
+    block_array = []
+    for block_attributes in block_values:
+        aux_block = Block(block_attributes)
+        block_array.append(aux_block)
+    block_model_in = BlockModel(block_json["name"],
+                                block_array,
+                                block_json["columns"],
+                                block_json["minerals"])
+    block_loaded = load_block_model.load_block_model_object(block_model_in)
+    if block_loaded:
+        return 'Success'
+    else:
+        return 'Error'
+    # return block_json
 
 
 def get_feature_flags():
