@@ -82,7 +82,9 @@ def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_F
 def get_block_info(name, index, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
     feature_flags_json = get_feature_flags()
     if not feature_flags_json["block_info"]:
-        return "block_info flag is disabled"
+        response = Response()
+        response.status_code = 501
+        return response
     else:
         status_code = 200
         final_data = {}
