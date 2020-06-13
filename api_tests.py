@@ -3,7 +3,6 @@ from api import __main__ as api_main
 import block_model_proccesor
 from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME
 
-
 class TestApi(unittest.TestCase):
 
     def setUp(self):
@@ -30,7 +29,7 @@ class TestApi(unittest.TestCase):
             block_model_proccesor.get_model_names_to_dictionary(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)[0]['name']
         self.assertEqual(
             block_model_proccesor.get_block_list(first_block_model_name, TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
-                                                 TEST_DB_NAME), json.loads(
+                                                 TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME), json.loads(
                 api_main.get_block_model_blocks(first_block_model_name, TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
                                                 TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME).data))
 
@@ -120,5 +119,13 @@ class TestApi(unittest.TestCase):
         self.assertEqual(api_main.get_block_model_blocks("unexistent_model",
                                                          TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
                                                          TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME).status_code, 400)
-# first_block_model_name = block_model_proccesor.get_model_names_to_dictionary(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)[0]['name']
-# print(first_block_model_name)
+
+    def test_get_block_info_return_ok_status_code(self):
+        response = api_main.get_block_info("mclaughlin_test", 13, TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME)
+        self.assertEqual(response.status_code, 200)
+
+    def test_get_block_info_return_correct(self):
+        correct_data = {"block": {"index": 14, "x": 31, "y": 211, "z": 44, "mass": 1041670.0000000001, "grades": {"au": 0.0}}}
+        response = api_main.get_block_info("mclaughlin_test", 14, TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME)
+        final_response_data = json.loads(response.data)
+        self.assertEqual(final_response_data, correct_data)

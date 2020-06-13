@@ -1,9 +1,7 @@
 from flask import Flask, jsonify, Response, request
 import json, requests
 import block_model_proccesor, api_verification, load_block_model
-from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME
-from block import Block
-from block_model import BlockModel
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME
 
 
 app = Flask(__name__)
@@ -35,7 +33,7 @@ def block_models_controller(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
 
 
 @app.route('/api/block_models/<name>/blocks/', methods=['GET'])
-def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=TEST_MINERAL_GRADES_INFORMATION_FILE_NAME):
+def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
     feature_flags_json = get_feature_flags()
     response = Response()
     valid_model = api_verification.verify_model_exists(name, json_file_name)
@@ -51,7 +49,7 @@ def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_F
 
 
 @app.route('/api/block_models/<name>/blocks/<index>', methods=['GET'])
-def get_block_model_blocks_info(name, index):
+def get_block_info(name, index, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
     feature_flags_json = get_feature_flags()
     if not feature_flags_json["block_info"]:
         return "block_info flag is disabled"
@@ -59,7 +57,7 @@ def get_block_model_blocks_info(name, index):
         status_code = 200
         final_data = {}
         try:
-            block_data = block_model_proccesor.get_block_info_by_index(name, int(index))
+            block_data = block_model_proccesor.get_block_info_by_index(name, int(index), json_file_name, db_name, json_mineral_grades_file_name)
             if block_data is None:
                 status_code = 400
             else:
@@ -73,7 +71,7 @@ def get_block_model_blocks_info(name, index):
 
 
 @app.route('/api/block_models/<name>/reblock', methods=['POST'])
-def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=TEST_MINERAL_GRADES_INFORMATION_FILE_NAME):
+def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
     if None:
         data = request.get_json()
     response = Response()
