@@ -15,6 +15,9 @@
 
 *.blocks
 
+### Test files ###
+block_model_test.db
+
 ### Models information file ###
 #/models_information.json
 #/mineral_grades_information.json

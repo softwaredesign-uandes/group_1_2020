@@ -54,20 +54,26 @@ def verify_model_exists(block_model_name, loaded_models_json=LOADED_MODELS_INFOR
 
 
 def verify_json_block_post(json_request):
-    if not json_request.hasOwnProperty('name'):
+    json_keys = set(list(json_request.keys()))
+    if 'name' not in json_keys:
         return False
-    if not json_request.hasOwnProperty('columns'):
+    if 'columns' not in json_keys:
         return False
-    else:
-        if ["id", "x", "y", "z"] <= json_request["columns"]:
-            return False
-    if not json_request.hasOwnProperty('minerals'):
+    elif not all(n in json_request["columns"] for n in["id", "x", "y", "z"]):
         return False
-    if not json_request.hasOwnProperty('blocks'):
+    if 'minerals' not in json_keys:
         return False
-    else:
-        for block in json_request["blocks"]:
-            for column_name in json_request['columns']:
-                if not block.hasOwnProperty(column_name):
-                    return False
+    if 'blocks' not in json_keys:
+        return False
+    if type(json_request["blocks"]) != list:
+        return False
+    if type(json_request["columns"]) != list:
+        return False
+    elif not all(isinstance(n, str) for n in json_request["columns"]):
+        return False
+    if type(json_request["minerals"]) != dict:
+        return False
+    if type(json_request["name"]) != str:
+        return False
     return True
+    # TODO: blocks is list, block is dict, each column element is string, name is string

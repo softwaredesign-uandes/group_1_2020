@@ -21,6 +21,7 @@ def check_necessary_files_existence_for_tests():
         with open(TEST_MINERAL_GRADES_INFORMATION_FILE_NAME, "w+") as f:
             json.dump({}, f, sort_keys=True)
 
+
 def delete_test_files():
     os.remove(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)
     os.remove(TEST_DB_NAME)
