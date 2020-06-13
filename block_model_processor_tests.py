@@ -7,7 +7,7 @@ from block import Block
 test_model_name = "mclaughlin_test"
 test_db_name = "block_model_test.db"
 mclaughlin_columns = ['id', 'x', 'y', 'z', 'blockvalue', 'ton', 'destination', 'au']
-mclaughlin_minerals = {"au": "oz_per_ton"}
+mclaughlin_minerals = {"au": "oz_per_ton", "mass_columns": ["ton"]}
 mclaughlin_block_model_test = BlockModel("mclaughlin_limit", [Block({'id': 0,
                                                                      'x': 31,
                                                                      'y': 208,
@@ -15,10 +15,9 @@ mclaughlin_block_model_test = BlockModel("mclaughlin_limit", [Block({'id': 0,
                                                                      'blockvalue': -646,
                                                                      'ton': 489.58,
                                                                      'destination': 0,
-                                                                     'au': 0.038})], mclaughlin_columns,
-                                         mclaughlin_minerals)
+                                                                     'au': 0.038})], mclaughlin_columns, mclaughlin_minerals)
 zuck_columns = ['id', 'x', 'y', 'z', 'cost', 'value', 'rock_tonnes', 'ore_tonnes']
-zuck_minerals = {"cu": "cu_proportion"}
+zuck_minerals = {"mass_columns": ["rock_tonnes", "ore_tonnes"], "ore_tonnes": "special_proportion"}
 zuck_block_model_test = BlockModel("mclaughlin_limit", [Block({'id': 12437,
                                                                'x': 23,
                                                                'y': 33,
@@ -63,12 +62,11 @@ class TestBlockModelProcessor(unittest.TestCase):
     def test_get_mass_in_kilograms_with_correct_information_return_correct_number(self):
         self.assertEqual(block_model_proccesor.get_mass_in_kilograms(mclaughlin_block_model_test,
                                                                      31, 208, 44,
-                                                                     "ton"), 489580)
+                                                                     ["ton"]), 489580)
 
     def test_get_mass_in_kilograms_with_wrong_coordinates_return_false(self):
         self.assertEqual(block_model_proccesor.get_mass_in_kilograms(mclaughlin_block_model_test,
-                                                                     1, 2, 3,
-                                                                     "ton"), False)
+                                                                     1, 2, 3, ["ton"]), False)
 
     def test_get_tabulated_blocks_with_mclaughlin_test_return_correct_information(self):
         rows = [
@@ -95,14 +93,12 @@ class TestBlockModelProcessor(unittest.TestCase):
         self.assertEqual(
             block_model_proccesor.get_percentage_grade_for_mineral_from_copper_proportion(zuck_block_model_test,
                                                                                           23, 33, 7,
-                                                                                          'rock_tonnes',
                                                                                           'ore_tonnes'), 72.727)
 
     def test_get_percentage_grade_for_mineral_from_copper_proportion_return_false_with_wrong_coordinates(self):
         self.assertEqual(
             block_model_proccesor.get_percentage_grade_for_mineral_from_copper_proportion(zuck_block_model_test,
                                                                                           0, 1, 2,
-                                                                                          'rock_tonnes',
                                                                                           'ore_tonnes'), False)
 
     def test_get_percentage_grade_for_mineral_from_different_unit_return_correct_result(self):

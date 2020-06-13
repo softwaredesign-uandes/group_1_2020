@@ -56,7 +56,6 @@ def get_block_model_blocks_info(name, index):
     if not feature_flags_json["block_info"]:
         return "block_info flag is disabled"
     else:
-        #TODO return more structured version of the block info
         status_code = 200
         final_data = {}
         try:
@@ -95,7 +94,7 @@ def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFOR
 
 def get_feature_flags():
     #TODO change this url to https://dry-brushlands-69779.herokuapp.com/api/feature_flags for the delivery
-    feature_flags_service_url = "https://dry-brushlands-69779.herokuapp.com/api/feature_flags" #"http://localhost:8001/api/feature_flags"
+    feature_flags_service_url = "http://localhost:8001/api/feature_flags"#"https://dry-brushlands-69779.herokuapp.com/api/feature_flags" #"http://localhost:8001/api/feature_flags"
     response = requests.get(feature_flags_service_url)
     feature_flags_json = response.json()
     return feature_flags_json
