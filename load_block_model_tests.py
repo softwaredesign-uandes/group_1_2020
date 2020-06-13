@@ -8,6 +8,7 @@ test_db_name = "block_model_test.db"
 
 test_existent_block_model_file_path = "mclaughlin_test.blocks"
 test_nonexistent_block_model_file_path = "kd_test.blocks"
+test_nonexistent_block_model_name = "json_test"
 
 mclaughlin_columns = ['id', 'x', 'y', 'z', 'blockvalue', 'ton', 'destination', 'au']
 mclaughlin_minerals = {"au": "oz_per_ton"}
@@ -36,6 +37,13 @@ class TestLoadBlockModel(unittest.TestCase):
     def test_retrieve_columns_types_valid_types(self):
         column_types = ["INT", "INT", "INT", "INT", "FLOAT", "INT", "FLOAT"]
         self.assertEqual(lbm.retrieve_columns_types(test_existent_block_model_file_path), column_types)
+
+    def test_load_block_model_json_returns_true(self):
+        columns = ["id", "x", "y", "z", "blockvalue", "ton", "destination", "au"]
+        minerals = {"au": "oz_per_ton"}
+        blocks = [{'id': 0,'x': 31, 'y': 208, 'z': 44, 'blockvalue': -646, 'ton': 489.58, 'destination': 0, 'au': 0.038}]
+        self.assertEqual(lbm.load_block_json(test_nonexistent_block_model_name, columns, minerals, blocks, TEST_DB_NAME,
+                                             TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME), True)
 
     def test_load_block_file_return_true(self):
         columns = ["id", "x", "y", "z", "tonn", "blockvalue", "destination", "CU", "processProfit"]

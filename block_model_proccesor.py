@@ -1,6 +1,6 @@
 from tabulate import tabulate
 import load_block_model
-from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME
 
 def get_model_data_table(block_model, from_id, to_id):
     data_table = []
@@ -25,10 +25,14 @@ def get_tabulated_blocks(block_model, from_id, to_id):
 
 
 def get_mass_in_kilograms(block_model, x, y, z, mass_column_name):
-    mass_in_tons = get_attribute_from_block(block_model, x, y, z, mass_column_name)
+    if type(mass_column_name) == type([]):
+        mass_in_tons = 0
+        for mass_column in mass_column_name:
+            mass_in_tons += get_attribute_from_block(block_model, x, y, z, mass_column)
+    else:
+        mass_in_tons = get_attribute_from_block(block_model, x, y, z, mass_column_name)
     if mass_in_tons:
         return mass_in_tons * 1000
-
     return False
 
 
@@ -42,7 +46,7 @@ def get_attribute_from_block(block_model, x, y, z, attribute):
 
 
 def get_percentage_grade_for_mineral_from_different_unit(block_model, x, y, z, mineral_name):
-    unit = block_model.minerals[mineral_name.lower()]
+    unit = block_model.minerals[mineral_name]
     attribute = get_attribute_from_block(block_model, x, y, z, mineral_name)
 
     if unit == "percentage":
@@ -54,17 +58,34 @@ def get_percentage_grade_for_mineral_from_different_unit(block_model, x, y, z, m
     elif unit == "oz_per_ton":
         if attribute is not None:
             return round(attribute * 0.00342853, 6)
+    elif unit == "proportion":
+        if attribute is not None:
+            return attribute * 100
     return None
 
 
-def get_percentage_grade_for_mineral_from_copper_proportion(block_model, x, y, z, rock_tonnes_column,
-                                                            ore_tonnes_column):
-    rock_tonnes = get_attribute_from_block(block_model, x, y, z, rock_tonnes_column)
-    ore_tonnes = get_attribute_from_block(block_model, x, y, z, ore_tonnes_column)
-    if rock_tonnes and ore_tonnes:
-        total_tonnes = ore_tonnes + rock_tonnes
-        return round((ore_tonnes / total_tonnes) * 100, 3)
-    return False
+def get_percentage_grade_for_mineral_from_copper_proportion(block_model, x, y, z, rock_tonnes_column=None, ore_tonnes_column=None):
+    if rock_tonnes_column and ore_tonnes_column:
+        rock_tonnes = get_attribute_from_block(block_model, x, y, z, rock_tonnes_column)
+        ore_tonnes = get_attribute_from_block(block_model, x, y, z, ore_tonnes_column)
+        if rock_tonnes and ore_tonnes:
+            total_tonnes = ore_tonnes + rock_tonnes
+            return round((ore_tonnes / total_tonnes) * 100, 3)
+        return False
+    else:
+        try:
+            total_tonnes = 0
+            for mass_column in block_model.minerals["extra_information"]["mass_columns"]:
+                mass_column_value = get_attribute_from_block(block_model, x, y, z, mass_column)
+                total_tonnes += mass_column_value
+            ore_column = block_model.minerals["extra_information"]["cu_mass_column"]
+            ore_tonnes = get_attribute_from_block(block_model, x, y, z, ore_column)
+
+            if total_tonnes and ore_tonnes:
+                return round((ore_tonnes / total_tonnes) * 100, 3)
+            return False
+        except:
+            return False
 
 
 def get_percentage_grade_for_mineral_from_gold_proportion(block_model, x, y, z, au_fa):
@@ -79,10 +100,10 @@ def get_available_minerals(block_model):
     return list(minerals_names)
 
 
-def get_block_list(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME):
+def get_block_list(block_model_name, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=TEST_MINERAL_GRADES_INFORMATION_FILE_NAME):
     block_list = []
     if block_model_name in load_block_model.get_available_models(json_file_name):
-        block_model = load_block_model.get_block_model_object(block_model_name, json_file_name, db_name)
+        block_model = load_block_model.get_block_model_object(block_model_name, json_file_name, db_name, json_mineral_grades_file_name)
 
         for block in block_model.blocks:
             block_list.append(block.attributes)

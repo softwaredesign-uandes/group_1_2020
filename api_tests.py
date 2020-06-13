@@ -1,7 +1,7 @@
 import unittest, json
 from api import __main__ as api_main
 import block_model_proccesor
-from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME
+from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME
 
 
 class TestApi(unittest.TestCase):
@@ -12,18 +12,18 @@ class TestApi(unittest.TestCase):
         self.app = api_main.app.test_client()
 
     def test_get_block_models_names_return_ok_status_code(self):
-        self.assertEqual(api_main.block_models_controller(TEST_LOADED_MODELS_INFORMATION_FILE_NAME).status_code, 200)
+        self.assertEqual(api_main.get_block_models_names(TEST_LOADED_MODELS_INFORMATION_FILE_NAME).status_code, 200)
 
     def test_get_block_model_blocks_return_ok_status_code(self):
         first_block_model_name = \
             block_model_proccesor.get_model_names_to_dictionary(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)[0]['name']
         self.assertEqual(
             api_main.get_block_model_blocks(first_block_model_name, TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
-                                            TEST_DB_NAME).status_code, 200)
+                                            TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME).status_code, 200)
 
     def test_get_block_models_names_return_correct(self):
         self.assertEqual(block_model_proccesor.get_model_names_to_dictionary(TEST_LOADED_MODELS_INFORMATION_FILE_NAME),
-                         json.loads(api_main.block_models_controller(TEST_LOADED_MODELS_INFORMATION_FILE_NAME).data))
+                         json.loads(api_main.get_block_models_names(TEST_LOADED_MODELS_INFORMATION_FILE_NAME).data))
 
     def test_get_block_model_blocks_return_correct(self):
         first_block_model_name = \
@@ -32,7 +32,7 @@ class TestApi(unittest.TestCase):
             block_model_proccesor.get_block_list(first_block_model_name, TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
                                                  TEST_DB_NAME), json.loads(
                 api_main.get_block_model_blocks(first_block_model_name, TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
-                                                TEST_DB_NAME).data))
+                                                TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME).data))
 
     def test_get_feature_flags_return_correct(self):
         default_feature_flags_json = {"restful_response": False, "block_info": False}
@@ -58,7 +58,7 @@ class TestApi(unittest.TestCase):
             "columnswith_mass": ["ton"]
         }
         model_name = "mclaughlin_limit"
-        response = api_main.reblock_block_model(model_name, data, TEST_LOADED_MODELS_INFORMATION_FILE_NAME)
+        response = api_main.reblock_block_model(model_name, data, TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME)
         self.assertEqual(response.status_code, 400)
 
     def test_reblock_block_model_endpoint_correct_data_return_status_code_200(self):
@@ -74,7 +74,7 @@ class TestApi(unittest.TestCase):
             "columns_with_mass": ["ton"]
         }
         model_name = "mclaughlin_limit"
-        response = api_main.reblock_block_model(model_name, data, TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME)
+        response = api_main.reblock_block_model(model_name, data, TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME)
         self.assertEqual(response.status_code, 200)
 
     def test_reblock_block_model_endpoint_inexistent_model_returns_400(self):
@@ -91,7 +91,7 @@ class TestApi(unittest.TestCase):
         }
         model_name = "kd"
         response = api_main.reblock_block_model(model_name, data, TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
-                                                TEST_DB_NAME)
+                                                TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME)
         self.assertEqual(response.status_code, 400)
 
     def test_reblock_block_model_endpoint_incorrect_columns_returns_400(self):
@@ -108,17 +108,17 @@ class TestApi(unittest.TestCase):
         }
         model_name = "mclaughlin_limit"
         response = api_main.reblock_block_model(model_name, data, TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
-                                                TEST_DB_NAME)
+                                                TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME)
         self.assertEqual(response.status_code, 400)
 
     def test_get_block_model_blocks_existent_model_returns_200(self):
         self.assertEqual(api_main.get_block_model_blocks("mclaughlin_limit",
                                                          TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
-                                                         TEST_DB_NAME).status_code, 200)
+                                                         TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME).status_code, 200)
 
-    def test_get_block_model_blocks_existent_model_returns_400(self):
-        self.assertEqual(api_main.get_block_model_blocks("mclaughlin_limit",
+    def test_get_block_model_blocks_unexistent_model_returns_400(self):
+        self.assertEqual(api_main.get_block_model_blocks("unexistent_model",
                                                          TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
-                                                         TEST_DB_NAME).status_code, 400)
+                                                         TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME).status_code, 400)
 # first_block_model_name = block_model_proccesor.get_model_names_to_dictionary(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)[0]['name']
 # print(first_block_model_name)

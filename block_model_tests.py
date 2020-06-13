@@ -112,7 +112,7 @@ class TestBlockModel(unittest.TestCase):
             4, 1, 1, test_continuous_attributes, test_proportional_attributes, test_categorical_attributes,
             test_mass_columns)
         result_of_calculation = reblocked_test.get_blocks_range(0, 1)[0].get_attribute_value("au")
-        self.assertEqual(result_of_calculation, 0.0034285299999999995)
+        self.assertEqual(result_of_calculation, 0.001028559)
 
     def test_reblock_for_ppm_attributes_return_correct(self):
         test_blocks = [
@@ -132,7 +132,7 @@ class TestBlockModel(unittest.TestCase):
         reblocked_test = test_block_model.reblock(
             4, 1, 1, test_continuous_attributes, test_proportional_attributes, test_categorical_attributes, test_mass_columns)
         result_of_calculation = reblocked_test.get_blocks_range(0, 1)[0].get_attribute_value("au")
-        self.assertEqual(result_of_calculation, 0.007000000000000001)
+        self.assertEqual(result_of_calculation, 0.0017000000000000001)
 
     def test_reblock_for_categorical_attributes_return_correct(self):
         test_blocks = [
@@ -233,7 +233,7 @@ class TestBlockModel(unittest.TestCase):
             30, 30, 30, test_continuous_attributes, test_proportional_attributes, test_categorical_attributes,
             test_mass_columns)
         reblocked_result = BlockModel("test_block_model_reblocked_30_30_30",
-                                      [Block({'id': 0, 'x': 0, 'y': 0, 'z': 0, 'ton': 100, 'au': 0.007000000000000001, 'destination': 0})],
+                                      [Block({'id': 0, 'x': 0, 'y': 0, 'z': 0, 'ton': 100, 'au': 0.0017000000000000001, 'destination': 0})],
                                       ['id', 'x', 'y', 'z', 'ton', 'au', 'destination'],
                                       {'au': 'proportion'})
         self.assertEqual(reblocked_test, reblocked_result)
@@ -258,12 +258,12 @@ class TestBlockModel(unittest.TestCase):
         test_categorical_attributes = ["destination"]
         test_mass_column = ["ton"]
         test_reblocked = BlockModel("test_block_model_reblocked_16_16_13", [Block(
-            {'id': 0, 'x': 5, 'y': 1, 'z': 0, 'ton': 8904, 'au': 3360000.0, 'ag': 55.29533183999994,
-             'cu': 2.520000000000009, 'destination': 0})],
+            {'id': 0, 'x': 5, 'y': 1, 'z': 0, 'ton': 8904, 'au': 11783.018867924528, 'ag': 0.19743157660377347,
+             'cu': 0.008849056603773586, 'destination': 0})],
                                     ['id', 'x', 'y', 'z', 'ton', 'au', 'ag', 'cu', 'destination'],
                                     {'au': 'proportion', 'ag': 'oz_per_ton', 'cu': 'ppm'})
-        print(test_block_model.reblock(rx, ry, rz, test_continuous_attributes, test_proportional_attributes,
-                                                  test_categorical_attributes, test_mass_column))
+        # print(test_block_model.reblock(rx, ry, rz, test_continuous_attributes, test_proportional_attributes,
+        #                                           test_categorical_attributes, test_mass_column))
         self.assertEqual(test_block_model.reblock(rx, ry, rz, test_continuous_attributes, test_proportional_attributes,
                                                   test_categorical_attributes, test_mass_column), test_reblocked)
 
