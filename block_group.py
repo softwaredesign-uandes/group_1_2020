@@ -1,3 +1,4 @@
+from reblock_attribute_calculation_strategy_factory import ReblockAttributeCalculationFactory
 from block import Block
 
 class BlockGroup:
@@ -18,7 +19,8 @@ class BlockGroup:
         new_z = ((self.blocks[0].attributes["z"] - self.z_offset) // self.rz) + self.z_offset
         new_attributes = {"id": self.new_id, "x": new_x, "y": new_y, "z": new_z}
         for attribute in continuous_attributes:
-            new_attributes[attribute] = sum([b.attributes[attribute] for b in self.blocks])
+            values = [b.attributes[attribute] for b in self.blocks]
+            new_attributes[attribute] = ReblockAttributeCalculationFactory().strategy("continuous").calculate(values)
         for attr, unit in proportional_attributes.items():
             denominator = sum(sum([b.attributes[m] for m in self.mass_columns]) for b in self.blocks)
             if denominator == 0:
@@ -29,10 +31,9 @@ class BlockGroup:
                 new_attributes[attr] = sum(sum([b.attributes[m] for m in self.mass_columns]) * (b.attributes[attr]/10000) for b in self.blocks) / denominator
             elif unit == "oz_per_ton":
                 new_attributes[attr] = sum(sum([b.attributes[m] for m in self.mass_columns]) * (b.attributes[attr] * 0.00342853) for b in self.blocks) / denominator
-
             elif unit == "proportion":
                 new_attributes[attr] = sum(sum([b.attributes[m] for m in self.mass_columns]) * (b.attributes[attr] * 100) for b in self.blocks) / denominator
         for at in categorical_attributes:
             values = [b.attributes[at] for b in self.blocks]
-            new_attributes[at] = max(set(values), key=values.count)
+            new_attributes[at] = ReblockAttributeCalculationFactory().strategy("categorical").calculate(values)
         return Block(new_attributes)

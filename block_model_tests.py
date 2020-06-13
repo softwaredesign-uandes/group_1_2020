@@ -31,6 +31,20 @@ class TestBlockModel(unittest.TestCase):
         test_block_model = BlockModel(test_block_model_name, test_blocks, test_columns, test_minerals)
         self.assertEqual(test_block_model.get_column_names(), test_columns)
 
+    def test_et_block_by_coordinates_return_correct(self):
+        test_blocks = [
+            Block({'id': 0, 'x': 0, 'y': 0, 'z': 0, 'ton': 22, 'au': 0.0, 'destination': 0}),
+            Block({'id': 1, 'x': 1, 'y': 1, 'z': 1, 'ton': 34, 'au': 0.0, 'destination': 0}),
+            Block({'id': 2, 'x': 2, 'y': 2, 'z': 2, 'ton': 0, 'au': 0.0, 'destination': 1}),
+            Block({'id': 3, 'x': 3, 'y': 3, 'z': 3, 'ton': 46, 'au': 0.0, 'destination': 1})
+        ]
+        test_columns = ["id", "x", "y", "z", "ton", "au", "destination"]
+        test_minerals = {"au": "proportion"}
+        test_block_model_name = "test_block_model"
+        test_block_model = BlockModel(test_block_model_name, test_blocks, test_columns, test_minerals)
+        self.assertEqual(test_block_model.get_block_by_coordinates(0, 0, 0),
+                         Block({'id': 0, 'x': 0, 'y': 0, 'z': 0, 'ton': 22, 'au': 0.0, 'destination': 0}))
+
     def test_reblock_for_continuous_attributes_return_correct(self):
         test_blocks = [
             Block({'id': 0, 'x': 0, 'y': 0, 'z': 0, 'ton': 22, 'au': 0.0, 'destination': 0}),
@@ -79,7 +93,7 @@ class TestBlockModel(unittest.TestCase):
         result_of_calculation = reblocked_test.get_blocks_range(0, 1)[0].get_attribute_value("au")
         self.assertEqual(result_of_calculation, 13.9)
 
-    def test_reblock_for_oz_per_toz_attribute_return_correct(self):
+    def test_reblock_for_oz_per_ton_attribute_return_correct(self):
         test_blocks = [
             Block({'id': 0, 'x': 0, 'y': 0, 'z': 0, 'ton': 30, 'au': 0.30, 'destination': 0}),
             Block({'id': 1, 'x': 1, 'y': 0, 'z': 0, 'ton': 20, 'au': 0.20, 'destination': 0}),
@@ -248,6 +262,8 @@ class TestBlockModel(unittest.TestCase):
              'cu': 0.008849056603773586, 'destination': 0})],
                                     ['id', 'x', 'y', 'z', 'ton', 'au', 'ag', 'cu', 'destination'],
                                     {'au': 'proportion', 'ag': 'oz_per_ton', 'cu': 'ppm'})
+        # print(test_block_model.reblock(rx, ry, rz, test_continuous_attributes, test_proportional_attributes,
+        #                                           test_categorical_attributes, test_mass_column))
         self.assertEqual(test_block_model.reblock(rx, ry, rz, test_continuous_attributes, test_proportional_attributes,
                                                   test_categorical_attributes, test_mass_column), test_reblocked)
 
