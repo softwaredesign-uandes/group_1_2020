@@ -41,7 +41,9 @@ class TestLoadBlockModel(unittest.TestCase):
     def test_load_block_model_json_returns_true(self):
         columns = ["id", "x", "y", "z", "blockvalue", "ton", "destination", "au"]
         minerals = {"au": "oz_per_ton"}
-        blocks = [{'id': 0,'x': 31, 'y': 208, 'z': 44, 'blockvalue': -646, 'ton': 489.58, 'destination': 0, 'au': 0.038}]
+        blocks = [{'id': 0,'x': 31, 'y': 208, 'z': 44, 'blockvalue': -646, 'ton': 489.58, 'destination': 0, 'au': 0.038},
+                  {'id': 1,'x': 31, 'y': 208, 'z': 44, 'blockvalue': -646, 'ton': 489.58, 'destination': 0, 'au': 0.038},
+                  {'id': 2,'x': 31, 'y': 208, 'z': 44, 'blockvalue': -646, 'ton': 489.58, 'destination': 0, 'au': 0.038}]
         self.assertEqual(lbm.load_block_json(test_nonexistent_block_model_name, columns, minerals, blocks, TEST_DB_NAME,
                                              TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME), True)
 
