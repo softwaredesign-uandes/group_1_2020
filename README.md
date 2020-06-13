@@ -43,7 +43,26 @@ block models in http://mansci-web.uai.cl/minelib/kd.xhtml"
 The following structure is an example of what is required to insert a block model in endpoint POST: /api/block_models/
 ```console
 
-                    Aqui
+{
+"name": "mclaughlin_limit",
+"columns": ["id", "x", "y", "z", "ton", "au","destination"],
+"minerals": {"au": "proportion", "mass_columns": ["ton"]},
+"blocks":
+        [
+        {
+             "id": 0,
+             "x": 0,
+             "y": 0,
+             "z": 0,
+             "ton": 30,
+             "au": 30,
+             "destination": 0
+        },
+        {"id": 1, "x": 1, "y": 0, "z": 0, "ton": 20, "au": 10, "destination": 1},
+        {"id": 2, "x": 2, "y": 0, "z": 0, "ton": 10, "au": 20, "destination": 1},
+        {"id": 3, "x": 3, "y": 0, "z": 0, "ton": 40, "au": 10, "destination": 1}
+        ]
+}
 ```
 
 ###Reblock block model
