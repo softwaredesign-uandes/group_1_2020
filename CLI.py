@@ -7,7 +7,7 @@ from CLI_helpers import clear_console, show_menu_title, show_normal_message, sho
 
 from constants import MAIN_MENU_OPTIONS, QUERY_CONSOLE_OPTIONS, MAIN_MENU_VALID_OPTIONS, QUERY_MENU_VALID_OPTIONS, \
     DIFFERENT_UNITS, COPPER_PROPORTION, GOLD_PROPORTION, TYPES_OF_COLUMN_ATTRIBUTES, MASS_UNIT_FOR_REBLOCK,\
-    TYPES_OF_PROPORTION_OPTIONS
+    TYPES_OF_PROPORTION_OPTIONS, SPECIAL_PROPORTION, MASS_COLUMNS_JSON_ENTRY
 
 
 class CLI:
@@ -161,18 +161,16 @@ class CLI:
                     mass_column = self.ask_for_mass_unit(column_name)
                     minerals_grades_info[column_name] = mass_column
                 table_columns.append(column_name)
-            extra_info = None
-            have_cu_proportion = get_user_decision_input("Are there mineral grade calculations with ore/copper proportion for this model?")
-            if have_cu_proportion:
-                extra_info = {}
-                copy_of_columns = table_columns[:]
-                columns_with_mass = self.ask_columns_with_mass_attribute(copy_of_columns)
-                extra_info["mass_columns"] = columns_with_mass
-                show_normal_message("Select the column for the ore/copper tons in the block")
-                cu_mass_column_index = int(show_options_from_list_and_get_user_input(table_columns))
-                cu_mass_column_name = table_columns[cu_mass_column_index]
-                extra_info["cu_mass_column"] = cu_mass_column_name
-            if load_block_model.load_block_file(block_model_file_path, table_columns, minerals_grades_info, extra_info=extra_info):
+            copy_of_columns = table_columns[:]
+            columns_with_mass = self.ask_columns_with_mass_attribute(copy_of_columns)
+            minerals_grades_info["mass_columns"] = columns_with_mass
+            have_special_proportion = get_user_decision_input("Are there special mineral grade calculations with ore proportion for this model?")
+            if have_special_proportion:
+                show_normal_message("Select the column for the ore tons in the block")
+                ore_mass_column_index = int(show_options_from_list_and_get_user_input(table_columns))
+                ore_mass_column_name = table_columns[ore_mass_column_index]
+                minerals_grades_info[ore_mass_column_name] = SPECIAL_PROPORTION
+            if load_block_model.load_block_file(block_model_file_path, table_columns, minerals_grades_info):
                 show_success_message("Block model loaded")
             else:
                 show_error_message("Can not load block model")
@@ -218,13 +216,8 @@ class CLI:
 
     def show_mass_of_block(self, block_model):
         x, y, z = self.get_coordinates_from_user()
-        block_model_columns = block_model.columns
-        show_normal_message("Select the column that represents the mass")
-        copy_of_columns = block_model_columns[:]
-        columns_with_mass = self.ask_columns_with_mass_attribute(copy_of_columns)
-        # mass_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
-        # mass_column_name = block_model_columns[mass_column_index]
-        block_mass = block_model_proccesor.get_mass_in_kilograms(block_model, x, y, z, columns_with_mass)
+        block_mass_columns = block_model.minerals[MASS_COLUMNS_JSON_ENTRY]
+        block_mass = block_model_proccesor.get_mass_in_kilograms(block_model, x, y, z, block_mass_columns)
         if block_mass:
             show_result("Block in {} with coordinates {} {} {} has a mass of {} kilograms".format(block_model.name, x, y, z,
                                                                                                   block_mass))
@@ -255,28 +248,19 @@ class CLI:
         grade = 0
         if unit == DIFFERENT_UNITS:
             show_normal_message("What mineral you want to get the grade from?")
-            mineral_index = int(show_options_from_list_and_get_user_input(minerals))
+            minerals_copy = minerals.copy()
+            minerals_copy.remove(MASS_COLUMNS_JSON_ENTRY)
+            mineral_index = int(show_options_from_list_and_get_user_input(minerals_copy))
             mineral_name = minerals[mineral_index]
             grade = block_model_proccesor.get_percentage_grade_for_mineral_from_different_unit(block_model, x, y, z,
                                                                                                mineral_name)
-        # elif unit == GOLD_PROPORTION:
-        #     block_model_columns = block_model.columns
-        #     show_normal_message("Select the column for the proportion of gold in the block (AuFa)")
-        #     au_fa_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
-        #     au_fa_column_name = block_model_columns[au_fa_column_index]
-        #     grade = block_model_proccesor.get_percentage_grade_for_mineral_from_gold_proportion(block_model, x, y, z,
-        #                                                                                         au_fa_column_name)
+
         elif unit == COPPER_PROPORTION:
-            # block_model_columns = block_model.columns
-            # show_normal_message("Select the column of tons of rock")
-            # rock_tonnes_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
-            # rock_tonnes_column_name = block_model_columns[rock_tonnes_column_index]
-            # show_normal_message("Select the column of tons of ore (copper)")
-            # ore_tonnes_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
-            # ore_tonnes_column_name = block_model_columns[ore_tonnes_column_index]
-            grade = block_model_proccesor.get_percentage_grade_for_mineral_from_copper_proportion(block_model, x, y, z)#,
-                                                                                                  #rock_tonnes_column_name,
-                                                                                                  #ore_tonnes_column_name)
+            block_model_columns = block_model.columns
+            show_normal_message("Select the column of tons of ore")
+            ore_tonnes_column_index = int(show_options_from_list_and_get_user_input(block_model_columns))
+            ore_tonnes_column_name = block_model_columns[ore_tonnes_column_index]
+            grade = block_model_proccesor.get_percentage_grade_for_mineral_from_copper_proportion(block_model, x, y, z, ore_tonnes_column_name)
 
         if grade is not None:
             show_result(
