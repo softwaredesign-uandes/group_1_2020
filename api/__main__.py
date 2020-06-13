@@ -1,7 +1,8 @@
 from flask import Flask, jsonify, Response, request
 import json, requests
 import block_model_proccesor, api_verification, load_block_model
-from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME, \
+    MINERAL_GRADES_INFORMATION_FILE_NAME
 from block import Block
 from block_model import BlockModel
 
@@ -34,22 +35,27 @@ def block_models_controller(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
 
 
 @app.route('/api/block_models/', methods=['POST'])
-def input_block_model():
+def input_block_model(block_json=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME,
+                      json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
     response = Response()
-    block_json = request.get_json()
+    if not block_json:
+        block_json = request.get_json()
     verify_blocks = api_verification.verify_json_block_post(block_json)
+    verify_name = api_verification.verify_model_exists(block_json["name"], json_file_name)
     if not verify_blocks:
         response.status_code = 400
         return response
-    block_values = block_json["blocks"]
-    block_array = []
-    for block_attributes in block_values:
-        aux_block = Block(block_attributes)
-        block_array.append(aux_block)
+    if verify_name:
+        response.status_code = 400
+        return response
     block_loaded = load_block_model.load_block_json(block_json["name"],
                                                     block_json["columns"],
                                                     block_json["minerals"],
-                                                    block_json["blocks"])
+                                                    block_json["blocks"],
+                                                    db_name,
+                                                    json_file_name,
+                                                    json_mineral_grades_file_name
+                                                    )
     if block_loaded:
         response.status_code = 200
     else:
@@ -59,7 +65,7 @@ def input_block_model():
 
 
 @app.route('/api/block_models/<name>/blocks/', methods=['GET'])
-def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=TEST_MINERAL_GRADES_INFORMATION_FILE_NAME):
+def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
     feature_flags_json = get_feature_flags()
     response = Response()
     valid_model = api_verification.verify_model_exists(name, json_file_name)
