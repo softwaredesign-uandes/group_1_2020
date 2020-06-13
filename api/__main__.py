@@ -86,7 +86,6 @@ def get_block_model_blocks_info(name, index):
     if not feature_flags_json["block_info"]:
         return "block_info flag is disabled"
     else:
-        #TODO return more structured version of the block info
         status_code = 200
         final_data = {}
         try:
@@ -105,7 +104,7 @@ def get_block_model_blocks_info(name, index):
 
 @app.route('/api/block_models/<name>/reblock', methods=['POST'])
 def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=TEST_MINERAL_GRADES_INFORMATION_FILE_NAME):
-    if None:
+    if not data:
         data = request.get_json()
     response = Response()
     valid_information = api_verification.verify_reblock_information(data, name, json_file_name)

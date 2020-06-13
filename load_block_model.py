@@ -3,7 +3,7 @@ import sqlite3
 import json
 from block import Block
 from block_model import BlockModel
-from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME, EXTRA_INFORMATION_JSON_ENTRY
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME
 
 def create_db(db_name=DB_NAME):
     if os.path.isfile(db_name):
@@ -75,7 +75,7 @@ def create_table_query(model_name, table_columns, columns_types):
 
 
 def load_block_file(block_model_file_path, table_columns, mineral_grades_info, db_name=DB_NAME,
-                    models_json=LOADED_MODELS_INFORMATION_FILE_NAME, minerals_json=MINERAL_GRADES_INFORMATION_FILE_NAME, extra_info=None):
+                    models_json=LOADED_MODELS_INFORMATION_FILE_NAME, minerals_json=MINERAL_GRADES_INFORMATION_FILE_NAME):
     try:
         model_name = get_model_name_from_path(block_model_file_path)
         conn = sqlite3.connect(db_name)
@@ -91,16 +91,13 @@ def load_block_file(block_model_file_path, table_columns, mineral_grades_info, d
             conn.commit()
         dump_model_information_into_json(model_name, table_columns, models_json)
         dump_model_information_into_json(model_name, mineral_grades_info, minerals_json)
-        if extra_info:
-            have_extra_info = True
-            dump_model_information_into_json(model_name, extra_info, minerals_json, have_extra_info)
         return True
     except sqlite3.IntegrityError:
         return False
 
 
 def load_block_json(model_name, table_columns, minerals, blocks, db_name=DB_NAME,
-                    models_json=LOADED_MODELS_INFORMATION_FILE_NAME, minerals_json=MINERAL_GRADES_INFORMATION_FILE_NAME, extra_info=None):
+                    models_json=LOADED_MODELS_INFORMATION_FILE_NAME, minerals_json=MINERAL_GRADES_INFORMATION_FILE_NAME):
     try:
         conn = sqlite3.connect(db_name)
         columns_types = retrieve_columns_types_from_dict(blocks)
@@ -115,21 +112,15 @@ def load_block_json(model_name, table_columns, minerals, blocks, db_name=DB_NAME
         conn.commit()
         dump_model_information_into_json(model_name, table_columns, models_json)
         dump_model_information_into_json(model_name, minerals, minerals_json)
-        if extra_info:
-            have_extra_info = True
-            dump_model_information_into_json(model_name, extra_info, minerals_json, have_extra_info)
         return True
     except sqlite3.IntegrityError:
         return False
 
 
-def dump_model_information_into_json(model_name, column_names, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, have_extra_info=False):
+def dump_model_information_into_json(model_name, column_names, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     with open(json_file_name, 'r') as json_file:
         data = json.load(json_file)
-    if not have_extra_info:
-        data[model_name] = column_names
-    else:
-        data[model_name][EXTRA_INFORMATION_JSON_ENTRY] = column_names
+    data[model_name] = column_names
     with open(json_file_name, 'w') as json_file:
         json.dump(data, json_file, sort_keys=True)
 
