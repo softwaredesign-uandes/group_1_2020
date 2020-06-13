@@ -64,6 +64,11 @@ The following structure is an example of what is required to insert a block mode
         ]
 }
 ```
+If a model has an special form of calculating the grade information, the json ahs to specify it. Here is an example:
+```console
+
+                    Aqui
+```
 
 ###Reblock block model
 
