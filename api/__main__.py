@@ -111,10 +111,13 @@ def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFOR
     if valid_information:
         block_model = load_block_model.get_block_model_object(name, json_file_name, db_name, json_mineral_grades_file_name)
         try:
-            block_model.reblock(data["rx"], data["ry"], data["rz"], data["continuous_attributes"],
+            reblock_model = block_model.reblock(data["rx"], data["ry"], data["rz"], data["continuous_attributes"],
                                 data["proportional_attributes"],
                                 data["categorical_attributes"], data["columns_with_mass"])
-            response.status_code = 200
+            if load_block_model.load_block_model_object(reblock_model, db_name, json_file_name, json_mineral_grades_file_name):
+                response.status_code = 200
+            else:
+                response.status_code = 500
         except:
             response.status_code = 500
     else:
@@ -123,7 +126,7 @@ def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFOR
 
 
 def get_feature_flags():
-    #TODO change this url to https://dry-brushlands-69779.herokuapp.com/api/feature_flags for the delivery
+    # TODO change this url to https://dry-brushlands-69779.herokuapp.com/api/feature_flags for the delivery
     feature_flags_service_url = "https://dry-brushlands-69779.herokuapp.com/api/feature_flags" #"http://localhost:8001/api/feature_flags"
     response = requests.get(feature_flags_service_url)
     feature_flags_json = response.json()

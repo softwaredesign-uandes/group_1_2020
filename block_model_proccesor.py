@@ -31,9 +31,7 @@ def get_mass_in_kilograms(block_model, x, y, z, mass_columns):
         mass_in_tons = 0
         for mass_column in mass_columns:
             mass_in_tons += get_attribute_from_block(block_model, x, y, z, mass_column)
-        if mass_in_tons:
-            return mass_in_tons * 1000
-        return False
+        return mass_in_tons * 1000
     except:
         return False
 
