@@ -103,19 +103,19 @@ def get_block_model_blocks_info(name, index):
 
 
 @app.route('/api/block_models/<name>/reblock', methods=['POST'])
-def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=TEST_MINERAL_GRADES_INFORMATION_FILE_NAME):
+def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
     if not data:
         data = request.get_json()
     response = Response()
     valid_information = api_verification.verify_reblock_information(data, name, json_file_name)
     if valid_information:
         block_model = load_block_model.get_block_model_object(name, json_file_name, db_name, json_mineral_grades_file_name)
-        try:
-            block_model.reblock(data["rx"], data["ry"], data["rz"], data["continuous_attributes"],
-                                data["proportional_attributes"],
-                                data["categorical_attributes"], data["columns_with_mass"])
+        reblock_model = block_model.reblock(data["rx"], data["ry"], data["rz"], data["continuous_attributes"],
+                            data["proportional_attributes"],
+                            data["categorical_attributes"], data["columns_with_mass"])
+        if load_block_model.load_block_model_object(reblock_model):
             response.status_code = 200
-        except:
+        else:
             response.status_code = 500
     else:
         response.status_code = 400
