@@ -99,7 +99,8 @@ The following structure is an example of what is required to reblock a block mod
             "ry": 1,
             "rz": 1,
             "continuous_attributes": [
-                "blockvalue"
+                "blockvalue",
+                "ton"
             ],
             "proportional_attributes": {"au": "oz_per_ton"},
             "categorical_attributes": ["destination"],
