@@ -1,16 +1,61 @@
-from flask import Flask, jsonify, Response, request
-import json, requests
+from flask import Flask, Response, request
+from werkzeug.utils import secure_filename
+import json, requests, os
 import block_model_proccesor, api_verification, load_block_model
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME, \
     MINERAL_GRADES_INFORMATION_FILE_NAME
 
-
+UPLOAD_FOLDER = 'prec_files'
+ALLOWED_EXTENSIONS = {"prec"}
 app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @app.route('/')
 def Index():
     return 'Hello World 2'
 
 
+@app.route('/api/block_models/<name>/precedence', methods=['POST'])
+def load_block_model_precedence(model_prec=None, name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+    response = Response()
+    verify_name = api_verification.verify_model_exists(name, json_file_name)
+    if not verify_name:
+        response.status_code = 400
+        return response
+    if not model_prec:
+        if 'file' not in request.files:
+            response.status_code = 400
+            return response
+        model_prec = request.files['file']
+    if model_prec.filename == '':
+        response.status_code = 400
+        return response
+    if model_prec and allowed_file(model_prec.filename):
+        filename = secure_filename(model_prec.filename)
+        path = os.path.join(os.getcwd(),app.config["UPLOAD_FOLDER"], filename)
+        model_prec.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
+        response.status_code = 200
+        return response
+
+@app.route('/api/block_models/<name>/blocks/<index>/extract')
+def extract_block(name=None, index=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME,
+                json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME, db_name=DB_NAME):
+    response = Response()
+    verify_name = api_verification.verify_model_exists(name, json_file_name)
+    if not verify_name:
+        response.status_code = 400
+        return response
+    block_model = load_block_model.get_block_model_object(name, json_file_name, db_name, json_mineral_grades_file_name)
+    if not block_model.has_precedence():
+        response.status_code = 400
+        return response
+    blocks_to_extract = block_model.extract(index)
+    response = Response(json.dumps(blocks_to_extract))
+    return response
 @app.route('/api/block_models/', methods=['GET'])
 def get_block_models_names(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     feature_flags_json = get_feature_flags()
@@ -134,4 +179,4 @@ def get_feature_flags():
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)

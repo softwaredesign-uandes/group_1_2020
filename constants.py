@@ -2,6 +2,7 @@ LOADED_MODELS_INFORMATION_FILE_NAME = "models_information.json"
 MINERAL_GRADES_INFORMATION_FILE_NAME = "mineral_grades_information.json"
 TEST_LOADED_MODELS_INFORMATION_FILE_NAME = "models_information_test.json"
 TEST_MINERAL_GRADES_INFORMATION_FILE_NAME = "mineral_grades_information_test.json"
+PRECEDENCE_FILES_PATH = "prec_files"
 DIFFERENT_UNITS = "ppm, percentage, oz_per_ton or proportion"
 MASS_UNIT_FOR_REBLOCK = ["ppm", "percentage", "oz_per_ton", "proportion"]
 COPPER_PROPORTION = "cu_proportion"

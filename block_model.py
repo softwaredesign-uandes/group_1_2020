@@ -2,11 +2,12 @@ from block_group import BlockGroup
 from block import Block
 
 class BlockModel:
-    def __init__(self, name, blocks, columns, minerals):
+    def __init__(self, name, blocks, columns, minerals, precedence):
         self.name = name
         self.blocks = blocks
         self.columns = columns
         self.minerals = minerals
+        self.precedence = precedence
 
     def __eq__(self, other):
         for i in range(len(self.blocks)):
@@ -27,6 +28,26 @@ class BlockModel:
     def get_blocks_range(self, from_id, to_id):
         blocks = list(filter(lambda block: from_id <= block.attributes["id"] <= to_id, self.blocks))
         return blocks
+
+    def extract(self, block_id):
+        next_blocks = self.precedence[block_id]
+        blocks_ids_to_remove = [block_id]
+        while len(next_blocks) > 0:
+            block = next_blocks.pop(0)
+            blocks_ids_to_remove.append(block)
+            for block_id in self.precedence[block]:
+                if block_id not in blocks_ids_to_remove:
+                    next_blocks.insert(0, block_id)
+        blocks_to_remove = {'blocks': []}
+        for id in blocks_ids_to_remove:
+            blocks_to_remove['blocks'].append({"index": int(id)})
+        return blocks_to_remove
+
+    def has_precedence(self):
+        if len(self.precedence.items()) > 0:
+            return True
+        else:
+            return False
 
     def get_column_names(self):
         return self.columns
