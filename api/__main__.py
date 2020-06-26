@@ -2,7 +2,7 @@ from flask import Flask, Response, request
 from werkzeug.utils import secure_filename
 import json, requests, os
 import block_model_proccesor, api_verification, load_block_model
-from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME, \
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, SPAN_TRACING_ID_FILE_NAME, \
     MINERAL_GRADES_INFORMATION_FILE_NAME
 
 UPLOAD_FOLDER = 'prec_files'
@@ -139,6 +139,10 @@ def get_block_info(name, index, json_file_name=LOADED_MODELS_INFORMATION_FILE_NA
                 status_code = 400
             else:
                 final_data = {"block": block_data}
+                x = block_data["x"]
+                y = block_data["y"]
+                z = block_data["z"]
+                post_span_to_trace(event_name="block_info_requested", event_data="{},{},{}".format(x, y, z))
         except:
             status_code = 500
         response = Response(json.dumps(final_data))
@@ -171,11 +175,34 @@ def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFOR
 
 
 def get_feature_flags():
-    # TODO change this url to https://dry-brushlands-69779.herokuapp.com/api/feature_flags for the delivery
     feature_flags_service_url = "https://dry-brushlands-69779.herokuapp.com/api/feature_flags" #"http://localhost:8001/api/feature_flags"
     response = requests.get(feature_flags_service_url)
     feature_flags_json = response.json()
     return feature_flags_json
+
+
+def post_span_to_trace(event_name, event_data):
+    trace_app_id = {"dev": "e824d2cb6fe313706126ad7d49b70f4b", "production": "dd6c385e8e294557673d35675f0f0c96"}
+    app_environment = "dev"
+    tracing_endpoint_url = "https://gentle-coast-69723.herokuapp.com/api/apps/{}/traces/".format(trace_app_id[app_environment])
+    actual_span_id = get_actual_span_id()
+    data = {"trace": {"span_id": actual_span_id, "event_name": event_name, "event_data": event_data}}
+    headers = {'Content-Type': 'application/json'}
+    post = requests.post(tracing_endpoint_url, data=json.dumps(data), headers=headers)
+
+
+def get_actual_span_id():
+    with open(SPAN_TRACING_ID_FILE_NAME, "r") as span_id_file:
+        data = json.load(span_id_file)
+    return data["span_id"]
+
+
+def increase_span_id():
+    with open(SPAN_TRACING_ID_FILE_NAME, "r") as span_id_file:
+        data = json.load(span_id_file)
+    data["span_id"] += 1
+    with open(SPAN_TRACING_ID_FILE_NAME, 'w') as span_id_file:
+        json.dump(data, span_id_file)
 
 
 if __name__ == '__main__':
