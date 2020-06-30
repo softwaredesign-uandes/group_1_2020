@@ -1,9 +1,11 @@
 from flask import Flask, Response, request
 from werkzeug.utils import secure_filename
 import json, requests, os
+from block_model_cli.__main__ import check_neccesary_files_existence
 import block_model_proccesor, api_verification, load_block_model
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, SPAN_TRACING_ID_FILE_NAME, \
     MINERAL_GRADES_INFORMATION_FILE_NAME
+
 
 UPLOAD_FOLDER = 'prec_files'
 ALLOWED_EXTENSIONS = {"prec"}
@@ -209,4 +211,5 @@ def increase_span_id():
 
 
 if __name__ == '__main__':
+    check_neccesary_files_existence()
     app.run(debug=True)
