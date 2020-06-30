@@ -5,6 +5,7 @@ from block import Block
 from block_model import BlockModel
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME, PRECEDENCE_FILES_PATH
 
+
 def create_db(db_name=DB_NAME):
     if os.path.isfile(db_name):
         os.remove(db_name)
@@ -203,13 +204,13 @@ def load_block_model_object(block_model, db_name=DB_NAME, models_json=LOADED_MOD
         return False
 
 
-def load_model_precedence(block_model_name):
-    filenames = os.listdir(os.path.join(os.getcwd(), PRECEDENCE_FILES_PATH))
+def load_model_precedence(block_model_name, precedence_path=PRECEDENCE_FILES_PATH):
+    filenames = os.listdir(os.path.join(os.getcwd(), precedence_path))
     precedence = {}
     block_model_precedence_file = "{}.prec".format(block_model_name)
     for filename in filenames:
         if block_model_precedence_file in filename:
-            file = open(os.path.join(os.getcwd(), PRECEDENCE_FILES_PATH, filename))
+            file = open(os.path.join(os.getcwd(), precedence_path, filename))
             for line in file:
                 data = line.strip().split(" ")
                 if data[1] != "0":

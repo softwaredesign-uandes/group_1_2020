@@ -3,10 +3,10 @@ from block_model import BlockModel
 from block import Block
 
 test_prec_file = {
-                "0": ["1", "1"],
-                "1": ["1", "2"],
-                "2": ["0"],
-                "3": ["0"]
+                "0": ["1"],
+                "1": ["2"],
+                "2": [],
+                "3": []
                 }
 
 
@@ -307,8 +307,8 @@ class TestBlockModel(unittest.TestCase):
         test_minerals = {"au": "proportion"}
         test_block_model_name = "test_block_model"
         test_block_model = BlockModel(test_block_model_name, test_blocks, test_columns, test_minerals, test_prec_file)
-        self.assertEqual(test_block_model.extract("0"), {'blocks': [{'index': 0}, {'index': 1}, {'index': 2},
-                                                                    {'index': 1}]})
+        self.assertEqual(test_block_model.extract("0"), {'blocks': [{'index': 0}, {'index': 1}, {'index': 2}]})
+
 
 if __name__ == "__main__":
     unittest.main()
