@@ -31,5 +31,4 @@ SPECIAL_PROPORTION = "special_proportion"
 MASS_COLUMNS_JSON_ENTRY = "mass_columns"
 SPAN_TRACING_ID_FILE_NAME = "span_tracing_id.json"
 TEST_SPAN_TRACING_ID_FILE_NAME = "span_tracing_id_test.json"
-#TODO change ACTUAL_SPAN_APP_ENVIRONMENT to "production" for final delivery
-ACTUAL_SPAN_APP_ENVIRONMENT = "dev"
+TRACE_APP_ID = {"dev": "e824d2cb6fe313706126ad7d49b70f4b", "production": "dd6c385e8e294557673d35675f0f0c96"}

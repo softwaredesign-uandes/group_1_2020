@@ -22,7 +22,7 @@ def check_necessary_files_existence_for_tests():
             json.dump({}, f, sort_keys=True)
     if not os.path.isfile(TEST_SPAN_TRACING_ID_FILE_NAME):
         with open(TEST_SPAN_TRACING_ID_FILE_NAME, "w+") as f:
-            json.dump({"span_id": 1000}, f)
+            json.dump({"span_id": 900}, f)
 
 def delete_test_files():
     os.remove(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)

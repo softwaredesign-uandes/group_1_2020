@@ -4,7 +4,7 @@ import json, requests, os
 from block_model_cli.__main__ import check_neccesary_files_existence
 import block_model_proccesor, api_verification, load_block_model
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, SPAN_TRACING_ID_FILE_NAME, \
-    MINERAL_GRADES_INFORMATION_FILE_NAME, ACTUAL_SPAN_APP_ENVIRONMENT
+    MINERAL_GRADES_INFORMATION_FILE_NAME, TRACE_APP_ID
 
 
 UPLOAD_FOLDER = 'prec_files'
@@ -26,7 +26,8 @@ def Index():
 
 
 @app.route('/api/block_models/<name>/precedence', methods=['POST'])
-def load_block_model_precedence(model_prec=None, name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
+def load_block_model_precedence(model_prec=None, name=None,
+                                json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, span_tracing_id_file_name=SPAN_TRACING_ID_FILE_NAME):
     response = Response()
     verify_name = api_verification.verify_model_exists(name, json_file_name)
     if not verify_name:
@@ -46,7 +47,7 @@ def load_block_model_precedence(model_prec=None, name=None, json_file_name=LOADE
         model_prec.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
         response.status_code = 200
         try:
-            post_span_to_trace("block_model_precedences_loaded", name)
+            post_span_to_trace("block_model_precedences_loaded", name, span_tracing_id_file_name)
         except:
             pass
         return response
@@ -54,7 +55,8 @@ def load_block_model_precedence(model_prec=None, name=None, json_file_name=LOADE
 
 @app.route('/api/block_models/<name>/blocks/<index>/extract/', methods=['POST'])
 def extract_block(name=None, index=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME,
-                json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME, db_name=DB_NAME):
+                json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME,
+                  db_name=DB_NAME, span_tracing_id_file_name=SPAN_TRACING_ID_FILE_NAME):
     response = Response()
     response.headers["Access-Control-Allow-Origin"] = "*"
     verify_name = api_verification.verify_model_exists(name, json_file_name)
@@ -74,7 +76,7 @@ def extract_block(name=None, index=None, json_file_name=LOADED_MODELS_INFORMATIO
         coordinates_tuple = block_model_proccesor.get_block_coordinates_by_index(block_model, int(index))
         if coordinates_tuple:
             x, y, z = coordinates_tuple
-            post_span_to_trace("block_extracted", "{},{},{}".format(x, y, z))
+            post_span_to_trace("block_extracted", "{},{},{}".format(x, y, z), span_tracing_id_file_name)
     except:
         pass
     return response
@@ -128,6 +130,7 @@ def input_block_model(block_json=None, json_file_name=LOADED_MODELS_INFORMATION_
         try:
             increase_span_id(span_tracing_id_file_name)
             post_span_to_trace("block_model_loaded", block_json["name"], span_tracing_id_file_name)
+            print("exito input_block_model")
         except:
             pass
     else:
@@ -137,7 +140,8 @@ def input_block_model(block_json=None, json_file_name=LOADED_MODELS_INFORMATION_
 
 
 @app.route('/api/block_models/<name>/blocks/', methods=['GET'])
-def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
+def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME,
+                           json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME, span_tracing_id_file_name=SPAN_TRACING_ID_FILE_NAME):
     feature_flags_json = get_feature_flags()
     response = Response()
     valid_model = api_verification.verify_model_exists(name, json_file_name)
@@ -148,7 +152,8 @@ def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_F
             data = {"block_model": {"blocks": data}}
         response = Response(json.dumps(data))
         try:
-            post_span_to_trace("blocks_requested", name)
+            post_span_to_trace("blocks_requested", name, span_tracing_id_file_name)
+            print("exito get_block_model_blocks")
         except:
             pass
     else:
@@ -158,7 +163,8 @@ def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_F
 
 
 @app.route('/api/block_models/<name>/blocks/<index>', methods=['GET'])
-def get_block_info(name, index, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
+def get_block_info(name, index, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME,
+                   json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME, span_tracing_id_file_name=SPAN_TRACING_ID_FILE_NAME):
     feature_flags_json = get_feature_flags()
     if not feature_flags_json["block_info"]:
         response = Response()
@@ -177,7 +183,8 @@ def get_block_info(name, index, json_file_name=LOADED_MODELS_INFORMATION_FILE_NA
                     x = block_data["x"]
                     y = block_data["y"]
                     z = block_data["z"]
-                    post_span_to_trace(event_name="block_info_requested", event_data="{},{},{}".format(x, y, z))
+                    post_span_to_trace("block_info_requested", "{},{},{}".format(x, y, z), span_tracing_id_file_name)
+                    print("exito get_block_info")
                 except:
                     pass
         except:
@@ -189,7 +196,8 @@ def get_block_info(name, index, json_file_name=LOADED_MODELS_INFORMATION_FILE_NA
 
 
 @app.route('/api/block_models/<name>/reblock', methods=['POST'])
-def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME, json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
+def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME,
+                        json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME, span_tracing_id_file_name=SPAN_TRACING_ID_FILE_NAME):
     if not data:
         data = request.get_json()
     response = Response()
@@ -203,7 +211,8 @@ def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFOR
             if load_block_model.load_block_model_object(reblock_model, db_name, json_file_name, json_mineral_grades_file_name):
                 response.status_code = 200
                 try:
-                    post_span_to_trace("block_model_reblocked", name)
+                    post_span_to_trace("block_model_reblocked", name, span_tracing_id_file_name)
+                    print("exito reblock_block_model")
                 except:
                     pass
             else:
@@ -224,8 +233,9 @@ def get_feature_flags():
 
 def post_span_to_trace(event_name, event_data, span_tracing_id_file_name=SPAN_TRACING_ID_FILE_NAME):
     try:
-        trace_app_id = {"dev": "e824d2cb6fe313706126ad7d49b70f4b", "production": "dd6c385e8e294557673d35675f0f0c96"}
-        tracing_endpoint_url = "https://gentle-coast-69723.herokuapp.com/api/apps/{}/traces/".format(trace_app_id[ACTUAL_SPAN_APP_ENVIRONMENT])
+        # TODO change app_environment to "production" for final delivery
+        app_environment = "dev"
+        tracing_endpoint_url = "https://gentle-coast-69723.herokuapp.com/api/apps/{}/traces/".format(TRACE_APP_ID[app_environment])
         actual_span_id = get_actual_span_id(span_tracing_id_file_name)
         data = {"trace": {"span_id": actual_span_id, "event_name": event_name, "event_data": event_data}}
         headers = {'Content-Type': 'application/json'}
