@@ -1,8 +1,9 @@
 from block_group import BlockGroup
 from block import Block
 
+
 class BlockModel:
-    def __init__(self, name, blocks, columns, minerals, precedence):
+    def __init__(self, name, blocks, columns, minerals, precedence={}):
         self.name = name
         self.blocks = blocks
         self.columns = columns

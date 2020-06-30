@@ -41,6 +41,7 @@ def load_block_model_precedence(model_prec=None, name=None, json_file_name=LOADE
         response.status_code = 200
         return response
 
+
 @app.route('/api/block_models/<name>/blocks/<index>/extract')
 def extract_block(name=None, index=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME,
                 json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME, db_name=DB_NAME):
@@ -56,6 +57,8 @@ def extract_block(name=None, index=None, json_file_name=LOADED_MODELS_INFORMATIO
     blocks_to_extract = block_model.extract(index)
     response = Response(json.dumps(blocks_to_extract))
     return response
+
+
 @app.route('/api/block_models/', methods=['GET'])
 def get_block_models_names(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
     feature_flags_json = get_feature_flags()

@@ -202,6 +202,7 @@ def load_block_model_object(block_model, db_name=DB_NAME, models_json=LOADED_MOD
     except:
         return False
 
+
 def load_model_precedence(block_model_name):
     filenames = os.listdir(os.path.join(os.getcwd(), PRECEDENCE_FILES_PATH))
     precedence = {}
