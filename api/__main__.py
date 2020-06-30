@@ -4,7 +4,7 @@ import json, requests, os
 from block_model_cli.__main__ import check_neccesary_files_existence
 import block_model_proccesor, api_verification, load_block_model
 from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, SPAN_TRACING_ID_FILE_NAME, \
-    MINERAL_GRADES_INFORMATION_FILE_NAME
+    MINERAL_GRADES_INFORMATION_FILE_NAME, ACTUAL_SPAN_APP_ENVIRONMENT
 
 
 UPLOAD_FOLDER = 'prec_files'
@@ -214,14 +214,16 @@ def get_feature_flags():
 
 
 def post_span_to_trace(event_name, event_data):
-    trace_app_id = {"dev": "e824d2cb6fe313706126ad7d49b70f4b", "production": "dd6c385e8e294557673d35675f0f0c96"}
-    #TODO change app_environment to "production" for final delivery
-    app_environment = "dev"
-    tracing_endpoint_url = "https://gentle-coast-69723.herokuapp.com/api/apps/{}/traces/".format(trace_app_id[app_environment])
-    actual_span_id = get_actual_span_id()
-    data = {"trace": {"span_id": actual_span_id, "event_name": event_name, "event_data": event_data}}
-    headers = {'Content-Type': 'application/json'}
-    post = requests.post(tracing_endpoint_url, data=json.dumps(data), headers=headers)
+    try:
+        trace_app_id = {"dev": "e824d2cb6fe313706126ad7d49b70f4b", "production": "dd6c385e8e294557673d35675f0f0c96"}
+        tracing_endpoint_url = "https://gentle-coast-69723.herokuapp.com/api/apps/{}/traces/".format(trace_app_id[ACTUAL_SPAN_APP_ENVIRONMENT])
+        actual_span_id = get_actual_span_id()
+        data = {"trace": {"span_id": actual_span_id, "event_name": event_name, "event_data": event_data}}
+        headers = {'Content-Type': 'application/json'}
+        post = requests.post(tracing_endpoint_url, data=json.dumps(data), headers=headers)
+        return post
+    except:
+        return None
 
 
 def get_actual_span_id():

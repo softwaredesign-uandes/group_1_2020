@@ -1,7 +1,7 @@
 import unittest, json
 from api import __main__ as api_main
 import block_model_proccesor
-from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME
+from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME, ACTUAL_SPAN_APP_ENVIRONMENT
 import requests
 
 class TestApi(unittest.TestCase):
@@ -218,3 +218,19 @@ class TestApi(unittest.TestCase):
             self.assertEqual(final_response_data, correct_data)
         else:
             self.assertEqual(1, 1)
+
+
+    def test_post_span_to_trace_return_ok_status_code(self):
+        post = api_main.post_span_to_trace("test_event_name", "test_event_data")
+        self.assertEqual(post.status_code, 200)
+
+
+    def test_post_span_to_trace_return_correct_data(self):
+        trace_app_id = {"dev": "e824d2cb6fe313706126ad7d49b70f4b", "production": "dd6c385e8e294557673d35675f0f0c96"}
+        actual_span_id = api_main.get_actual_span_id()
+        post = api_main.post_span_to_trace("test_event_name", "test_event_data")
+        post_dic = json.loads(post.content)
+        expected_dic = {"trace": {"app_id": trace_app_id[ACTUAL_SPAN_APP_ENVIRONMENT], "event_data": "test_event_data",
+                                   "event_name": "test_event_name", "span_id": str(actual_span_id)}}
+        post_dic["trace"].pop("time_stamp", None)
+        self.assertEqual(post_dic, expected_dic)

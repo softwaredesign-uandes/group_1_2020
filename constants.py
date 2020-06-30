@@ -30,3 +30,5 @@ TEST_DB_NAME = "block_model_test.db"
 SPECIAL_PROPORTION = "special_proportion"
 MASS_COLUMNS_JSON_ENTRY = "mass_columns"
 SPAN_TRACING_ID_FILE_NAME = "span_tracing_id.json"
+#TODO change ACTUAL_SPAN_APP_ENVIRONMENT to "production" for final delivery
+ACTUAL_SPAN_APP_ENVIRONMENT = "dev"
