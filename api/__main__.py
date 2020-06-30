@@ -127,7 +127,7 @@ def input_block_model(block_json=None, json_file_name=LOADED_MODELS_INFORMATION_
         response.status_code = 200
         try:
             increase_span_id(span_tracing_id_file_name)
-            post_span_to_trace("block_model_loaded", block_json["name"])
+            post_span_to_trace("block_model_loaded", block_json["name"], span_tracing_id_file_name)
         except:
             pass
     else:
