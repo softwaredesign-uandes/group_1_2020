@@ -2,7 +2,12 @@ import unittest
 from block_model import BlockModel
 from block import Block
 
-test_prec_file = "test.prec"
+test_prec_file = {
+                "0": ["1", "1"],
+                "1": ["1", "2"],
+                "2": ["0"],
+                "3": ["0"]
+                }
 
 
 class TestBlockModel(unittest.TestCase):
@@ -291,7 +296,7 @@ class TestBlockModel(unittest.TestCase):
         self.assertEqual(test_block_model.reblock(rx, ry, rz, test_continuous_attributes, test_proportional_attributes,
                                                   test_categorical_attributes, test_mass_column), False)
 
-    def test_extract_with_chain_blocks(self):
+    def test_extract_block_return_chain_blocks(self):
         test_blocks = [
             Block({'id': 0, 'x': 0, 'y': 0, 'z': 0, 'ton': 22, 'au': 0.0, 'destination': 0}),
             Block({'id': 1, 'x': 1, 'y': 1, 'z': 1, 'ton': 34, 'au': 0.0, 'destination': 0}),
@@ -301,7 +306,9 @@ class TestBlockModel(unittest.TestCase):
         test_columns = ["id", "x", "y", "z", "ton", "au", "destination"]
         test_minerals = {"au": "proportion"}
         test_block_model_name = "test_block_model"
-        test_block_model = BlockModel(test_block_model_name, test_blocks, test_columns, test_minerals)
+        test_block_model = BlockModel(test_block_model_name, test_blocks, test_columns, test_minerals, test_prec_file)
+        self.assertEqual(test_block_model.extract("0"), {'blocks': [{'index': 0}, {'index': 1}, {'index': 2},
+                                                                    {'index': 1}]})
 
 if __name__ == "__main__":
     unittest.main()
