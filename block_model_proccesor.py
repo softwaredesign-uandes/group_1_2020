@@ -110,21 +110,11 @@ def get_block_info_by_index(block_model_name, index, json_file_name=LOADED_MODEL
                 y = block.attributes["y"]
                 z = block.attributes["z"]
                 block_data = {"index": index, "x": x, "y": y, "z": z}
-                # print("1",block_data)
-                # pure_block_model_name = get_pure_block_model_name(block_model_name)
                 minerals_and_calculations = load_block_model.get_mineral_grades_information_json(json_mineral_grades_file_name)[block_model_name]
-                # print("2", minerals_and_calculations)
-                # print("json_mineral_grades_file_name:", json_mineral_grades_file_name)
                 minerals_and_calculations_copy = minerals_and_calculations.copy()
-                # print("2.2")
-                # print(minerals_and_calculations_copy, MASS_COLUMNS_JSON_ENTRY)
-                # print(x, y, z, minerals_and_calculations_copy[MASS_COLUMNS_JSON_ENTRY])
                 block_data["mass"] = get_mass_in_kilograms(block_model, x, y, z, minerals_and_calculations_copy[MASS_COLUMNS_JSON_ENTRY])
-                # print(2.4)
                 del minerals_and_calculations_copy[MASS_COLUMNS_JSON_ENTRY]
-                # print(2.7)
                 block_data["grades"] = {}
-                # print("3", block_data)
                 for mineral in minerals_and_calculations:
                     mineral_name = get_mineral_name_from_column_name(mineral)
                     if minerals_and_calculations[mineral] in MASS_UNIT_FOR_REBLOCK:
@@ -157,3 +147,15 @@ def get_mineral_name_from_column_name(column_name):
         return "ag"
     else:
         return "cu"
+
+
+def get_block_coordinates_by_index(block_model_object, index):
+    model_blocks = block_model_object.blocks
+    try:
+        for block in model_blocks:
+            if block.attributes["id"] == index:
+                return (block.attributes["x"], block.attributes["y"], block.attributes["z"])
+        return None
+    except:
+        return None
+

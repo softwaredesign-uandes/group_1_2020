@@ -45,6 +45,10 @@ def load_block_model_precedence(model_prec=None, name=None, json_file_name=LOADE
         path = os.path.join(os.getcwd(),app.config["UPLOAD_FOLDER"], filename)
         model_prec.save(os.path.join(app.config["UPLOAD_FOLDER"], filename))
         response.status_code = 200
+        try:
+            post_span_to_trace("block_model_precedences_loaded", name)
+        except:
+            pass
         return response
 
 
@@ -66,6 +70,13 @@ def extract_block(name=None, index=None, json_file_name=LOADED_MODELS_INFORMATIO
     response = Response(json.dumps(blocks_to_extract))
     response.headers["Access-Control-Allow-Origin"] = "*"
     response.status_code = 200
+    try:
+        coordinates_tuple = block_model_proccesor.get_block_coordinates_by_index(block_model, int(index))
+        if coordinates_tuple:
+            x, y, z = coordinates_tuple
+            post_span_to_trace("block_extracted", "{},{},{}".format(x, y, z))
+    except:
+        pass
     return response
 
 
@@ -114,6 +125,11 @@ def input_block_model(block_json=None, json_file_name=LOADED_MODELS_INFORMATION_
                                                     )
     if block_loaded:
         response.status_code = 200
+        try:
+            increase_span_id()
+            post_span_to_trace("block_model_loaded", block_json["name"])
+        except:
+            pass
     else:
         response.status_code = 500
     return response
@@ -131,6 +147,10 @@ def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_F
             data = list(map(change_id_for_index, data))
             data = {"block_model": {"blocks": data}}
         response = Response(json.dumps(data))
+        try:
+            post_span_to_trace("blocks_requested", name)
+        except:
+            pass
     else:
         response.status_code = 400
     response.headers["Access-Control-Allow-Origin"] = "*"
@@ -153,10 +173,13 @@ def get_block_info(name, index, json_file_name=LOADED_MODELS_INFORMATION_FILE_NA
                 status_code = 400
             else:
                 final_data = {"block": block_data}
-                x = block_data["x"]
-                y = block_data["y"]
-                z = block_data["z"]
-                post_span_to_trace(event_name="block_info_requested", event_data="{},{},{}".format(x, y, z))
+                try:
+                    x = block_data["x"]
+                    y = block_data["y"]
+                    z = block_data["z"]
+                    post_span_to_trace(event_name="block_info_requested", event_data="{},{},{}".format(x, y, z))
+                except:
+                    pass
         except:
             status_code = 500
         response = Response(json.dumps(final_data))
@@ -179,6 +202,10 @@ def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFOR
                                 data["categorical_attributes"], data["columns_with_mass"])
             if load_block_model.load_block_model_object(reblock_model, db_name, json_file_name, json_mineral_grades_file_name):
                 response.status_code = 200
+                try:
+                    post_span_to_trace("block_model_reblocked", name)
+                except:
+                    pass
             else:
                 response.status_code = 500
         except:
@@ -197,6 +224,7 @@ def get_feature_flags():
 
 def post_span_to_trace(event_name, event_data):
     trace_app_id = {"dev": "e824d2cb6fe313706126ad7d49b70f4b", "production": "dd6c385e8e294557673d35675f0f0c96"}
+    #TODO change app_environment to "production" for final delivery
     app_environment = "dev"
     tracing_endpoint_url = "https://gentle-coast-69723.herokuapp.com/api/apps/{}/traces/".format(trace_app_id[app_environment])
     actual_span_id = get_actual_span_id()
