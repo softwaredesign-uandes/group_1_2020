@@ -16,6 +16,10 @@ def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+def change_id_for_index(block):
+    block["index"] = block.pop("id")
+    return block
+
 @app.route('/')
 def Index():
     return 'Hello World 2'
@@ -44,10 +48,11 @@ def load_block_model_precedence(model_prec=None, name=None, json_file_name=LOADE
         return response
 
 
-@app.route('/api/block_models/<name>/blocks/<index>/extract')
+@app.route('/api/block_models/<name>/blocks/<index>/extract/', methods=['POST'])
 def extract_block(name=None, index=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME,
                 json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME, db_name=DB_NAME):
     response = Response()
+    response.headers["Access-Control-Allow-Origin"] = "*"
     verify_name = api_verification.verify_model_exists(name, json_file_name)
     if not verify_name:
         response.status_code = 400
@@ -57,7 +62,10 @@ def extract_block(name=None, index=None, json_file_name=LOADED_MODELS_INFORMATIO
         response.status_code = 400
         return response
     blocks_to_extract = block_model.extract(index)
+
     response = Response(json.dumps(blocks_to_extract))
+    response.headers["Access-Control-Allow-Origin"] = "*"
+    response.status_code = 200
     return response
 
 
@@ -120,6 +128,7 @@ def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_F
     if valid_model:
         data = block_model_proccesor.get_block_list(name, json_file_name, db_name, json_mineral_grades_file_name)
         if feature_flags_json["restful_response"]:
+            data = list(map(change_id_for_index, data))
             data = {"block_model": {"blocks": data}}
         response = Response(json.dumps(data))
     else:
