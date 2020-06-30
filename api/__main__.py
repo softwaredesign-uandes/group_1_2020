@@ -103,7 +103,7 @@ def block_models_controller(json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME):
 
 @app.route('/api/block_models/', methods=['POST'])
 def input_block_model(block_json=None, json_file_name=LOADED_MODELS_INFORMATION_FILE_NAME, db_name=DB_NAME,
-                      json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME):
+                      json_mineral_grades_file_name=MINERAL_GRADES_INFORMATION_FILE_NAME, span_tracing_id_file_name=SPAN_TRACING_ID_FILE_NAME):
     response = Response()
     if not block_json:
         block_json = request.get_json()
@@ -126,7 +126,7 @@ def input_block_model(block_json=None, json_file_name=LOADED_MODELS_INFORMATION_
     if block_loaded:
         response.status_code = 200
         try:
-            increase_span_id()
+            increase_span_id(span_tracing_id_file_name)
             post_span_to_trace("block_model_loaded", block_json["name"])
         except:
             pass
@@ -222,11 +222,11 @@ def get_feature_flags():
     return feature_flags_json
 
 
-def post_span_to_trace(event_name, event_data):
+def post_span_to_trace(event_name, event_data, span_tracing_id_file_name=SPAN_TRACING_ID_FILE_NAME):
     try:
         trace_app_id = {"dev": "e824d2cb6fe313706126ad7d49b70f4b", "production": "dd6c385e8e294557673d35675f0f0c96"}
         tracing_endpoint_url = "https://gentle-coast-69723.herokuapp.com/api/apps/{}/traces/".format(trace_app_id[ACTUAL_SPAN_APP_ENVIRONMENT])
-        actual_span_id = get_actual_span_id()
+        actual_span_id = get_actual_span_id(span_tracing_id_file_name)
         data = {"trace": {"span_id": actual_span_id, "event_name": event_name, "event_data": event_data}}
         headers = {'Content-Type': 'application/json'}
         post = requests.post(tracing_endpoint_url, data=json.dumps(data), headers=headers)
@@ -235,17 +235,17 @@ def post_span_to_trace(event_name, event_data):
         return None
 
 
-def get_actual_span_id():
-    with open(SPAN_TRACING_ID_FILE_NAME, "r") as span_id_file:
+def get_actual_span_id(span_tracing_id_file_name=SPAN_TRACING_ID_FILE_NAME):
+    with open(span_tracing_id_file_name, "r") as span_id_file:
         data = json.load(span_id_file)
     return data["span_id"]
 
 
-def increase_span_id():
-    with open(SPAN_TRACING_ID_FILE_NAME, "r") as span_id_file:
+def increase_span_id(span_tracing_id_file_name=SPAN_TRACING_ID_FILE_NAME):
+    with open(span_tracing_id_file_name, "r") as span_id_file:
         data = json.load(span_id_file)
     data["span_id"] += 1
-    with open(SPAN_TRACING_ID_FILE_NAME, 'w') as span_id_file:
+    with open(span_tracing_id_file_name, 'w') as span_id_file:
         json.dump(data, span_id_file)
 
 

@@ -8,7 +8,7 @@ import load_block_model_tests
 import block_model_tests
 import api_tests
 
-from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME
+from constants import TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_DB_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME, TEST_SPAN_TRACING_ID_FILE_NAME
 
 
 def check_necessary_files_existence_for_tests():
@@ -20,13 +20,15 @@ def check_necessary_files_existence_for_tests():
     if not os.path.isfile(TEST_MINERAL_GRADES_INFORMATION_FILE_NAME):
         with open(TEST_MINERAL_GRADES_INFORMATION_FILE_NAME, "w+") as f:
             json.dump({}, f, sort_keys=True)
-
+    if not os.path.isfile(TEST_SPAN_TRACING_ID_FILE_NAME):
+        with open(TEST_SPAN_TRACING_ID_FILE_NAME, "w+") as f:
+            json.dump({"span_id": 1000}, f)
 
 def delete_test_files():
     os.remove(TEST_LOADED_MODELS_INFORMATION_FILE_NAME)
     os.remove(TEST_DB_NAME)
     os.remove(TEST_MINERAL_GRADES_INFORMATION_FILE_NAME)
-
+    os.remove(TEST_SPAN_TRACING_ID_FILE_NAME)
 
 def main(args=None):
     """The main routine."""
