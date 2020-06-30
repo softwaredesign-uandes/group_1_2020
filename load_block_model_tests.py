@@ -1,4 +1,8 @@
+import shutil
+import tempfile
 import unittest
+from os import path
+
 import load_block_model as lbm
 from constants import TEST_DB_NAME, TEST_LOADED_MODELS_INFORMATION_FILE_NAME, TEST_MINERAL_GRADES_INFORMATION_FILE_NAME
 from block_model import BlockModel
@@ -24,6 +28,12 @@ mclaughlin_block_model_test = BlockModel("mclaughlin_limit", [Block({'id': 0,
 
 
 class TestLoadBlockModel(unittest.TestCase):
+
+    def set_up(self):
+        self.test_dir = tempfile.mkdtemp()
+
+    def tear_down(self):
+        shutil.rmtree(self.test_dir)
 
     def test_get_model_name_from_path_returns_correct_name(self):
         self.assertEqual(lbm.get_model_name_from_path("some\\text\\before\\name.name"), "name")
@@ -77,6 +87,18 @@ class TestLoadBlockModel(unittest.TestCase):
         self.assertEqual(lbm.load_block_model_object(mclaughlin_block_model_test, TEST_DB_NAME,
                                                      TEST_LOADED_MODELS_INFORMATION_FILE_NAME,
                                                      TEST_MINERAL_GRADES_INFORMATION_FILE_NAME), True)
+
+    def test_load_model_precedence_file(self):
+        self.set_up()
+        test_prec_file = open(path.join(self.test_dir, "test.prec"), 'w')
+        test_prec_file.write("0 1 1\n" +
+                             "1 1 2\n" +
+                             "2 0\n" +
+                             "3 0")
+        test_prec_file.close()
+        test_prec_file = open(path.join(self.test_dir, "test.prec"), 'r')
+        self.assertEqual(lbm.load_model_precedence("test", self.test_dir), {"0": ["1"], "1": ["2"], "2": [], "3": []})
+
 
 if __name__ == "__main__":
     unittest.main()
