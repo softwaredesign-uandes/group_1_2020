@@ -3,7 +3,8 @@ import sqlite3
 import json
 from block import Block
 from block_model import BlockModel
-from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME
+from constants import LOADED_MODELS_INFORMATION_FILE_NAME, DB_NAME, MINERAL_GRADES_INFORMATION_FILE_NAME, PRECEDENCE_FILES_PATH
+
 
 def create_db(db_name=DB_NAME):
     if os.path.isfile(db_name):
@@ -163,7 +164,8 @@ def get_block_model_object(block_model_name, json_file_name=LOADED_MODELS_INFORM
         for row in cursor.fetchall():
             blocks.append(Block({attribute: value for (attribute, value) in zip(columns, row)}))
         minerals = get_mineral_grades_information_json(json_mineral_grades_file_name)[block_model_name]
-        return BlockModel(block_model_name, blocks, columns, minerals)
+        precedence = load_model_precedence(block_model_name)
+        return BlockModel(block_model_name, blocks, columns, minerals, precedence)
 
 
 def get_column_types_from_block(block_model):
@@ -200,3 +202,22 @@ def load_block_model_object(block_model, db_name=DB_NAME, models_json=LOADED_MOD
         return True
     except:
         return False
+
+
+def load_model_precedence(block_model_name, precedence_path=PRECEDENCE_FILES_PATH):
+    filenames = os.listdir(os.path.join(os.getcwd(), precedence_path))
+    precedence = {}
+    block_model_precedence_file = "{}.prec".format(block_model_name)
+    for filename in filenames:
+        if block_model_precedence_file in filename:
+            file = open(os.path.join(os.getcwd(), precedence_path, filename))
+            for line in file:
+                data = line.strip().split(" ")
+                if data[1] != "0":
+                    precedence[data[0]] = data[2:]
+                else:
+                    precedence[data[0]] = []
+    return precedence
+
+
+
