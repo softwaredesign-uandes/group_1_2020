@@ -130,7 +130,6 @@ def input_block_model(block_json=None, json_file_name=LOADED_MODELS_INFORMATION_
         try:
             increase_span_id(span_tracing_id_file_name)
             post_span_to_trace("block_model_loaded", block_json["name"], span_tracing_id_file_name)
-            print("exito input_block_model")
         except:
             pass
     else:
@@ -153,7 +152,6 @@ def get_block_model_blocks(name=None, json_file_name=LOADED_MODELS_INFORMATION_F
         response = Response(json.dumps(data))
         try:
             post_span_to_trace("blocks_requested", name, span_tracing_id_file_name)
-            print("exito get_block_model_blocks")
         except:
             pass
     else:
@@ -184,7 +182,6 @@ def get_block_info(name, index, json_file_name=LOADED_MODELS_INFORMATION_FILE_NA
                     y = block_data["y"]
                     z = block_data["z"]
                     post_span_to_trace("block_info_requested", "{},{},{}".format(x, y, z), span_tracing_id_file_name)
-                    print("exito get_block_info")
                 except:
                     pass
         except:
@@ -212,7 +209,6 @@ def reblock_block_model(name=None, data=None, json_file_name=LOADED_MODELS_INFOR
                 response.status_code = 200
                 try:
                     post_span_to_trace("block_model_reblocked", name, span_tracing_id_file_name)
-                    print("exito reblock_block_model")
                 except:
                     pass
             else:
@@ -233,8 +229,8 @@ def get_feature_flags():
 
 def post_span_to_trace(event_name, event_data, span_tracing_id_file_name=SPAN_TRACING_ID_FILE_NAME):
     try:
-        # TODO change app_environment to "production" for final delivery
-        app_environment = "dev"
+        # _TODO change app_environment to "production" for final delivery. Ready
+        app_environment = "production"
         tracing_endpoint_url = "https://gentle-coast-69723.herokuapp.com/api/apps/{}/traces/".format(TRACE_APP_ID[app_environment])
         actual_span_id = get_actual_span_id(span_tracing_id_file_name)
         data = {"trace": {"span_id": actual_span_id, "event_name": event_name, "event_data": event_data}}
