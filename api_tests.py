@@ -233,7 +233,7 @@ class TestApi(unittest.TestCase):
         actual_span_id = api_main.get_actual_span_id(TEST_SPAN_TRACING_ID_FILE_NAME)
         post = api_main.post_span_to_trace("test_event_name", "test_event_data", TEST_SPAN_TRACING_ID_FILE_NAME)
         post_dic = json.loads(post.content)
-        expected_dic = {"trace": {"app_id": TRACE_APP_ID["dev"], "event_data": "test_event_data",
+        expected_dic = {"trace": {"app_id": TRACE_APP_ID["production"], "event_data": "test_event_data",
                                    "event_name": "test_event_name", "span_id": str(actual_span_id)}}
         post_dic["trace"].pop("time_stamp", None)
         self.assertEqual(post_dic, expected_dic)

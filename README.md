@@ -111,5 +111,5 @@ The following structure is an example of what is required to reblock a block mod
 ###Span Traces (using production app id)
 Span ids from 100 onwards are from API call events
 
-Span ids from 9000 onwards are tests of API methods 
+Span ids from 8000 onwards are tests of API methods
 
